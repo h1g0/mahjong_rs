@@ -1,3 +1,6 @@
+use rand::thread_rng;
+use rand::seq::SliceRandom;
+
 mod tile;
 use tile::*;
 
@@ -5,6 +8,20 @@ mod hand;
 use hand::*;
 
 fn main() {
-    let hand = Hand::new(vec!(Tile::new(Tile::M1);13));
+    let mut rng = rand::thread_rng();
+    let mut tiles: Vec<Tile> = Vec::new();
+    for i in 0..4{
+        for j in 0..Tile::LEN{
+            tiles.push(Tile::new(j as TileType));
+        }
+    }
+    tiles.shuffle(&mut rng);
+    
+    let mut hand_vec: Vec<Tile> = Vec::new();
+    for i in 0..13{
+        hand_vec.push(tiles.pop().unwrap());
+    }
+    hand_vec.sort();
+    let hand = Hand::new(hand_vec,tiles.pop());
     println!("{}",hand.to_ascii());
 }
