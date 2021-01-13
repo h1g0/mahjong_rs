@@ -56,6 +56,29 @@ impl Hand{
     fn sort(&mut self){
         self.tiles.sort();
     }
+    /// 種類別に各牌の数をカウントする
+    fn summarize_tiles(&self)->Vec<TileType>{
+        let mut result: Vec<TileType> = vec!(0,Tile::LEN as u32);
+
+        // 通常の手牌をカウント
+        for i in 0.. self.tiles.len(){
+            result[self.tiles[i].get() as usize] += 1;
+        }
+
+        // 鳴いている牌があればカウント
+        for i in 0 .. self.meld.len(){
+            for j in 0..self.meld[i].tiles.len(){
+                result[self.meld[i].tiles[j].get() as usize] += 1;
+            }
+        }
+
+        // ツモった牌があればカウント
+        if let Some(t) = self.drawn{
+            result[t.get() as usize] += 1;
+        }
+
+        return result;
+    }
 
     pub fn to_emoji(&self)->String{
         let mut result = String::new();
