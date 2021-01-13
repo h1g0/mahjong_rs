@@ -162,7 +162,7 @@ impl Tile {
     pub fn to_char(&self) -> char {
         return Tile::CHARS[self.index as usize];
     }
-    pub fn to_ascii(&self) -> String {
+    pub fn to_string(&self) -> String {
         return Tile::ASCII[self.index as usize].to_string();
     }
 

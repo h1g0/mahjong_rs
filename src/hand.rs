@@ -1,7 +1,7 @@
 use super::tile::*;
 
 /// 副露の種類
-pub enum FuroType{
+pub enum MeldType{
     /// チー
     Chi,
     /// ポン
@@ -11,7 +11,7 @@ pub enum FuroType{
 }
 
 /// どこから副露したか
-pub enum FuroFrom{
+pub enum MeldFrom{
     /// 上家
     Previous,
     /// 自家
@@ -23,10 +23,12 @@ pub enum FuroFrom{
 }
 
 
-pub struct Furo{
+
+/// 副露状態を表す構造体
+pub struct Meld{
     tiles: Vec<Tile>,
-    furo_type: FuroType,
-    from: FuroFrom,
+    r#type: MeldType,
+    from: MeldFrom,
 }
 
 /// 手牌
@@ -36,7 +38,7 @@ pub struct Hand{
     /// ツモってきた牌
     drawn: Option<Tile>,
     /// 副露
-    furo: Vec<Furo>,
+    meld: Vec<Meld>,
 
 }
 impl Hand{
@@ -47,7 +49,7 @@ impl Hand{
         return Hand{
             tiles,
             drawn,
-            furo: Vec::new(),
+            meld: Vec::new(),
         }
     }
 
@@ -55,7 +57,7 @@ impl Hand{
         self.tiles.sort();
     }
 
-    pub fn to_string(&self)->String{
+    pub fn to_emoji(&self)->String{
         let mut result = String::new();
         for i in 0..self.tiles.len(){
             result.push(self.tiles[i].to_char());
@@ -65,13 +67,13 @@ impl Hand{
         }
         return result;
     }
-    pub fn to_ascii(&self)->String{
+    pub fn to_string(&self)->String{
         let mut result = String::new();
         for i in 0..self.tiles.len(){
-            result.push_str(&self.tiles[i].to_ascii());
+            result.push_str(&self.tiles[i].to_string());
         }
         if let Some(tsumo) = self.drawn{
-            result.push_str(&format!(" {}",tsumo.to_ascii()));
+            result.push_str(&format!(" {}",tsumo.to_string()));
         }
         return result;
     }

@@ -23,5 +23,5 @@ fn main() {
     }
     hand_vec.sort();
     let hand = Hand::new(hand_vec,tiles.pop());
-    println!("{}",hand.to_ascii());
+    println!("{}",hand.to_string());
 }
