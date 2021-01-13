@@ -137,7 +137,7 @@ impl Tile {
     }
 
     /// 対子（同じ2枚）か否かを返す
-    pub fn is_same_to(&self,tile:Tile)->bool{
+    pub fn is_same_to(&self, tile: Tile) -> bool {
         return self.get() == tile.get();
     }
     /// 搭子（連続した2枚）か否かを返す
@@ -151,9 +151,9 @@ impl Tile {
             return false;
         }
         // 九萬・九筒・九索の時に1つ後（一筒・一索・東）が来ても連続とはみなさない
-        if matches!(self.index, Tile::M9 | Tile::P9 | Tile::S9) && self.get() == tile.get() -1 {
+        if matches!(self.index, Tile::M9 | Tile::P9 | Tile::S9) && self.get() == tile.get() - 1 {
             return false;
-        }else if self.get() == tile.get() - 1 || self.get() == tile.get() + 1 {
+        } else if self.get() == tile.get() - 1 || self.get() == tile.get() + 1 {
             return true;
         }
         return false;
@@ -312,7 +312,7 @@ mod tests {
 
     /// 対子テスト
     #[test]
-    fn sameness_test(){
+    fn sameness_test() {
         // 1m→1mは対子
         assert_eq!(Tile::new(Tile::M1).is_same_to(Tile::new(Tile::M1)), true);
         // 1m→1pは対子ではない
@@ -323,24 +323,51 @@ mod tests {
 
     /// 搭子テスト
     #[test]
-    fn sequential_test(){
+    fn sequential_test() {
         // 1m→2mは搭子
-        assert_eq!(Tile::new(Tile::M1).is_sequential_to(Tile::new(Tile::M2)), true);
+        assert_eq!(
+            Tile::new(Tile::M1).is_sequential_to(Tile::new(Tile::M2)),
+            true
+        );
         // 3p→3pは搭子ではない
-        assert_eq!(Tile::new(Tile::P3).is_sequential_to(Tile::new(Tile::P3)), false);
+        assert_eq!(
+            Tile::new(Tile::P3).is_sequential_to(Tile::new(Tile::P3)),
+            false
+        );
         // 7s→8sは搭子
-        assert_eq!(Tile::new(Tile::S7).is_sequential_to(Tile::new(Tile::S8)), true);
+        assert_eq!(
+            Tile::new(Tile::S7).is_sequential_to(Tile::new(Tile::S8)),
+            true
+        );
         // 1m→1pは搭子ではない
-        assert_eq!(Tile::new(Tile::M1).is_sequential_to(Tile::new(Tile::P1)), false);
+        assert_eq!(
+            Tile::new(Tile::M1).is_sequential_to(Tile::new(Tile::P1)),
+            false
+        );
         // 9m→8mは搭子
-        assert_eq!(Tile::new(Tile::M9).is_sequential_to(Tile::new(Tile::M8)), true);
+        assert_eq!(
+            Tile::new(Tile::M9).is_sequential_to(Tile::new(Tile::M8)),
+            true
+        );
         // 9m→1pは搭子ではない
-        assert_eq!(Tile::new(Tile::M9).is_sequential_to(Tile::new(Tile::P1)), false);
+        assert_eq!(
+            Tile::new(Tile::M9).is_sequential_to(Tile::new(Tile::P1)),
+            false
+        );
         // 1s→9pは搭子ではない
-        assert_eq!(Tile::new(Tile::S1).is_sequential_to(Tile::new(Tile::P9)), false);
+        assert_eq!(
+            Tile::new(Tile::S1).is_sequential_to(Tile::new(Tile::P9)),
+            false
+        );
         // 9s→1zは搭子ではない
-        assert_eq!(Tile::new(Tile::S9).is_sequential_to(Tile::new(Tile::Z1)), false);
+        assert_eq!(
+            Tile::new(Tile::S9).is_sequential_to(Tile::new(Tile::Z1)),
+            false
+        );
         // 1z→2zは搭子ではない
-        assert_eq!(Tile::new(Tile::Z1).is_sequential_to(Tile::new(Tile::Z2)), false);
+        assert_eq!(
+            Tile::new(Tile::Z1).is_sequential_to(Tile::new(Tile::Z2)),
+            false
+        );
     }
 }
