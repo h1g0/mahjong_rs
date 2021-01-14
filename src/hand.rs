@@ -1,7 +1,7 @@
 use super::tile::*;
 
 /// 副露の種類
-pub enum MeldType {
+pub enum OpenType {
     /// チー
     Chi,
     /// ポン
@@ -10,23 +10,26 @@ pub enum MeldType {
     Kan,
 }
 
-/// どこから副露したか
-pub enum MeldFrom {
-    /// 上家
+/// 誰から副露したか
+pub enum OpenFrom {
+    /// 上家（チー・ポン・明カン）
     Previous,
-    /// 自家
+    /// 自家（暗カンしたときのみ）
     Myself,
-    /// 下家
-    Folloing,
-    /// 対面
+    /// 下家（ポン・明カン）
+    Following,
+    /// 対面（ポン・明カン）
     Opposite,
 }
 
 /// 副露状態を表す構造体
-pub struct Meld {
-    tiles: Vec<Tile>,
-    r#type: MeldType,
-    from: MeldFrom,
+pub struct OpenTiles {
+    /// 3枚の牌が入る。カンした時も3枚（4枚目は自明）
+    tiles: [Tile;3],
+    /// 副露の種類
+    r#type: OpenType,
+    /// 誰から副露したか
+    from: OpenFrom,
 }
 
 /// 手牌
@@ -36,7 +39,7 @@ pub struct Hand {
     /// ツモってきた牌
     drawn: Option<Tile>,
     /// 副露
-    meld: Vec<Meld>,
+    opened: Vec<OpenTiles>,
 }
 impl Hand {
     pub fn new(tiles: Vec<Tile>, drawn: Option<Tile>) -> Hand {
@@ -46,7 +49,7 @@ impl Hand {
         return Hand {
             tiles,
             drawn,
-            meld: Vec::new(),
+            opened: Vec::new(),
         };
     }
 
@@ -63,9 +66,9 @@ impl Hand {
         }
 
         // 鳴いている牌があればカウント
-        for i in 0..self.meld.len() {
-            for j in 0..self.meld[i].tiles.len() {
-                result[self.meld[i].tiles[j].get() as usize] += 1;
+        for i in 0..self.opened.len() {
+            for j in 0..self.opened[i].tiles.len() {
+                result[self.opened[i].tiles[j].get() as usize] += 1;
             }
         }
 
@@ -97,4 +100,16 @@ impl Hand {
         }
         return result;
     }
+
+    fn make_short_str(mut tiles: Vec<Tile>)->String{
+        tiles.sort();
+        let mut result = String::new();
+        for t in tiles{}
+        unimplemented!();
+    }
+
+    pub fn to_short_string(&self)->String{
+        unimplemented!();
+    }
+
 }
