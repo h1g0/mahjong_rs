@@ -1,4 +1,4 @@
-use rand::thread_rng;
+//use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 mod tile;
@@ -10,18 +10,18 @@ use hand::*;
 fn main() {
     let mut rng = rand::thread_rng();
     let mut tiles: Vec<Tile> = Vec::new();
-    for i in 0..4{
-        for j in 0..Tile::LEN{
-            tiles.push(Tile::new(j as TileType));
+    for _ in 0..4{
+        for i in 0..Tile::LEN{
+            tiles.push(Tile::new(i as TileType));
         }
     }
     tiles.shuffle(&mut rng);
     
     let mut hand_vec: Vec<Tile> = Vec::new();
-    for i in 0..13{
+    for _ in 0..13{
         hand_vec.push(tiles.pop().unwrap());
     }
     hand_vec.sort();
     let hand = Hand::new(hand_vec,tiles.pop());
-    println!("{}",hand.to_string());
+    println!("{}",hand.to_short_string());
 }

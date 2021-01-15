@@ -25,7 +25,7 @@ pub enum OpenFrom {
 /// 副露状態を表す構造体
 pub struct OpenTiles {
     /// 3枚の牌が入る。カンした時も3枚（4枚目は自明）
-    tiles: [Tile;3],
+    tiles: [Tile; 3],
     /// 副露の種類
     r#type: OpenType,
     /// 誰から副露したか
@@ -101,15 +101,37 @@ impl Hand {
         return result;
     }
 
-    fn make_short_str(mut tiles: Vec<Tile>)->String{
+    fn make_short_str(mut tiles: Vec<Tile>) -> String {
+        if tiles.len() == 0 {
+            return String::from("");
+        } else if tiles.len() == 1 {
+            return tiles[1].to_string();
+        }
         tiles.sort();
         let mut result = String::new();
-        for t in tiles{}
-        unimplemented!();
+        let mut prev_suit = 'x';
+        for i in 0..tiles.len() {
+            let now_suit = tiles[i].to_string().chars().nth(1).unwrap();
+            if i > 0 {
+                result.push(tiles[i - 1].to_string().chars().nth(0).unwrap());
+                if now_suit != prev_suit {
+                    result.push(prev_suit);
+                }
+            }
+            if i == tiles.len() - 1 {
+                result.push(tiles[i].to_string().chars().nth(0).unwrap());
+                result.push(now_suit);
+            }
+            prev_suit = now_suit;
+        }
+        return result;
     }
-
-    pub fn to_short_string(&self)->String{
-        unimplemented!();
+    pub fn to_short_string(&self) -> String {
+        let tiles = self.tiles.clone();
+        let mut result = Hand::make_short_str(tiles);
+        if let Some(tsumo) = self.drawn {
+            result.push_str(&format!(" {}", tsumo.to_string()));
+        }
+        return result;
     }
-
 }
