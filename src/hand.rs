@@ -1,4 +1,5 @@
 use super::tile::*;
+use std::collections::VecDeque;
 
 /// 副露の種類
 pub enum OpenType {
@@ -85,6 +86,16 @@ impl Hand {
         for i in 0..self.tiles.len() {
             result.push(self.tiles[i].to_char());
         }
+
+        for i in 0..self.opened.len() {
+            result.push_str(&format!(
+                " {}{}{}",
+                self.opened[i].tiles[0].to_char(),
+                self.opened[i].tiles[1].to_char(),
+                self.opened[i].tiles[2].to_char()
+            ))
+        }
+
         if let Some(tsumo) = self.drawn {
             result.push_str(&format!(" {}", tsumo.to_char()));
         }
@@ -95,6 +106,16 @@ impl Hand {
         for i in 0..self.tiles.len() {
             result.push_str(&self.tiles[i].to_string());
         }
+
+        for i in 0..self.opened.len() {
+            result.push_str(&format!(
+                " {}{}{}",
+                self.opened[i].tiles[0].to_string(),
+                self.opened[i].tiles[1].to_string(),
+                self.opened[i].tiles[2].to_string()
+            ))
+        }
+
         if let Some(tsumo) = self.drawn {
             result.push_str(&format!(" {}", tsumo.to_string()));
         }
@@ -121,6 +142,7 @@ impl Hand {
             if i == tiles.len() - 1 {
                 result.push(tiles[i].to_string().chars().nth(0).unwrap());
                 result.push(now_suit);
+                break;
             }
             prev_suit = now_suit;
         }
@@ -133,5 +155,25 @@ impl Hand {
             result.push_str(&format!(" {}", tsumo.to_string()));
         }
         return result;
+    }
+
+    fn str_to_tiles(hand_str: &str) -> Vec<Tile> {
+        let mut result: Vec<Tile> = Vec::new();
+
+        let mut stack: VecDeque<char> = VecDeque::new();
+        while let Some(c) = hand_str.chars().next() {
+            if matches!(c, '1'..='9') {
+                stack.push_back(c);
+            } else if matches!(c, 'm' | 'p' | 's' | 'z') {
+                while let Some(t) = stack.pop_front() {
+                    result.push(Tile::from(&format!("{}{}", t, c)));
+                }
+            }
+        }
+        return result;
+    }
+
+    pub fn from(hand_str: &str) -> Hand {
+        todo!();
     }
 }
