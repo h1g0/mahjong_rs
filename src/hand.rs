@@ -81,6 +81,7 @@ impl Hand {
         return result;
     }
 
+    /// 絵文字として出力する
     pub fn to_emoji(&self) -> String {
         let mut result = String::new();
         for i in 0..self.tiles.len() {
@@ -101,6 +102,10 @@ impl Hand {
         }
         return result;
     }
+
+    /// 文字列として出力する
+    ///
+    /// `to_short_string`と違い、こちらは牌の種類を省略せずに`1m2m3m1p2p3p...`と必ず2文字単位で出力する。
     pub fn to_string(&self) -> String {
         let mut result = String::new();
         for i in 0..self.tiles.len() {
@@ -122,6 +127,7 @@ impl Hand {
         return result;
     }
 
+    /// `Vec<Tile>`から連続した牌の種類を圧縮した文字列を返す
     fn make_short_str(mut tiles: Vec<Tile>) -> String {
         if tiles.len() == 0 {
             return String::from("");
@@ -148,6 +154,10 @@ impl Hand {
         }
         return result;
     }
+
+    /// 文字列として出力する
+    ///
+    /// `to_string`と違い、こちらは連続した牌の種類は省略して`123m123p...`と出力する。
     pub fn to_short_string(&self) -> String {
         let tiles = self.tiles.clone();
         let mut result = Hand::make_short_str(tiles);
@@ -157,6 +167,7 @@ impl Hand {
         return result;
     }
 
+    /// 文字列から`Vec<Tile>`を返す
     fn str_to_tiles(hand_str: &str) -> Vec<Tile> {
         let mut result: Vec<Tile> = Vec::new();
 
