@@ -170,14 +170,17 @@ impl Hand {
     /// 文字列から`Vec<Tile>`を返す
     fn str_to_tiles(hand_str: &str) -> Vec<Tile> {
         let mut result: Vec<Tile> = Vec::new();
-
         let mut stack: VecDeque<char> = VecDeque::new();
-        while let Some(c) = hand_str.chars().next() {
+        let mut itr = hand_str.chars();
+        while let Some(c) = itr.next() {
             if matches!(c, '1'..='9') {
                 stack.push_back(c);
             } else if matches!(c, 'm' | 'p' | 's' | 'z') {
                 while let Some(t) = stack.pop_front() {
-                    result.push(Tile::from(&format!("{}{}", t, c)));
+                    // 字牌の場合は`8z`と`9z`は存在しない
+                    if matches!(c, 'm' | 'p' | 's') || (c == 'z' && matches!(t, '1'..='7')) {
+                        result.push(Tile::from(&format!("{}{}", t, c)));
+                    }
                 }
             }
         }
@@ -186,5 +189,37 @@ impl Hand {
 
     pub fn from(hand_str: &str) -> Hand {
         todo!();
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn str_to_tiles_test() {
+        let test = Hand::str_to_tiles("123m456p789s1234z");
+        assert_eq!(test[0], Tile::new(Tile::M1));
+        assert_eq!(test[1], Tile::new(Tile::M2));
+        assert_eq!(test[2], Tile::new(Tile::M3));
+        assert_eq!(test[3], Tile::new(Tile::P4));
+        assert_eq!(test[4], Tile::new(Tile::P5));
+        assert_eq!(test[5], Tile::new(Tile::P6));
+        assert_eq!(test[6], Tile::new(Tile::S7));
+        assert_eq!(test[7], Tile::new(Tile::S8));
+        assert_eq!(test[8], Tile::new(Tile::S9));
+        assert_eq!(test[9], Tile::new(Tile::Z1));
+        assert_eq!(test[10], Tile::new(Tile::Z2));
+        assert_eq!(test[11], Tile::new(Tile::Z3));
+        assert_eq!(test[12], Tile::new(Tile::Z4));
+    }
+    #[test]
+    fn str_to_tiles_test2() {
+        let test = Hand::str_to_tiles("1m2m3m4p5p6p");
+        assert_eq!(test[0], Tile::new(Tile::M1));
+        assert_eq!(test[1], Tile::new(Tile::M2));
+        assert_eq!(test[2], Tile::new(Tile::M3));
+        assert_eq!(test[3], Tile::new(Tile::P4));
+        assert_eq!(test[4], Tile::new(Tile::P5));
+        assert_eq!(test[5], Tile::new(Tile::P6));
     }
 }
