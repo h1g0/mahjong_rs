@@ -1,6 +1,6 @@
-mod tile;
+pub mod tile;
 use tile::*;
 
-mod hand;
+pub mod hand;
 use hand::*;
 

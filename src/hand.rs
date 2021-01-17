@@ -2,6 +2,7 @@ use super::tile::*;
 use std::collections::VecDeque;
 
 /// 副露の種類
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum OpenType {
     /// チー
     Chi,
@@ -12,6 +13,7 @@ pub enum OpenType {
 }
 
 /// 誰から副露したか
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum OpenFrom {
     /// 上家（チー・ポン・明カン）
     Previous,
@@ -28,7 +30,7 @@ pub struct OpenTiles {
     /// 3枚の牌が入る。カンした時も3枚（4枚目は自明）
     tiles: [Tile; 3],
     /// 副露の種類
-    r#type: OpenType,
+    category: OpenType,
     /// 誰から副露したか
     from: OpenFrom,
 }
@@ -37,21 +39,21 @@ pub struct OpenTiles {
 pub struct Hand {
     /// 現在の手牌（副露がなければ13枚）
     tiles: Vec<Tile>,
-    /// ツモってきた牌
-    drawn: Option<Tile>,
     /// 副露
     opened: Vec<OpenTiles>,
+    /// ツモってきた牌
+    drawn: Option<Tile>,
 }
 impl Hand {
     pub fn new(tiles: Vec<Tile>, drawn: Option<Tile>) -> Hand {
-        if tiles.len() != 13 {
-            panic!("`Hand.tiles.len()` must be 13.");
-        }
-        return Hand {
+        return Hand::new_with_opened(tiles, Vec::new(), drawn);
+    }
+    pub fn new_with_opened(tiles: Vec<Tile>,opened: Vec<OpenTiles>, drawn: Option<Tile>) -> Hand{
+        Hand{
             tiles,
             drawn,
-            opened: Vec::new(),
-        };
+            opened,
+        }
     }
 
     fn sort(&mut self) {
@@ -118,7 +120,14 @@ impl Hand {
                 self.opened[i].tiles[0].to_string(),
                 self.opened[i].tiles[1].to_string(),
                 self.opened[i].tiles[2].to_string()
-            ))
+            ));
+            // カンなら4枚目を追加する
+            if self.opened[i].category == OpenType::Kan{
+                result.push_str(&format!(
+                    "{}",
+                    self.opened[i].tiles[0].to_string(),
+                ));
+            }
         }
 
         if let Some(tsumo) = self.drawn {
