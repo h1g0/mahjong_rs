@@ -48,8 +48,8 @@ impl Hand {
     pub fn new(tiles: Vec<Tile>, drawn: Option<Tile>) -> Hand {
         return Hand::new_with_opened(tiles, Vec::new(), drawn);
     }
-    pub fn new_with_opened(tiles: Vec<Tile>,opened: Vec<OpenTiles>, drawn: Option<Tile>) -> Hand{
-        Hand{
+    pub fn new_with_opened(tiles: Vec<Tile>, opened: Vec<OpenTiles>, drawn: Option<Tile>) -> Hand {
+        Hand {
             tiles,
             drawn,
             opened,
@@ -122,11 +122,8 @@ impl Hand {
                 self.opened[i].tiles[2].to_string()
             ));
             // カンなら4枚目を追加する
-            if self.opened[i].category == OpenType::Kan{
-                result.push_str(&format!(
-                    "{}",
-                    self.opened[i].tiles[0].to_string(),
-                ));
+            if self.opened[i].category == OpenType::Kan {
+                result.push_str(&format!("{}", self.opened[i].tiles[0].to_string(),));
             }
         }
 
