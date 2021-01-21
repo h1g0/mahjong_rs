@@ -194,7 +194,7 @@ impl Hand {
     }
 
     pub fn from(hand_str: &str) -> Hand {
-        todo!();
+        let splitted = hand_str.split_ascii_whitespace();
     }
 }
 #[cfg(test)]
