@@ -290,7 +290,7 @@ mod tests {
 
     #[test]
     fn from_with_no_opened_test() {
-        let test_str = "123m456p789s1234z 5z";
+        let test_str = "123m456p789s1115z 5z";
         let test = Hand::from(test_str);
         assert_eq!(test.tiles[0],Tile::new(Tile::M1));
         assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
@@ -299,7 +299,7 @@ mod tests {
 
     #[test]
     fn from_with_chi_test() {
-        let test_str = "123m456p1234z 789s 5z";
+        let test_str = "123m456p1115z 789s 5z";
         let test = Hand::from(test_str);
         assert_eq!(test.tiles[0],Tile::new(Tile::M1));
         assert_eq!(test.opened[0].category,OpenType::Chi);
@@ -311,11 +311,11 @@ mod tests {
 
     #[test]
     fn from_with_pon_test() {
-        let test_str = "123m456p1234z 777s 5z";
+        let test_str = "123m456p789s5z 111z 5z";
         let test = Hand::from(test_str);
         assert_eq!(test.tiles[0],Tile::new(Tile::M1));
         assert_eq!(test.opened[0].category,OpenType::Pon);
-        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S7),Tile::new(Tile::S7)]);
+        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::Z1),Tile::new(Tile::Z1),Tile::new(Tile::Z1)]);
         assert_eq!(test.opened[0].from,OpenFrom::Unknown);
         assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
@@ -323,11 +323,11 @@ mod tests {
 
     #[test]
     fn from_with_kan_test() {
-        let test_str = "123m456p1234z 7777s 5z";
+        let test_str = "123m456p789s5z 1111z 5z";
         let test = Hand::from(test_str);
         assert_eq!(test.tiles[0],Tile::new(Tile::M1));
         assert_eq!(test.opened[0].category,OpenType::Kan);
-        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S7),Tile::new(Tile::S7)]);
+        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::Z1),Tile::new(Tile::Z1),Tile::new(Tile::Z1)]);
         assert_eq!(test.opened[0].from,OpenFrom::Unknown);
         assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
