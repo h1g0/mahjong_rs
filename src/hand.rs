@@ -23,9 +23,12 @@ pub enum OpenFrom {
     Following,
     /// 対面（ポン・明カン）
     Opposite,
+    /// 不明
+    Unknown,
 }
 
 /// 副露状態を表す構造体
+#[derive(Debug)]
 pub struct OpenTiles {
     /// 3枚の牌が入る。カンした時も3枚（4枚目は自明）
     tiles: [Tile; 3],
@@ -36,6 +39,7 @@ pub struct OpenTiles {
 }
 
 /// 手牌
+#[derive(Debug)]
 pub struct Hand {
     /// 現在の手牌（副露がなければ13枚）
     tiles: Vec<Tile>,
@@ -167,6 +171,15 @@ impl Hand {
     pub fn to_short_string(&self) -> String {
         let tiles = self.tiles.clone();
         let mut result = Hand::make_short_str(tiles);
+
+        for i in 0..self.opened.len() {
+            let mut op_tiles = Vec::from(self.opened[i].tiles);
+            if self.opened[i].category == OpenType::Kan{
+                op_tiles.push(self.opened[i].tiles[0]);
+            }
+            result.push_str(&format!(" {}",Hand::make_short_str(op_tiles)));
+        }
+
         if let Some(tsumo) = self.drawn {
             result.push_str(&format!(" {}", tsumo.to_string()));
         }
@@ -194,7 +207,48 @@ impl Hand {
     }
 
     pub fn from(hand_str: &str) -> Hand {
-        let splitted = hand_str.split_ascii_whitespace();
+        let mut itr = hand_str.split_ascii_whitespace();
+        let hand = Hand::str_to_tiles(itr.next().unwrap_or(""));
+        let mut opened: Vec<OpenTiles> = Vec::new();
+        let mut drawn: Option<Tile> = None;
+
+        while let Some(tile_str) = itr.next() {
+            let tile_vec = Hand::str_to_tiles(tile_str);
+            match tile_vec.len() {
+                1 => {
+                    let t = *tile_vec.get(0).unwrap();
+                    drawn = Some(t);
+                }
+                3 => {
+                    opened.push(OpenTiles {
+                        tiles: [
+                            *tile_vec.get(0).unwrap(),
+                            *tile_vec.get(1).unwrap(),
+                            *tile_vec.get(2).unwrap(),
+                        ],
+                        category: if *tile_vec.get(0).unwrap() == *tile_vec.get(1).unwrap() {
+                            OpenType::Pon
+                        } else {
+                            OpenType::Chi
+                        },
+                        from: OpenFrom::Unknown,
+                    });
+                }
+                4 => {
+                    opened.push(OpenTiles {
+                        tiles: [
+                            *tile_vec.get(0).unwrap(),
+                            *tile_vec.get(1).unwrap(),
+                            *tile_vec.get(2).unwrap(),
+                        ],
+                        category: OpenType::Kan,
+                        from: OpenFrom::Unknown,
+                    });
+                }
+                _ => {}
+            }
+        }
+        return Hand::new_with_opened(hand, opened, drawn);
     }
 }
 #[cfg(test)]
@@ -227,5 +281,55 @@ mod tests {
         assert_eq!(test[3], Tile::new(Tile::P4));
         assert_eq!(test[4], Tile::new(Tile::P5));
         assert_eq!(test[5], Tile::new(Tile::P6));
+    }
+    #[test]
+    fn str_to_tiles_test3() {
+        let test = Hand::str_to_tiles("");
+        assert_eq!(test.len(), 0);
+    }
+
+    #[test]
+    fn from_with_no_opened_test() {
+        let test_str = "123m456p789s1234z 5z";
+        let test = Hand::from(test_str);
+        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
+        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.to_short_string(), test_str);
+    }
+
+    #[test]
+    fn from_with_chi_test() {
+        let test_str = "123m456p1234z 789s 5z";
+        let test = Hand::from(test_str);
+        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category,OpenType::Chi);
+        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S8),Tile::new(Tile::S9)]);
+        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
+        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.to_short_string(), test_str);
+    }
+
+    #[test]
+    fn from_with_pon_test() {
+        let test_str = "123m456p1234z 777s 5z";
+        let test = Hand::from(test_str);
+        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category,OpenType::Pon);
+        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S7),Tile::new(Tile::S7)]);
+        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
+        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.to_short_string(), test_str);
+    }
+
+    #[test]
+    fn from_with_kan_test() {
+        let test_str = "123m456p1234z 7777s 5z";
+        let test = Hand::from(test_str);
+        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category,OpenType::Kan);
+        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S7),Tile::new(Tile::S7)]);
+        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
+        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.to_short_string(), test_str);
     }
 }
