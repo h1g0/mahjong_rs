@@ -64,7 +64,7 @@ impl Hand {
         self.tiles.sort();
     }
     /// 種類別に各牌の数をカウントする
-    fn summarize_tiles(&self) -> Vec<TileType> {
+    pub fn summarize_tiles(&self) -> Vec<TileType> {
         let mut result: Vec<TileType> = vec![0, Tile::LEN as u32];
 
         // 通常の手牌をカウント
