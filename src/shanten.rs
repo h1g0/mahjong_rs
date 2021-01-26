@@ -1,3 +1,3 @@
 pub mod shanten;
-mod index_s;
-mod index_h;
+//mod index_s;
+//mod index_h;
