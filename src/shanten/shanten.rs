@@ -4,10 +4,10 @@
 /// アルゴリズムは https://tomohxx.github.io/mahjong-algorithm-book/ssrf/ を参照した。
 use std::cmp::*;
 
-use super::hand::Hand;
-use super::tile::Tile;
-use super::winning_hand::WinningHandForm;
-use shanten_index::*;
+use super::super::hand::Hand;
+use super::super::tile::Tile;
+use super::super::winning_hand::WinningHandForm;
+//use shanten_index::*;
 
 #[derive(Debug, Eq)]
 pub struct Shanten {
@@ -101,13 +101,8 @@ impl Shanten {
 
     /// 通常の役への向聴数を計算する
     fn calc_normal_form(hand: &Hand) -> i32 {
-        let mut mp1: Vec<Vec<u32>> = ;
-        let mut mp2: Vec<Vec<u32>>;
 
-        for i in Tile::M1..Tile::M9{
-
-        }
-        let mut result = mp1[];        
+        unimplemented!();
     }
 
     fn add1(lhs: &mut Vec<u32>, rhs: &mut Vec<u32>) {
