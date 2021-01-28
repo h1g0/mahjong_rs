@@ -13,7 +13,6 @@ use super::super::winning_hand::WinningHandForm;
 pub struct Shanten {
     pub num: i32,
     pub form: WinningHandForm,
-
 }
 impl Ord for Shanten {
     fn cmp(&self, other: &Self) -> Ordering {
@@ -101,10 +100,10 @@ impl Shanten {
 
     /// 通常の役への向聴数を計算する
     fn calc_normal_form(hand: &Hand) -> i32 {
-
         unimplemented!();
     }
 
+    /*
     fn add1(lhs: &mut Vec<u32>, rhs: &mut Vec<u32>) {
         let mentsu_num = 3;
         for i in (5..=mentsu_num + 5).rev() {
@@ -134,4 +133,5 @@ impl Shanten {
         }
         lhs[i] = s;
     }
+    */
 }
