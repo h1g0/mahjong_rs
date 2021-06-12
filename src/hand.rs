@@ -65,7 +65,7 @@ impl Hand {
     }
     /// 種類別に各牌の数をカウントする
     pub fn summarize_tiles(&self) -> Vec<TileType> {
-        let mut result: Vec<TileType> = vec![0, Tile::LEN as u32];
+        let mut result: Vec<TileType> = vec![0; Tile::LEN as usize];
 
         // 通常の手牌をカウント
         for i in 0..self.tiles.len() {
@@ -174,10 +174,10 @@ impl Hand {
 
         for i in 0..self.opened.len() {
             let mut op_tiles = Vec::from(self.opened[i].tiles);
-            if self.opened[i].category == OpenType::Kan{
+            if self.opened[i].category == OpenType::Kan {
                 op_tiles.push(self.opened[i].tiles[0]);
             }
-            result.push_str(&format!(" {}",Hand::make_short_str(op_tiles)));
+            result.push_str(&format!(" {}", Hand::make_short_str(op_tiles)));
         }
 
         if let Some(tsumo) = self.drawn {
@@ -254,7 +254,17 @@ impl Hand {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    #[test]
+    fn summarize_test() {
+        let test_str = "111m456p789s123z 4z";
+        let test_hand = Hand::from(test_str);
+        let test = test_hand.summarize_tiles();
+        let answer = vec![
+            3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+            1, 1, 0, 0, 0,
+        ];
+        assert_eq!(test, answer);
+    }
     #[test]
     fn str_to_tiles_test() {
         let test = Hand::str_to_tiles("123m456p789s1234z");
@@ -292,8 +302,8 @@ mod tests {
     fn from_with_no_opened_test() {
         let test_str = "123m456p789s1115z 5z";
         let test = Hand::from(test_str);
-        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
-        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.tiles[0], Tile::new(Tile::M1));
+        assert_eq!(test.drawn, Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
     }
 
@@ -301,11 +311,18 @@ mod tests {
     fn from_with_chi_test() {
         let test_str = "123m456p1115z 789s 5z";
         let test = Hand::from(test_str);
-        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
-        assert_eq!(test.opened[0].category,OpenType::Chi);
-        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::S7),Tile::new(Tile::S8),Tile::new(Tile::S9)]);
-        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
-        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.tiles[0], Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category, OpenType::Chi);
+        assert_eq!(
+            test.opened[0].tiles,
+            [
+                Tile::new(Tile::S7),
+                Tile::new(Tile::S8),
+                Tile::new(Tile::S9)
+            ]
+        );
+        assert_eq!(test.opened[0].from, OpenFrom::Unknown);
+        assert_eq!(test.drawn, Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
     }
 
@@ -313,11 +330,18 @@ mod tests {
     fn from_with_pon_test() {
         let test_str = "123m456p789s5z 111z 5z";
         let test = Hand::from(test_str);
-        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
-        assert_eq!(test.opened[0].category,OpenType::Pon);
-        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::Z1),Tile::new(Tile::Z1),Tile::new(Tile::Z1)]);
-        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
-        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.tiles[0], Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category, OpenType::Pon);
+        assert_eq!(
+            test.opened[0].tiles,
+            [
+                Tile::new(Tile::Z1),
+                Tile::new(Tile::Z1),
+                Tile::new(Tile::Z1)
+            ]
+        );
+        assert_eq!(test.opened[0].from, OpenFrom::Unknown);
+        assert_eq!(test.drawn, Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
     }
 
@@ -325,11 +349,18 @@ mod tests {
     fn from_with_kan_test() {
         let test_str = "123m456p789s5z 1111z 5z";
         let test = Hand::from(test_str);
-        assert_eq!(test.tiles[0],Tile::new(Tile::M1));
-        assert_eq!(test.opened[0].category,OpenType::Kan);
-        assert_eq!(test.opened[0].tiles,[Tile::new(Tile::Z1),Tile::new(Tile::Z1),Tile::new(Tile::Z1)]);
-        assert_eq!(test.opened[0].from,OpenFrom::Unknown);
-        assert_eq!(test.drawn,Some(Tile::new(Tile::Z5)));
+        assert_eq!(test.tiles[0], Tile::new(Tile::M1));
+        assert_eq!(test.opened[0].category, OpenType::Kan);
+        assert_eq!(
+            test.opened[0].tiles,
+            [
+                Tile::new(Tile::Z1),
+                Tile::new(Tile::Z1),
+                Tile::new(Tile::Z1)
+            ]
+        );
+        assert_eq!(test.opened[0].from, OpenFrom::Unknown);
+        assert_eq!(test.drawn, Some(Tile::new(Tile::Z5)));
         assert_eq!(test.to_short_string(), test_str);
     }
 }

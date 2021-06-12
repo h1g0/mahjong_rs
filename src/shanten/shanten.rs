@@ -103,35 +103,23 @@ impl Shanten {
         unimplemented!();
     }
 
-    /*
-    fn add1(lhs: &mut Vec<u32>, rhs: &mut Vec<u32>) {
-        let mentsu_num = 3;
-        for i in (5..=mentsu_num + 5).rev() {
-            let mut s = min(lhs[i] + rhs[0], lhs[0] + rhs[i]);
-            for j in 5..i {
-                s = min(s, min(lhs[j] + rhs[i - j], lhs[i - j] + rhs[j]));
-            }
-            lhs[i] = s;
-        }
-        for i in (0..=mentsu_num).rev() {
-            let mut s = lhs[i] + rhs[0];
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-            for j in 0..i {
-                s = min(s, lhs[j] + rhs[i - j]);
-            }
-            lhs[i] = s;
-        }
+    #[test]
+    /// 七対子で和了った
+    fn win_by_seven_pairs() {
+        let test_str = "1122m3344p5566s1z 1z";
+        let test = Hand::from(test_str);
+        assert_eq!(Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,-1);
     }
-
-    fn add2(lhs: &mut Vec<u32>, rhs: &mut Vec<u32>) {
-        let mentsu_num = 3;
-        let i = mentsu_num + 5;
-        let mut s = min(lhs[i] + rhs[0], lhs[0] + rhs[i]);
-
-        for j in 5..i {
-            s = min(s, min(lhs[j] + rhs[i - j], lhs[i - j] + rhs[j]));
-        }
-        lhs[i] = s;
+    #[test]
+    /// 国士無双で和了った
+    fn win_by_thirteen_orphens() {
+        let test_str = "19m19p19s1234567z 1m";
+        let test = Hand::from(test_str);
+        assert_eq!(Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,-1);
     }
-    */
 }
