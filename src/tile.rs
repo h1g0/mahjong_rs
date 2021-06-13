@@ -5,6 +5,7 @@ pub type TileType = u32;
 #[derive(Debug, Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Tile {
     index: TileType,
+    red_dora: bool,
 }
 
 impl Tile {
@@ -92,7 +93,7 @@ impl Tile {
     ];
 
     pub fn new(tile_type: TileType) -> Tile {
-        return Tile { index: tile_type };
+        return Tile { index: tile_type, red_dora: false };
     }
 
     pub fn get(&self) -> TileType {
