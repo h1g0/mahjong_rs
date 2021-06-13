@@ -81,15 +81,29 @@ impl Shanten {
 
     /// 国士無双への向聴数を計算する
     fn calc_thirteen_orphens(hand: &Hand) -> i32 {
-        let to_tiles = [0, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33];
+        let to_tiles = [
+            Tile::M1,
+            Tile::M9,
+            Tile::P1,
+            Tile::P9,
+            Tile::S1,
+            Tile::S9,
+            Tile::Z1,
+            Tile::Z2,
+            Tile::Z3,
+            Tile::Z4,
+            Tile::Z5,
+            Tile::Z6,
+            Tile::Z7,
+        ];
         let mut pair: u32 = 0;
         let mut kind: u32 = 0;
         let t = hand.summarize_tiles();
 
         for i in &to_tiles {
-            if t[*i] > 0 {
+            if t[*i as usize] > 0 {
                 kind = kind + 1;
-                if t[*i] >= 2 {
+                if t[*i as usize] >= 2 {
                     pair += 1;
                 }
             }
@@ -102,7 +116,6 @@ impl Shanten {
     fn calc_normal_form(hand: &Hand) -> i32 {
         unimplemented!();
     }
-
 }
 #[cfg(test)]
 mod tests {
@@ -113,13 +126,40 @@ mod tests {
     fn win_by_seven_pairs() {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
-        assert_eq!(Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,-1);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            -1
+        );
     }
     #[test]
     /// 国士無双で和了った
     fn win_by_thirteen_orphens() {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
-        assert_eq!(Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,-1);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+            -1
+        );
+    }
+
+    #[test]
+    /// 七対子を聴牌
+    fn zero_shanten_to_seven_pairs() {
+        let test_str = "226699m99p228s66z 1z";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            0
+        );
+    }
+    #[test]
+    /// 国士無双を聴牌
+    fn zero_shanten_to_orphens() {
+        let test_str = "19m19p11s1234567z 5m";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+            0
+        );
     }
 }
