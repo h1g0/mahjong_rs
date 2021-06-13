@@ -1,13 +1,11 @@
 /// 向聴数を計算する
 ///
 /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
-/// アルゴリズムは https://tomohxx.github.io/mahjong-algorithm-book/ssrf/ を参照した。
 use std::cmp::*;
 
 use super::super::hand::Hand;
 use super::super::tile::Tile;
-use super::super::winning_hand::WinningHandForm;
-//use shanten_index::*;
+use super::winning_hand::WinningHandForm;
 
 #[derive(Debug, Eq)]
 pub struct Shanten {
