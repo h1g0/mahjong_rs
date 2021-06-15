@@ -1,42 +1,7 @@
-use super::tile::*;
+use crate::tile::*;
+use crate::hand_info::opened::*;
 use std::collections::VecDeque;
 
-/// 副露の種類
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum OpenType {
-    /// チー
-    Chi,
-    /// ポン
-    Pon,
-    /// カン
-    Kan,
-}
-
-/// 誰から副露したか
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum OpenFrom {
-    /// 上家（チー・ポン・明カン）
-    Previous,
-    /// 自家（暗カンしたときのみ）
-    Myself,
-    /// 下家（ポン・明カン）
-    Following,
-    /// 対面（ポン・明カン）
-    Opposite,
-    /// 不明
-    Unknown,
-}
-
-/// 副露状態を表す構造体
-#[derive(Debug)]
-pub struct OpenTiles {
-    /// 3枚の牌が入る。カンした時も3枚（4枚目は自明）
-    tiles: [Tile; 3],
-    /// 副露の種類
-    category: OpenType,
-    /// 誰から副露したか
-    from: OpenFrom,
-}
 
 /// 手牌
 #[derive(Debug)]

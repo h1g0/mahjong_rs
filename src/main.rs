@@ -7,6 +7,9 @@ use tile::*;
 mod hand;
 use hand::*;
 
+mod hand_info;
+use hand_info::*;
+
 fn main() {
     let mut rng = rand::thread_rng();
     let mut tiles: Vec<Tile> = Vec::new();

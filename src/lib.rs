@@ -2,5 +2,5 @@
 pub mod tile;
 /// 手牌
 pub mod hand;
-/// 役を判定する
-pub mod winning_calc;
+/// 手牌の情報（副露しているか、面子があるかなど）
+pub mod hand_info;

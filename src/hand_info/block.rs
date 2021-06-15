@@ -1,4 +1,4 @@
-use super::super::tile::Tile;
+use crate::tile::Tile;
 
 /// ブロック（対子、順子、刻子）の振る舞いを定義する
 trait BlockProperty {

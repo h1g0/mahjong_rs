@@ -3,9 +3,9 @@
 /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
 use std::cmp::*;
 
-use super::super::hand::Hand;
-use super::super::tile::Tile;
-use super::winning_hand::WinningHandForm;
+use crate::hand::Hand;
+use crate::tile::Tile;
+use crate::hand_info::winning_hand::WinningHandForm;
 
 #[derive(Debug, Eq)]
 pub struct Shanten {
