@@ -1,12 +1,13 @@
-/// 向聴数を計算する
-///
-/// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
+
 use std::cmp::*;
 
 use crate::hand::Hand;
-use crate::tile::Tile;
 use crate::hand_info::winning_hand::WinningHandForm;
+use crate::tile::Tile;
 
+/// 向聴数を計算する
+///
+/// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
 #[derive(Debug, Eq)]
 pub struct Shanten {
     pub num: i32,
@@ -42,6 +43,21 @@ impl Shanten {
     }
 
     /// 和了形を指定して向聴数を計算する
+    /// # Examples
+    /// 
+    /// ```
+    /// use mahjong_rs::hand::*;
+    /// use mahjong_rs::hand_info::shanten::*;
+    /// use mahjong_rs::hand_info::winning_hand::*;
+    /// 
+    /// // 国士無双で和了る
+    /// let test_str = "19m19p19s1234567z 1m";
+    /// let test = Hand::from(test_str);
+    /// assert_eq!(
+    ///   Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+    ///   -1
+    /// );
+    /// ```
     pub fn calc_by_form(hand: &Hand, form: WinningHandForm) -> Shanten {
         return match form {
             WinningHandForm::SevenPairs => Shanten {
@@ -129,6 +145,7 @@ mod tests {
             -1
         );
     }
+
     #[test]
     /// 国士無双で和了った
     fn win_by_thirteen_orphens() {
@@ -151,6 +168,16 @@ mod tests {
         );
     }
     #[test]
+    /// 同じ牌が3枚ある状態で七対子を聴牌
+    fn zero_shanten_to_seven_pairs_2() {
+        let test_str = "226699m99p222s66z 1z";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            0
+        );
+    }
+    #[test]
     /// 国士無双を聴牌
     fn zero_shanten_to_orphens() {
         let test_str = "19m19p11s1234567z 5m";
@@ -158,6 +185,17 @@ mod tests {
         assert_eq!(
             Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
             0
+        );
+    }
+
+    #[test]
+    /// 同じ牌が4枚ある状態で七対子は認められない（一向聴とみなす）
+    fn seven_pairs_with_4_same_tiles() {
+        let test_str = "1122m3344p5555s1z 1z";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            1
         );
     }
 }
