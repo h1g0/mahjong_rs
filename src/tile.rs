@@ -167,7 +167,7 @@ impl Tile {
         return Tile::ASCII[self.index as usize].to_string();
     }
 
-    pub fn from(tile_name: &str) -> Tile {
+    pub fn from(tile_name: &str) -> Option<Tile> {
         let t = match tile_name {
             "1m" | "🀇" => Tile::M1,
             "2m" | "🀈" => Tile::M2,
@@ -204,10 +204,10 @@ impl Tile {
             "6z" | "🀅" => Tile::Z6,
             "7z" | "🀄" => Tile::Z7,
             _ => {
-                panic!("unknown string")
+                return None;
             }
         };
-        return Tile::new(t);
+        return Some(Tile::new(t));
     }
 }
 
