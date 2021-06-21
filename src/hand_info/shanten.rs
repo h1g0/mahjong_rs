@@ -51,10 +51,18 @@ impl Shanten {
     /// use mahjong_rs::hand_info::winning_hand::*;
     /// 
     /// // 国士無双で和了る
-    /// let test_str = "19m19p19s1234567z 1m";
-    /// let test = Hand::from(test_str);
+    /// let to_test_str = "19m19p19s1234567z 1m";
+    /// let to_test = Hand::from(to_test_str);
     /// assert_eq!(
-    ///   Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+    ///   Shanten::calc_by_form(&to_test, WinningHandForm::ThirteenOrphens).num,
+    ///   -1
+    /// );
+    /// 
+    /// // 七対子で和了る
+    /// let sp_test_str = "1122m3344p5566s7z 7z";
+    /// let sp_test = Hand::from(sp_test_str);
+    /// assert_eq!(
+    ///   Shanten::calc_by_form(&sp_test, WinningHandForm::SevenPairs).num,
     ///   -1
     /// );
     /// ```
