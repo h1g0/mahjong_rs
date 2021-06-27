@@ -137,6 +137,83 @@ impl Shanten {
     fn calc_normal_form(hand: &Hand) -> i32 {
         unimplemented!();
     }
+    /// 独立した（順子になり得ない）刻子の数を返す
+    fn count_independent_same_3(summarized_hand: &mut Vec<u32>) -> i32 {
+        let mut result: i32 = 0;
+        for i in Tile::M1..=Tile::Z7 {
+            match i {
+                Tile::M1 | Tile::P1 | Tile::S1 => {
+                    if summarized_hand[i as usize] >= 3
+                        && summarized_hand[i as usize + 1] == 0
+                        && summarized_hand[i as usize + 2] == 0
+                    {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                Tile::M2 | Tile::P2 | Tile::S2 => {
+                    if summarized_hand[i as usize - 1] == 0
+                        && summarized_hand[i as usize] >= 3
+                        && summarized_hand[i as usize + 1] == 0
+                        && summarized_hand[i as usize + 2] == 0
+                    {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                Tile::M3..=Tile::M7 | Tile::P3..=Tile::P7 | Tile::S3..=Tile::S7 => {
+                    if summarized_hand[i as usize - 2] == 0
+                        && summarized_hand[i as usize - 1] == 0
+                        && summarized_hand[i as usize] >= 3
+                        && summarized_hand[i as usize + 1] == 0
+                        && summarized_hand[i as usize + 2] == 0
+                    {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                Tile::M8 | Tile::P8 | Tile::S8 => {
+                    if summarized_hand[i as usize - 2] == 0
+                        && summarized_hand[i as usize - 1] == 0
+                        && summarized_hand[i as usize] >= 3
+                        && summarized_hand[i as usize + 1] == 0
+                    {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                Tile::M9 | Tile::P9 | Tile::S9 => {
+                    if summarized_hand[i as usize - 2] == 0
+                        && summarized_hand[i as usize - 1] == 0
+                        && summarized_hand[i as usize] >= 3
+                    {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                Tile::Z1..=Tile::Z7 => {
+                    if summarized_hand[i as usize] >= 3 {
+                        summarized_hand[i as usize] -= 3;
+                        result += 1;
+                    }
+                }
+                _ => {
+                    panic! {"unknown tile index!"}
+                }
+            }
+        }
+        return result;
+    }
+
+    /// 独立した（他の順子と複合し得ない）順子の数を返す
+    fn count_independent_sequential_3(summarized_hand: &mut Vec<u32>) -> i32{
+        unimplemented!();
+    }
+
+    /// 独立した（他の順子や刻子などと複合し得ない）牌の数を返す
+    fn count_independent_single(summarized_hand: &mut Vec<u32>) -> i32{
+        unimplemented!();
+    }
 }
 #[cfg(test)]
 mod tests {
