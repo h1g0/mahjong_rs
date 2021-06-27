@@ -1,7 +1,6 @@
-use crate::tile::*;
 use crate::hand_info::opened::*;
+use crate::tile::*;
 use std::collections::VecDeque;
-
 
 /// 手牌
 #[derive(Debug)]
@@ -163,10 +162,9 @@ impl Hand {
                 while let Some(t) = stack.pop_front() {
                     // 字牌の場合は`8z`と`9z`は存在しない
                     if matches!(c, 'm' | 'p' | 's') || (c == 'z' && matches!(t, '1'..='7')) {
-                        if let  Some(t) = Tile::from(&format!("{}{}",t,c)) {
+                        if let Some(t) = Tile::from(&format!("{}{}", t, c)) {
                             result.push(t);
                         }
-
                     }
                 }
             }

@@ -93,7 +93,10 @@ impl Tile {
     ];
 
     pub fn new(tile_type: TileType) -> Tile {
-        return Tile { index: tile_type, red_dora: false };
+        return Tile {
+            index: tile_type,
+            red_dora: false,
+        };
     }
 
     pub fn get(&self) -> TileType {

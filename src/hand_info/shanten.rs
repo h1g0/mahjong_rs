@@ -1,4 +1,3 @@
-
 use std::cmp::*;
 
 use crate::hand::Hand;
@@ -44,12 +43,12 @@ impl Shanten {
 
     /// 和了形を指定して向聴数を計算する
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use mahjong_rs::hand::*;
     /// use mahjong_rs::hand_info::shanten::*;
     /// use mahjong_rs::hand_info::winning_hand::*;
-    /// 
+    ///
     /// // 国士無双で和了る
     /// let to_test_str = "19m19p19s1234567z 1m";
     /// let to_test = Hand::from(to_test_str);
@@ -57,7 +56,7 @@ impl Shanten {
     ///   Shanten::calc_by_form(&to_test, WinningHandForm::ThirteenOrphens).num,
     ///   -1
     /// );
-    /// 
+    ///
     /// // 七対子で和了る
     /// let sp_test_str = "1122m3344p5566s7z 7z";
     /// let sp_test = Hand::from(sp_test_str);
