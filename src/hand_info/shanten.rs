@@ -206,12 +206,12 @@ impl Shanten {
     }
 
     /// 独立した（他の順子と複合し得ない）順子の数を返す
-    fn count_independent_sequential_3(summarized_hand: &mut Vec<u32>) -> i32{
+    fn count_independent_sequential_3(summarized_hand: &mut Vec<u32>) -> i32 {
         unimplemented!();
     }
 
     /// 独立した（他の順子や刻子などと複合し得ない）牌の数を返す
-    fn count_independent_single(summarized_hand: &mut Vec<u32>) -> i32{
+    fn count_independent_single(summarized_hand: &mut Vec<u32>) -> i32 {
         unimplemented!();
     }
 }
