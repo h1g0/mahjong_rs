@@ -211,29 +211,29 @@ impl Shanten {
         let mut result: i32 = 0;
         // 先に一盃口の処理をしてから通常の処理
         for i in (1..=2).rev() {
-            // 一萬、一筒、一索
+            // 一萬、一筒、一索のインデックス位置
             for j in (Tile::M1..=Tile::S9).step_by(9) {
-                // 一□～七□
+                // 一*～七*のインデックス位置
                 for k in 0..=6 {
                     let l: usize = (j + k) as usize;
-                    //三□以上のとき-2の牌が存在しない
+                    //三*以上のとき-2の牌が存在しない
                     // i.e. チェック下限はxx345
-                    if k >= 2 && summarized_hand[l - 2] != 0 {
+                    if k >= 2 && summarized_hand[l - 2] > 0 {
                         break;
                     }
-                    //二□以上のとき-1の牌が存在しない
+                    //二*以上のとき-1の牌が存在しない
                     // i.e. チェック下限はx234
-                    if k >= 1 && summarized_hand[l - 1] != 0 {
+                    if k >= 1 && summarized_hand[l - 1] > 0 {
                         break;
                     }
-                    //六□以下で+3の牌が存在しない
+                    //六*以下で+3の牌が存在しない
                     // i.e. チェック上限は678x
-                    if k <= 5 && summarized_hand[l + 3] != 0 {
+                    if k <= 5 && summarized_hand[l + 3] > 0 {
                         break;
                     }
-                    //五□以下で+4の牌が存在しない
+                    //五*以下で+4の牌が存在しない
                     // i.e. チェック上限は567xx
-                    if k <= 4 && summarized_hand[l + 4] != 0 {
+                    if k <= 4 && summarized_hand[l + 4] > 0 {
                         break;
                     }
                     if summarized_hand[l] == i
