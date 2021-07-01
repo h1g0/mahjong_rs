@@ -4,40 +4,39 @@ use crate::hand::Hand;
 use crate::hand_info::winning_hand::WinningHandForm;
 use crate::tile::Tile;
 
-/// 向聴数を計算する
-///
-/// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
+/// 向聴数などの手牌に関する情報を計算する
 #[derive(Debug, Eq)]
-pub struct Shanten {
-    pub num: i32,
+pub struct HandAnalyzer {
+    /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
+    pub shanten: i32,
     pub form: WinningHandForm,
 }
-impl Ord for Shanten {
+impl Ord for HandAnalyzer {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.num.cmp(&other.num)
+        self.shanten.cmp(&other.shanten)
     }
 }
 
-impl PartialOrd for Shanten {
+impl PartialOrd for HandAnalyzer {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl PartialEq for Shanten {
+impl PartialEq for HandAnalyzer {
     fn eq(&self, other: &Self) -> bool {
-        self.num == other.num
+        self.shanten == other.shanten
     }
 }
 
-impl Shanten {
+impl HandAnalyzer {
     /// 向聴数を計算する
     ///
     /// 七対子・国士無双・通常の3つの和了形に対してそれぞれ向聴数を求め、最小のものを返す。
-    pub fn calc(hand: &Hand) -> Shanten {
-        let sp = Shanten::calc_by_form(hand, WinningHandForm::SevenPairs);
-        let to = Shanten::calc_by_form(hand, WinningHandForm::ThirteenOrphens);
-        let normal = Shanten::calc_by_form(hand, WinningHandForm::Normal);
+    pub fn calc(hand: &Hand) -> HandAnalyzer {
+        let sp = HandAnalyzer::calc_by_form(hand, WinningHandForm::SevenPairs);
+        let to = HandAnalyzer::calc_by_form(hand, WinningHandForm::ThirteenOrphens);
+        let normal = HandAnalyzer::calc_by_form(hand, WinningHandForm::Normal);
         return min(min(sp, to), normal);
     }
 
@@ -53,7 +52,7 @@ impl Shanten {
     /// let to_test_str = "19m19p19s1234567z 1m";
     /// let to_test = Hand::from(to_test_str);
     /// assert_eq!(
-    ///   Shanten::calc_by_form(&to_test, WinningHandForm::ThirteenOrphens).num,
+    ///   Shanten::calc_by_form(&to_test, WinningHandForm::ThirteenOrphens).shanten,
     ///   -1
     /// );
     ///
@@ -61,22 +60,22 @@ impl Shanten {
     /// let sp_test_str = "1122m3344p5566s7z 7z";
     /// let sp_test = Hand::from(sp_test_str);
     /// assert_eq!(
-    ///   Shanten::calc_by_form(&sp_test, WinningHandForm::SevenPairs).num,
+    ///   Shanten::calc_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
     ///   -1
     /// );
     /// ```
-    pub fn calc_by_form(hand: &Hand, form: WinningHandForm) -> Shanten {
+    pub fn calc_by_form(hand: &Hand, form: WinningHandForm) -> HandAnalyzer {
         return match form {
-            WinningHandForm::SevenPairs => Shanten {
-                num: Shanten::calc_seven_pairs(hand),
+            WinningHandForm::SevenPairs => HandAnalyzer {
+                shanten: HandAnalyzer::calc_seven_pairs(hand),
                 form: WinningHandForm::SevenPairs,
             },
-            WinningHandForm::ThirteenOrphens => Shanten {
-                num: Shanten::calc_thirteen_orphens(hand),
+            WinningHandForm::ThirteenOrphens => HandAnalyzer {
+                shanten: HandAnalyzer::calc_thirteen_orphens(hand),
                 form: WinningHandForm::ThirteenOrphens,
             },
-            WinningHandForm::Normal => Shanten {
-                num: Shanten::calc_normal_form(hand),
+            WinningHandForm::Normal => HandAnalyzer {
+                shanten: HandAnalyzer::calc_normal_form(hand),
                 form: WinningHandForm::Normal,
             },
         };
@@ -266,7 +265,7 @@ mod tests {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
             -1
         );
     }
@@ -277,7 +276,7 @@ mod tests {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
             -1
         );
     }
@@ -288,7 +287,7 @@ mod tests {
         let test_str = "226699m99p228s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
             0
         );
     }
@@ -298,7 +297,7 @@ mod tests {
         let test_str = "226699m99p222s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
             0
         );
     }
@@ -308,7 +307,7 @@ mod tests {
         let test_str = "19m19p11s1234567z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::ThirteenOrphens).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
             0
         );
     }
@@ -319,7 +318,7 @@ mod tests {
         let test_str = "1122m3344p5555s1z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            Shanten::calc_by_form(&test, WinningHandForm::SevenPairs).num,
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
             1
         );
     }
