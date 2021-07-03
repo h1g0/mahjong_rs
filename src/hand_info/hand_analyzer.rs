@@ -135,7 +135,7 @@ impl HandAnalyzer {
     /// 通常の役への向聴数を計算する
     fn calc_normal_form(hand: &Hand) -> i32 {
         let mut t = hand.summarize_tiles();
-        let mut shanten = 100;
+        let mut shanten: i32 = 100;
 
         let same3: u32 = 0;
         let sequential3: u32 = 0;
@@ -161,7 +161,7 @@ impl HandAnalyzer {
                     same2,
                     sequential2,
                     &mut t,
-                    shanten,
+                    &mut shanten,
                 );
                 t[i as usize] += 2;
                 same2 -= 1;
@@ -178,7 +178,7 @@ impl HandAnalyzer {
             0,
             0,
             &mut t,
-            shanten,
+            &mut shanten,
         );
         return shanten;
     }
@@ -243,7 +243,7 @@ impl HandAnalyzer {
                     }
                 }
                 _ => {
-                    panic! {"unknown tile index!"}
+                    panic!("unknown tile index!");
                 }
             }
         }
@@ -357,7 +357,7 @@ impl HandAnalyzer {
                     }
                 }
                 _ => {
-                    panic! {"unknown tile index!"}
+                    panic!("unknown tile index!");
                 }
             }
         }
@@ -374,7 +374,7 @@ fn count_normal_shanten_by_recursive(
     same2: u32,
     sequential2: u32,
     summarized_hand: &mut Vec<u32>,
-    mut shanten_min: i32,
+    shanten_min: &mut i32,
 ) -> i32 {
     count_same_or_sequential_3(
         idx,
@@ -406,10 +406,12 @@ fn count_normal_shanten_by_recursive(
         same2,
         sequential2,
     );
-    if shanten < shanten_min {
-        shanten_min = shanten;
+    if shanten < *shanten_min {
+        *shanten_min = shanten;
+        //println!("shanten_min: {}",shanten_min);
+        //println!("hand: {}",Hand::from_summarized(&summarized_hand).to_short_string());
     }
-    return shanten_min;
+    return *shanten_min;
 }
 
 /// 面子（刻子および順子）の数を返す
@@ -424,7 +426,7 @@ fn count_same_or_sequential_3(
     same2: u32,
     sequential2: u32,
     summarized_hand: &mut Vec<u32>,
-    shanten_min: i32,
+    shanten_min: &mut i32,
 ) -> (u32, u32) {
     for i in idx..=Tile::Z7 {
         // 刻子カウント
@@ -432,7 +434,7 @@ fn count_same_or_sequential_3(
             //block3 += 1;
             same3 += 1;
             summarized_hand[i as usize] -= 3;
-            count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_by_recursive(
                 i,
                 independent_same3,
                 independent_sequential3,
@@ -460,7 +462,7 @@ fn count_same_or_sequential_3(
             summarized_hand[i as usize] -= 1;
             summarized_hand[i as usize + 1] -= 1;
             summarized_hand[i as usize + 2] -= 1;
-            count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_by_recursive(
                 i,
                 independent_same3,
                 independent_sequential3,
@@ -492,14 +494,14 @@ fn count_2(
     mut same2: u32,
     mut sequential2: u32,
     summarized_hand: &mut Vec<u32>,
-    shanten: i32,
+    shanten_min: &mut i32,
 ) -> (u32, u32) {
     for i in idx..=Tile::Z7 {
         // 対子
         if summarized_hand[i as usize] == 2 {
             same2 += 1;
             summarized_hand[i as usize] -= 2;
-            count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_by_recursive(
                 idx,
                 independent_same3,
                 independent_sequential3,
@@ -508,7 +510,7 @@ fn count_2(
                 same2,
                 sequential2,
                 summarized_hand,
-                shanten,
+                shanten_min,
             );
             summarized_hand[i as usize] += 2;
             same2 -= 1;
@@ -523,7 +525,7 @@ fn count_2(
                 sequential2 += 1;
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 1] -= 1;
-                count_normal_shanten_by_recursive(
+                *shanten_min = count_normal_shanten_by_recursive(
                     idx,
                     independent_same3,
                     independent_sequential3,
@@ -532,7 +534,7 @@ fn count_2(
                     same2,
                     sequential2,
                     summarized_hand,
-                    shanten,
+                    shanten_min,
                 );
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 1] += 1;
@@ -546,7 +548,7 @@ fn count_2(
                 sequential2 += 1;
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 2] -= 1;
-                count_normal_shanten_by_recursive(
+                *shanten_min = count_normal_shanten_by_recursive(
                     idx,
                     independent_same3,
                     independent_sequential3,
@@ -555,7 +557,7 @@ fn count_2(
                     same2,
                     sequential2,
                     summarized_hand,
-                    shanten,
+                    shanten_min,
                 );
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 2] += 1;
@@ -650,8 +652,61 @@ mod tests {
 
     #[test]
     /// 立直で和了った
-    fn win_by_riichi() {
-        let test_str = "123m456p789s1112z 2z";
+    fn win_by_ready_hand() {
+        let test_str = "123m444p789s1112z 2z";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            -1
+        );
+    }
+
+    #[test]
+    /// 自風牌で和了った
+    fn win_by_honor_tiles_players_wind() {
+        let test_str = "333m456p1789s 333z 1s";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            -1
+        );
+    }
+
+    #[test]
+    /// 場風で和了った
+    fn win_by_honor_tiles_prevailing_wind() {
+        let test_str = "234567m6789s 111z 6s";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            -1
+        );
+    }
+    #[test]
+    /// 三元牌で和了った
+    fn win_by_honor_tiles_dragons() {
+        let test_str = "5m123456p888s 777z 5m";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            -1
+        );
+    }
+    #[test]
+    /// 断么九で和了った
+    fn win_by_all_simples() {
+        let test_str = "234m8s 567m 333p 456s 8s";
+        let test = Hand::from(test_str);
+        assert_eq!(
+            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            -1
+        );
+    }
+
+    #[test]
+    /// 平和で和了った
+    fn win_by_no_points() {
+        let test_str = "123567m234p6799s 5s";
         let test = Hand::from(test_str);
         assert_eq!(
             HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
