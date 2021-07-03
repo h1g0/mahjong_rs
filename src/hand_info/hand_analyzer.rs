@@ -173,8 +173,9 @@ impl HandAnalyzer {
         // 先に独立した牌を抜き出しておく
         let independent_same3 = HandAnalyzer::count_independent_same_3(&mut t);
         let independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
-        let independent_single = HandAnalyzer::count_independent_single(&mut t);
-
+        //let independent_single = HandAnalyzer::count_independent_single(&mut t);
+        HandAnalyzer::count_independent_single(&mut t);
+        
         // 雀頭を抜き出す
         for i in Tile::M1..=Tile::Z7 {
             if t[i as usize] >= 2 {
