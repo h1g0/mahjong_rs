@@ -33,6 +33,26 @@ impl HandAnalyzer {
     /// 向聴数を計算する
     ///
     /// 七対子・国士無双・通常の3つの和了形に対してそれぞれ向聴数を求め、最小のものを返す。
+    /// # Examples
+    ///
+    /// ```
+    /// use mahjong_rs::hand::*;
+    /// use mahjong_rs::hand_info::hand_analyzer::*;
+    /// use mahjong_rs::hand_info::winning_hand::*;
+    ///
+    /// // 通常型で和了る
+    /// let nm_test_str = "222333444666m6z 6z";
+    /// let nm_test = Hand::from(nm_test_str);
+    /// let analyzer = HandAnalyzer::calc(&nm_test);
+    /// assert_eq!(
+    ///   analyzer.shanten,
+    ///   -1
+    /// );
+    /// assert_eq!(
+    ///   analyzer.form,
+    ///   WinningHandForm::Normal
+    /// );
+    /// ```
     pub fn calc(hand: &Hand) -> HandAnalyzer {
         let sp = HandAnalyzer::calc_by_form(hand, WinningHandForm::SevenPairs);
         let to = HandAnalyzer::calc_by_form(hand, WinningHandForm::ThirteenOrphens);
@@ -61,6 +81,14 @@ impl HandAnalyzer {
     /// let sp_test = Hand::from(sp_test_str);
     /// assert_eq!(
     ///   HandAnalyzer::calc_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
+    ///   -1
+    /// );
+    /// 
+    /// // 通常型で和了る
+    /// let nm_test_str = "1112345678999m 5m";
+    /// let nm_test = Hand::from(nm_test_str);
+    /// assert_eq!(
+    ///   HandAnalyzer::calc_by_form(&nm_test, WinningHandForm::Normal).shanten,
     ///   -1
     /// );
     /// ```
