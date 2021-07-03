@@ -216,6 +216,17 @@ impl Hand {
         }
         return Hand::new_with_opened(hand, opened, drawn);
     }
+
+    pub fn from_summarized(sum: &Vec<TileType>)->Hand{
+        let mut result: Vec<Tile> = Vec::new();
+
+        for i in Tile::M1 as usize..Tile::LEN{
+            for j in 0..sum[i]{
+                result.push(Tile::new(i as TileType));
+            }
+        }
+        return Hand::new(result, None);
+    }
 }
 #[cfg(test)]
 mod tests {
