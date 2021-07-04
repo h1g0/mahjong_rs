@@ -41,7 +41,7 @@ impl HandAnalyzer {
     /// use mahjong_rs::hand_info::winning_hand::*;
     ///
     /// // 通常型で和了る
-    /// let nm_test_str = "222333444666m6z 6z";
+    /// let nm_test_str = "222333444666s6z 6z";
     /// let nm_test = Hand::from(nm_test_str);
     /// let analyzer = HandAnalyzer::calc(&nm_test);
     /// assert_eq!(
@@ -175,7 +175,7 @@ impl HandAnalyzer {
         let independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
         //let independent_single = HandAnalyzer::count_independent_single(&mut t);
         HandAnalyzer::count_independent_single(&mut t);
-        
+
         // 雀頭を抜き出す
         for i in Tile::M1..=Tile::Z7 {
             if t[i as usize] >= 2 {
