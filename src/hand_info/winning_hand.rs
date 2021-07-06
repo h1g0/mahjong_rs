@@ -1,9 +1,9 @@
+use crate::hand_info::hand_analyzer::HandAnalyzer;
 /// 役を判定する
 use std::collections::HashMap;
-use crate::hand_info::hand_analyzer::HandAnalyzer;
 
 /// 和了時の手牌の形態
-#[derive(Debug,Eq,PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum WinningHandForm {
     /// 七対子
     SevenPairs,
@@ -214,161 +214,289 @@ pub fn check(hand: &HandAnalyzer) -> HashMap<&str, bool> {
 
 /// 立直
 fn check_ready_hand(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 七対子
 fn check_seven_pairs(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    return if hand.form == WinningHandForm::SevenPairs {
+        true
+    } else {
+        false
+    };
 }
 /// 流し満貫
 fn check_nagashi_mangan(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 門前清自摸和
 fn check_self_pick(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 一発
 fn check_one_shot(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 海底撈月
 fn check_last_tile_from_the_wall(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 河底撈魚
 fn check_last_discard(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 嶺上開花
 fn check_dead_wall_draw(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 搶槓
 fn check_robbing_a_quad(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// ダブル立直
 fn check_double_ready(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 平和
 fn check_no_points_hand(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 一盃口
 fn check_one_set_of_identical_sequences(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 三色同順
 fn check_three_colour_straight(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 一気通貫
 fn check_straight(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 二盃口
 fn check_two_sets_of_identical_sequences(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 対々和
 fn check_all_triplet_hand(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 三暗刻
 fn check_three_closed_triplets(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 三色同刻
 fn check_three_colour_triplets(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 断么九
 fn check_all_simples(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 役牌（自風牌）
 fn check_honor_tiles_players_wind(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 役牌（場風牌）
 fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 役牌（三元牌）
 fn check_honor_tiles_dragons(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 混全帯么九
 fn check_terminal_or_honor_in_each_set(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 純全帯么九
 fn check_terminal_in_each_set(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 混老頭
 fn check_all_terminals_and_honors(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 小三元
 fn check_little_three_dragons(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 混一色
 fn check_half_flush(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 清一色
 fn check_flush(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 国士無双
 fn check_thirteen_orphans(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    return if hand.form == WinningHandForm::ThirteenOrphens {
+        true
+    } else {
+        false
+    };
 }
 /// 四暗刻
 fn check_four_concealed_triplets(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 大三元
 fn check_big_three_dragons(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 小四喜
 fn check_little_four_winds(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 大四喜
 fn check_big_four_winds(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 字一色
 fn check_all_honors(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 清老頭
 fn check_all_terminals(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 緑一色
 fn check_all_green(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 九蓮宝燈
 fn check_nine_gates(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 四槓子
 fn check_four_kans(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 天和
 fn check_heavenly_hand(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
 /// 地和
 fn check_hand_of_earth(hand: &HandAnalyzer) -> bool {
-    unimplemented!()
+    if hand.shanten > -1 {
+        return false;
+    }
+    unimplemented!();
 }
