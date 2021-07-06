@@ -500,3 +500,34 @@ fn check_hand_of_earth(hand: &HandAnalyzer) -> bool {
     }
     unimplemented!();
 }
+
+/// ユニットテスト
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::hand::*;
+
+    #[test]
+    /// 七対子で和了った
+    fn win_by_seven_pairs() {
+        let test_str = "1122m3344p5566s1z 1z";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::calc(&test);
+        assert_eq!(
+            check_seven_pairs(&test_analyzer),
+            true
+        );
+    }
+
+    #[test]
+    /// 国士無双で和了った
+    fn win_by_thirteen_orphens() {
+        let test_str = "19m19p19s1234567z 1m";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::calc(&test);
+        assert_eq!(
+            check_thirteen_orphans(&test_analyzer),
+            true
+        );
+    }
+}

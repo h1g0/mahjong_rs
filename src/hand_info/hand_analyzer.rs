@@ -83,7 +83,7 @@ impl HandAnalyzer {
     ///   HandAnalyzer::calc_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
     ///   -1
     /// );
-    /// 
+    ///
     /// // 通常型で和了る
     /// let nm_test_str = "1112345678999m 5m";
     /// let nm_test = Hand::from(nm_test_str);
@@ -181,7 +181,7 @@ impl HandAnalyzer {
             if t[i as usize] >= 2 {
                 same2 += 1;
                 t[i as usize] -= 2;
-                shanten = count_normal_shanten_by_recursive(
+                shanten = count_normal_shanten_recursively(
                     0,
                     independent_same3,
                     independent_sequential3,
@@ -198,7 +198,7 @@ impl HandAnalyzer {
         }
 
         // 雀頭がない場合
-        shanten = count_normal_shanten_by_recursive(
+        shanten = count_normal_shanten_recursively(
             0,
             independent_same3,
             independent_sequential3,
@@ -394,7 +394,8 @@ impl HandAnalyzer {
     }
 }
 
-fn count_normal_shanten_by_recursive(
+/// 再帰的にシャンテン数が最小のものを探す
+fn count_normal_shanten_recursively(
     idx: u32,
     independent_same3: u32,
     independent_sequential3: u32,
@@ -416,7 +417,7 @@ fn count_normal_shanten_by_recursive(
         summarized_hand,
         shanten_min,
     );
-    count_2(
+    count_same_or_sequential_2(
         idx,
         independent_same3,
         independent_sequential3,
@@ -463,7 +464,7 @@ fn count_same_or_sequential_3(
             //block3 += 1;
             same3 += 1;
             summarized_hand[i as usize] -= 3;
-            *shanten_min = count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_recursively(
                 i,
                 independent_same3,
                 independent_sequential3,
@@ -491,7 +492,7 @@ fn count_same_or_sequential_3(
             summarized_hand[i as usize] -= 1;
             summarized_hand[i as usize + 1] -= 1;
             summarized_hand[i as usize + 2] -= 1;
-            *shanten_min = count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_recursively(
                 i,
                 independent_same3,
                 independent_sequential3,
@@ -514,7 +515,7 @@ fn count_same_or_sequential_3(
 /// 対子・塔子・嵌張カウント
 /// # returns
 /// (対子,塔子・嵌張)
-fn count_2(
+fn count_same_or_sequential_2(
     idx: u32,
     independent_same3: u32,
     independent_sequential3: u32,
@@ -530,7 +531,7 @@ fn count_2(
         if summarized_hand[i as usize] == 2 {
             same2 += 1;
             summarized_hand[i as usize] -= 2;
-            *shanten_min = count_normal_shanten_by_recursive(
+            *shanten_min = count_normal_shanten_recursively(
                 idx,
                 independent_same3,
                 independent_sequential3,
@@ -554,7 +555,7 @@ fn count_2(
                 sequential2 += 1;
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 1] -= 1;
-                *shanten_min = count_normal_shanten_by_recursive(
+                *shanten_min = count_normal_shanten_recursively(
                     idx,
                     independent_same3,
                     independent_sequential3,
@@ -577,7 +578,7 @@ fn count_2(
                 sequential2 += 1;
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 2] -= 1;
-                *shanten_min = count_normal_shanten_by_recursive(
+                *shanten_min = count_normal_shanten_recursively(
                     idx,
                     independent_same3,
                     independent_sequential3,
@@ -614,28 +615,6 @@ fn calc_normal_shanten(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    /// 七対子で和了った
-    fn win_by_seven_pairs() {
-        let test_str = "1122m3344p5566s1z 1z";
-        let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
-            -1
-        );
-    }
-
-    #[test]
-    /// 国士無双で和了った
-    fn win_by_thirteen_orphens() {
-        let test_str = "19m19p19s1234567z 1m";
-        let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
-            -1
-        );
-    }
 
     #[test]
     /// 七対子を聴牌
