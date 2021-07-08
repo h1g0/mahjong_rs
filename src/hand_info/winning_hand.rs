@@ -98,10 +98,10 @@ pub const HAND_NAME: [&'static str; 40] = [
     "hand_of_earth",
 ];
 
-pub fn check(hand: &HandAnalyzer) -> HashMap<&str, bool> {
+pub fn check(hand: &HandAnalyzer) -> HashMap<&str, (&str,bool)> {
     let mut result = HashMap::new();
     for i in 0..HAND_NAME.len() {
-        result.insert(HAND_NAME[i], false);
+        result.insert(HAND_NAME[i], ("unknown",false));
     }
 
     // 立直
@@ -213,290 +213,292 @@ pub fn check(hand: &HandAnalyzer) -> HashMap<&str, bool> {
 }
 
 /// 立直
-fn check_ready_hand(hand: &HandAnalyzer) -> bool {
+fn check_ready_hand(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("立直",false);
     }
     unimplemented!();
 }
 /// 七対子
-fn check_seven_pairs(hand: &HandAnalyzer) -> bool {
+fn check_seven_pairs(hand: &HandAnalyzer) -> (&str,bool) {
+    let name = "七対子";
     if hand.shanten > -1 {
-        return false;
+        return (name,false);
     }
     return if hand.form == WinningHandForm::SevenPairs {
-        true
+        (name,true)
     } else {
-        false
+        (name,false)
     };
 }
 /// 流し満貫
-fn check_nagashi_mangan(hand: &HandAnalyzer) -> bool {
+fn check_nagashi_mangan(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("流し満貫",false);
     }
     unimplemented!();
 }
 /// 門前清自摸和
-fn check_self_pick(hand: &HandAnalyzer) -> bool {
+fn check_self_pick(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("門前清自摸和",false);
     }
     unimplemented!();
 }
 /// 一発
-fn check_one_shot(hand: &HandAnalyzer) -> bool {
+fn check_one_shot(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("一発",false);
     }
     unimplemented!();
 }
 /// 海底撈月
-fn check_last_tile_from_the_wall(hand: &HandAnalyzer) -> bool {
+fn check_last_tile_from_the_wall(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("海底撈月",false);
     }
     unimplemented!();
 }
 /// 河底撈魚
-fn check_last_discard(hand: &HandAnalyzer) -> bool {
+fn check_last_discard(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("河底撈魚",false);
     }
     unimplemented!();
 }
 /// 嶺上開花
-fn check_dead_wall_draw(hand: &HandAnalyzer) -> bool {
+fn check_dead_wall_draw(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("嶺上開花",false);
     }
     unimplemented!();
 }
 /// 搶槓
-fn check_robbing_a_quad(hand: &HandAnalyzer) -> bool {
+fn check_robbing_a_quad(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("搶槓",false);
     }
     unimplemented!();
 }
 /// ダブル立直
-fn check_double_ready(hand: &HandAnalyzer) -> bool {
+fn check_double_ready(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("ダブル立直",false);
     }
     unimplemented!();
 }
 /// 平和
-fn check_no_points_hand(hand: &HandAnalyzer) -> bool {
+fn check_no_points_hand(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("平和",false);
     }
     unimplemented!();
 }
 /// 一盃口
-fn check_one_set_of_identical_sequences(hand: &HandAnalyzer) -> bool {
+fn check_one_set_of_identical_sequences(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("一盃口",false);
     }
     unimplemented!();
 }
 /// 三色同順
-fn check_three_colour_straight(hand: &HandAnalyzer) -> bool {
+fn check_three_colour_straight(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("三色同順",false);
     }
     unimplemented!();
 }
 /// 一気通貫
-fn check_straight(hand: &HandAnalyzer) -> bool {
+fn check_straight(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("一気通貫",false);
     }
     unimplemented!();
 }
 /// 二盃口
-fn check_two_sets_of_identical_sequences(hand: &HandAnalyzer) -> bool {
+fn check_two_sets_of_identical_sequences(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("二盃口",false);
     }
     unimplemented!();
 }
 /// 対々和
-fn check_all_triplet_hand(hand: &HandAnalyzer) -> bool {
+fn check_all_triplet_hand(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("対々和",false);
     }
     unimplemented!();
 }
 /// 三暗刻
-fn check_three_closed_triplets(hand: &HandAnalyzer) -> bool {
+fn check_three_closed_triplets(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("三暗刻",false);
     }
     unimplemented!();
 }
 /// 三色同刻
-fn check_three_colour_triplets(hand: &HandAnalyzer) -> bool {
+fn check_three_colour_triplets(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("三色同刻",false);
     }
     unimplemented!();
 }
 /// 断么九
-fn check_all_simples(hand: &HandAnalyzer) -> bool {
+fn check_all_simples(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("断么九",false);
     }
     unimplemented!();
 }
 /// 役牌（自風牌）
-fn check_honor_tiles_players_wind(hand: &HandAnalyzer) -> bool {
+fn check_honor_tiles_players_wind(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("役牌（自風牌）",false);
     }
     unimplemented!();
 }
 /// 役牌（場風牌）
-fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer) -> bool {
+fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("役牌（場風牌）",false);
     }
     unimplemented!();
 }
 /// 役牌（三元牌）
-fn check_honor_tiles_dragons(hand: &HandAnalyzer) -> bool {
+fn check_honor_tiles_dragons(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("役牌（三元牌）",false);
     }
     unimplemented!();
 }
 /// 混全帯么九
-fn check_terminal_or_honor_in_each_set(hand: &HandAnalyzer) -> bool {
+fn check_terminal_or_honor_in_each_set(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("混全帯么九",false);
     }
     unimplemented!();
 }
 /// 純全帯么九
-fn check_terminal_in_each_set(hand: &HandAnalyzer) -> bool {
+fn check_terminal_in_each_set(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("純全帯么九",false);
     }
     unimplemented!();
 }
 /// 混老頭
-fn check_all_terminals_and_honors(hand: &HandAnalyzer) -> bool {
+fn check_all_terminals_and_honors(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("混老頭",false);
     }
     unimplemented!();
 }
 /// 小三元
-fn check_little_three_dragons(hand: &HandAnalyzer) -> bool {
+fn check_little_three_dragons(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("小三元",false);
     }
     unimplemented!();
 }
 /// 混一色
-fn check_half_flush(hand: &HandAnalyzer) -> bool {
+fn check_half_flush(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("混一色",false);
     }
     unimplemented!();
 }
 /// 清一色
-fn check_flush(hand: &HandAnalyzer) -> bool {
+fn check_flush(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("清一色",false);
     }
     unimplemented!();
 }
 /// 国士無双
-fn check_thirteen_orphans(hand: &HandAnalyzer) -> bool {
+fn check_thirteen_orphans(hand: &HandAnalyzer) -> (&str,bool) {
+    let name = "国士無双";
     if hand.shanten > -1 {
-        return false;
+        return (name,false);
     }
     return if hand.form == WinningHandForm::ThirteenOrphens {
-        true
+        (name,true)
     } else {
-        false
+        (name,false)
     };
 }
 /// 四暗刻
-fn check_four_concealed_triplets(hand: &HandAnalyzer) -> bool {
+fn check_four_concealed_triplets(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("四暗刻",false);
     }
     unimplemented!();
 }
 /// 大三元
-fn check_big_three_dragons(hand: &HandAnalyzer) -> bool {
+fn check_big_three_dragons(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("大三元",false);
     }
     unimplemented!();
 }
 /// 小四喜
-fn check_little_four_winds(hand: &HandAnalyzer) -> bool {
+fn check_little_four_winds(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("小四喜",false);
     }
     unimplemented!();
 }
 /// 大四喜
-fn check_big_four_winds(hand: &HandAnalyzer) -> bool {
+fn check_big_four_winds(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("大四喜",false);
     }
     unimplemented!();
 }
 /// 字一色
-fn check_all_honors(hand: &HandAnalyzer) -> bool {
+fn check_all_honors(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("字一色",false);
     }
     unimplemented!();
 }
 /// 清老頭
-fn check_all_terminals(hand: &HandAnalyzer) -> bool {
+fn check_all_terminals(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("清老頭",false);
     }
     unimplemented!();
 }
 /// 緑一色
-fn check_all_green(hand: &HandAnalyzer) -> bool {
+fn check_all_green(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("緑一色",false);
     }
     unimplemented!();
 }
 /// 九蓮宝燈
-fn check_nine_gates(hand: &HandAnalyzer) -> bool {
+fn check_nine_gates(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("九蓮宝燈",false);
     }
     unimplemented!();
 }
 /// 四槓子
-fn check_four_kans(hand: &HandAnalyzer) -> bool {
+fn check_four_kans(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("四槓子",false);
     }
     unimplemented!();
 }
 /// 天和
-fn check_heavenly_hand(hand: &HandAnalyzer) -> bool {
+fn check_heavenly_hand(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("天和",false);
     }
     unimplemented!();
 }
 /// 地和
-fn check_hand_of_earth(hand: &HandAnalyzer) -> bool {
+fn check_hand_of_earth(hand: &HandAnalyzer) -> (&str,bool) {
     if hand.shanten > -1 {
-        return false;
+        return ("地和",false);
     }
     unimplemented!();
 }
@@ -513,10 +515,7 @@ mod tests {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::calc(&test);
-        assert_eq!(
-            check_seven_pairs(&test_analyzer),
-            true
-        );
+        assert_eq!(check_seven_pairs(&test_analyzer), ("七対子",true));
     }
 
     #[test]
@@ -525,9 +524,6 @@ mod tests {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::calc(&test);
-        assert_eq!(
-            check_thirteen_orphans(&test_analyzer),
-            true
-        );
+        assert_eq!(check_thirteen_orphans(&test_analyzer), ("国士無双",true));
     }
 }
