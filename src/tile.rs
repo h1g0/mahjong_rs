@@ -103,6 +103,7 @@ impl Tile {
         return self.index;
     }
 
+    /*
     /// 萬子か否かを返す
     pub fn is_character(&self) -> bool {
         return matches!(self.index, Tile::M1..=Tile::M9);
@@ -162,7 +163,7 @@ impl Tile {
         }
         return false;
     }
-
+*/
     pub fn to_char(&self) -> char {
         return Tile::CHARS[self.index as usize];
     }
@@ -214,10 +215,30 @@ impl Tile {
     }
 }
 
+/// 自風／場風
+pub enum Wind{
+    East=Tile::Z1 as isize,
+    South=Tile::Z2 as isize,
+    West=Tile::Z3 as isize,
+    North=Tile::Z4 as isize,
+}
+
+impl Wind{
+    pub fn is_tile(tile: &Tile)->Option<Wind>{
+        match tile.get(){
+            Tile::Z1=>Some(Wind::East),
+            Tile::Z2=>Some(Wind::South),
+            Tile::Z3=>Some(Wind::West),
+            Tile::Z4=>Some(Wind::North),
+            _=>None,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-
+/*
     /// 萬子の属性テスト
     #[test]
     fn suit_char_test() {
@@ -374,4 +395,5 @@ mod tests {
             false
         );
     }
+    */
 }
