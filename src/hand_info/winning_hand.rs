@@ -524,6 +524,9 @@ mod tests {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::calc(&test);
-        assert_eq!(check_thirteen_orphans(&test_analyzer), ("国士無双", true, 13));
+        assert_eq!(
+            check_thirteen_orphans(&test_analyzer),
+            ("国士無双", true, 13)
+        );
     }
 }
