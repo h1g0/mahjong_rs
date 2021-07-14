@@ -28,8 +28,8 @@ impl Hand {
         self.tiles.sort();
     }
     /// 種類別に各牌の数をカウントする
-    pub fn summarize_tiles(&self) -> Vec<TileType> {
-        let mut result: Vec<TileType> = vec![0; Tile::LEN as usize];
+    pub fn summarize_tiles(&self) -> TileSummarize {
+        let mut result: TileSummarize = [0; Tile::LEN as usize];
 
         // 通常の手牌をカウント
         for i in 0..self.tiles.len() {
@@ -217,11 +217,11 @@ impl Hand {
         return Hand::new_with_opened(hand, opened, drawn);
     }
 
-    pub fn from_summarized(sum: &Vec<TileType>)->Hand{
+    pub fn from_summarized(sum: &TileSummarize) -> Hand {
         let mut result: Vec<Tile> = Vec::new();
 
-        for i in Tile::M1 as usize..Tile::LEN{
-            for j in 0..sum[i]{
+        for i in Tile::M1 as usize..Tile::LEN {
+            for j in 0..sum[i] {
                 result.push(Tile::new(i as TileType));
             }
         }
@@ -236,7 +236,7 @@ mod tests {
         let test_str = "111m456p789s123z 4z";
         let test_hand = Hand::from(test_str);
         let test = test_hand.summarize_tiles();
-        let answer = vec![
+        let answer = [
             3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
             1, 1, 0, 0, 0,
         ];

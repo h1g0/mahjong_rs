@@ -1,6 +1,8 @@
 /// 牌の種類を示す型
 pub type TileType = u32;
 
+pub type TileSummarize = [u32; Tile::LEN];
+
 /// 牌
 #[derive(Debug, Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Tile {
@@ -104,66 +106,66 @@ impl Tile {
     }
 
     /*
-    /// 萬子か否かを返す
-    pub fn is_character(&self) -> bool {
-        return matches!(self.index, Tile::M1..=Tile::M9);
-    }
-    /// 筒子か否かを返す
-    pub fn is_circle(&self) -> bool {
-        return matches!(self.index, Tile::P1..=Tile::P9);
-    }
-    /// 索子か否かを返す
-    pub fn is_bamboo(&self) -> bool {
-        return matches!(self.index, Tile::S1..=Tile::S9);
-    }
-    /// 風牌か否かを返す
-    pub fn is_wind(&self) -> bool {
-        return matches!(self.index, Tile::Z1..=Tile::Z4);
-    }
-    /// 三元牌か否かを返す
-    pub fn is_dragon(&self) -> bool {
-        return matches!(self.index, Tile::Z5..=Tile::Z7);
-    }
-    /// 字牌か否かを返す
-    pub fn is_honor(&self) -> bool {
-        return self.is_wind() || self.is_dragon();
-    }
+        /// 萬子か否かを返す
+        pub fn is_character(&self) -> bool {
+            return matches!(self.index, Tile::M1..=Tile::M9);
+        }
+        /// 筒子か否かを返す
+        pub fn is_circle(&self) -> bool {
+            return matches!(self.index, Tile::P1..=Tile::P9);
+        }
+        /// 索子か否かを返す
+        pub fn is_bamboo(&self) -> bool {
+            return matches!(self.index, Tile::S1..=Tile::S9);
+        }
+        /// 風牌か否かを返す
+        pub fn is_wind(&self) -> bool {
+            return matches!(self.index, Tile::Z1..=Tile::Z4);
+        }
+        /// 三元牌か否かを返す
+        pub fn is_dragon(&self) -> bool {
+            return matches!(self.index, Tile::Z5..=Tile::Z7);
+        }
+        /// 字牌か否かを返す
+        pub fn is_honor(&self) -> bool {
+            return self.is_wind() || self.is_dragon();
+        }
 
-    /// 老頭牌か否かを返す
-    pub fn is_1_or_9(&self) -> bool {
-        return matches!(
-            self.index,
-            Tile::M1 | Tile::M9 | Tile::P1 | Tile::P9 | Tile::S1 | Tile::S9
-        );
-    }
-    /// 么九牌（老頭牌＋字牌）か否かを返す
-    pub fn is_1_9_honor(&self) -> bool {
-        return self.is_1_or_9() || self.is_honor();
-    }
+        /// 老頭牌か否かを返す
+        pub fn is_1_or_9(&self) -> bool {
+            return matches!(
+                self.index,
+                Tile::M1 | Tile::M9 | Tile::P1 | Tile::P9 | Tile::S1 | Tile::S9
+            );
+        }
+        /// 么九牌（老頭牌＋字牌）か否かを返す
+        pub fn is_1_9_honor(&self) -> bool {
+            return self.is_1_or_9() || self.is_honor();
+        }
 
-    /// 対子（同じ2枚）か否かを返す
-    pub fn is_same_to(&self, tile: Tile) -> bool {
-        return self.get() == tile.get();
-    }
-    /// 搭子（連続した2枚）か否かを返す
-    pub fn is_sequential_to(&self, tile: Tile) -> bool {
-        // 字牌ならば連続はありえない
-        if self.is_honor() {
+        /// 対子（同じ2枚）か否かを返す
+        pub fn is_same_to(&self, tile: Tile) -> bool {
+            return self.get() == tile.get();
+        }
+        /// 搭子（連続した2枚）か否かを返す
+        pub fn is_sequential_to(&self, tile: Tile) -> bool {
+            // 字牌ならば連続はありえない
+            if self.is_honor() {
+                return false;
+            }
+            // 一萬・一筒・一索の時に1つ前（九萬・九筒）が来ても連続とはみなさない
+            if matches!(self.index, Tile::M1 | Tile::P1 | Tile::S1) && self.get() == tile.get() + 1 {
+                return false;
+            }
+            // 九萬・九筒・九索の時に1つ後（一筒・一索・東）が来ても連続とはみなさない
+            if matches!(self.index, Tile::M9 | Tile::P9 | Tile::S9) && self.get() == tile.get() - 1 {
+                return false;
+            } else if self.get() == tile.get() - 1 || self.get() == tile.get() + 1 {
+                return true;
+            }
             return false;
         }
-        // 一萬・一筒・一索の時に1つ前（九萬・九筒）が来ても連続とはみなさない
-        if matches!(self.index, Tile::M1 | Tile::P1 | Tile::S1) && self.get() == tile.get() + 1 {
-            return false;
-        }
-        // 九萬・九筒・九索の時に1つ後（一筒・一索・東）が来ても連続とはみなさない
-        if matches!(self.index, Tile::M9 | Tile::P9 | Tile::S9) && self.get() == tile.get() - 1 {
-            return false;
-        } else if self.get() == tile.get() - 1 || self.get() == tile.get() + 1 {
-            return true;
-        }
-        return false;
-    }
-*/
+    */
     pub fn to_char(&self) -> char {
         return Tile::CHARS[self.index as usize];
     }
@@ -216,21 +218,21 @@ impl Tile {
 }
 
 /// 自風／場風
-pub enum Wind{
-    East=Tile::Z1 as isize,
-    South=Tile::Z2 as isize,
-    West=Tile::Z3 as isize,
-    North=Tile::Z4 as isize,
+pub enum Wind {
+    East = Tile::Z1 as isize,
+    South = Tile::Z2 as isize,
+    West = Tile::Z3 as isize,
+    North = Tile::Z4 as isize,
 }
 
-impl Wind{
-    pub fn is_tile(tile: &Tile)->Option<Wind>{
-        match tile.get(){
-            Tile::Z1=>Some(Wind::East),
-            Tile::Z2=>Some(Wind::South),
-            Tile::Z3=>Some(Wind::West),
-            Tile::Z4=>Some(Wind::North),
-            _=>None,
+impl Wind {
+    pub fn is_tile(tile: &Tile) -> Option<Wind> {
+        match tile.get() {
+            Tile::Z1 => Some(Wind::East),
+            Tile::Z2 => Some(Wind::South),
+            Tile::Z3 => Some(Wind::West),
+            Tile::Z4 => Some(Wind::North),
+            _ => None,
         }
     }
 }
@@ -238,7 +240,7 @@ impl Wind{
 #[cfg(test)]
 mod tests {
     use super::*;
-/*
+    /*
     /// 萬子の属性テスト
     #[test]
     fn suit_char_test() {
