@@ -514,7 +514,7 @@ mod tests {
     fn win_by_seven_pairs() {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::calc(&test);
+        let test_analyzer = HandAnalyzer::new(&test);
         assert_eq!(check_seven_pairs(&test_analyzer), ("七対子", true, 2));
     }
 
@@ -523,7 +523,7 @@ mod tests {
     fn win_by_thirteen_orphens() {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::calc(&test);
+        let test_analyzer = HandAnalyzer::new(&test);
         assert_eq!(
             check_thirteen_orphans(&test_analyzer),
             ("国士無双", true, 13)

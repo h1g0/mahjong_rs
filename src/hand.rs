@@ -24,7 +24,8 @@ impl Hand {
         }
     }
 
-    fn sort(&mut self) {
+    /// 手牌をソートする
+    pub fn sort(&mut self) {
         self.tiles.sort();
     }
     /// 種類別に各牌の数をカウントする
@@ -221,7 +222,7 @@ impl Hand {
         let mut result: Vec<Tile> = Vec::new();
 
         for i in Tile::M1 as usize..Tile::LEN {
-            for j in 0..sum[i] {
+            for _ in 0..sum[i] {
                 result.push(Tile::new(i as TileType));
             }
         }

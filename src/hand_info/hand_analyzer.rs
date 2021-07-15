@@ -4,12 +4,26 @@ use crate::hand::Hand;
 use crate::hand_info::winning_hand::WinningHandForm;
 use crate::tile::*;
 
-/// 向聴数などの手牌に関する情報を計算する
+/// 与えられた手牌について、向聴数が最小になる時の面子・対子等の組み合わせを計算して格納する
+///
+/// 通常形の場合は面子・対子等の情報もVecに格納される。
+/// 七対子・国士無双の場合は（今のところ）向聴数のみが格納される。
 #[derive(Debug, Eq)]
 pub struct HandAnalyzer {
     /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
     pub shanten: i32,
+    /// どの和了形か
     pub form: WinningHandForm,
+    /// 刻子（同じ牌が3枚）が入るVec
+    pub same3: Vec<[TileType; 3]>,
+    /// 順子（連続した牌が3枚）が入るVec
+    pub sequential3: Vec<[TileType; 3]>,
+    /// 対子（同じ牌が2枚）が入るVec
+    pub same2: Vec<[TileType; 2]>,
+    /// 塔子（連続した牌が2枚）もしくは嵌張（順子の真ん中が抜けている2枚）が入るVec
+    pub sequential2: Vec<[TileType; 2]>,
+    /// 面子や対子・塔子などを構成しない、単独の牌が入るVec
+    pub single: Vec<TileType>,
 }
 impl Ord for HandAnalyzer {
     fn cmp(&self, other: &Self) -> Ordering {
@@ -30,8 +44,6 @@ impl PartialEq for HandAnalyzer {
 }
 
 impl HandAnalyzer {
-    /// 向聴数を計算する
-    ///
     /// 七対子・国士無双・通常の3つの和了形に対してそれぞれ向聴数を求め、最小のものを返す。
     /// # Examples
     ///
@@ -43,7 +55,7 @@ impl HandAnalyzer {
     /// // 通常型で和了る
     /// let nm_test_str = "222333444666s6z 6z";
     /// let nm_test = Hand::from(nm_test_str);
-    /// let analyzer = HandAnalyzer::calc(&nm_test);
+    /// let analyzer = HandAnalyzer::new(&nm_test);
     /// assert_eq!(
     ///   analyzer.shanten,
     ///   -1
@@ -53,10 +65,10 @@ impl HandAnalyzer {
     ///   WinningHandForm::Normal
     /// );
     /// ```
-    pub fn calc(hand: &Hand) -> HandAnalyzer {
-        let sp = HandAnalyzer::calc_by_form(hand, WinningHandForm::SevenPairs);
-        let to = HandAnalyzer::calc_by_form(hand, WinningHandForm::ThirteenOrphens);
-        let normal = HandAnalyzer::calc_by_form(hand, WinningHandForm::Normal);
+    pub fn new(hand: &Hand) -> HandAnalyzer {
+        let sp = HandAnalyzer::new_by_form(hand, WinningHandForm::SevenPairs);
+        let to = HandAnalyzer::new_by_form(hand, WinningHandForm::ThirteenOrphens);
+        let normal = HandAnalyzer::new_by_form(hand, WinningHandForm::Normal);
         return min(min(sp, to), normal);
     }
 
@@ -72,7 +84,7 @@ impl HandAnalyzer {
     /// let to_test_str = "19m19p19s1234567z 1m";
     /// let to_test = Hand::from(to_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::calc_by_form(&to_test, WinningHandForm::ThirteenOrphens).shanten,
+    ///   HandAnalyzer::new_by_form(&to_test, WinningHandForm::ThirteenOrphens).shanten,
     ///   -1
     /// );
     ///
@@ -80,7 +92,7 @@ impl HandAnalyzer {
     /// let sp_test_str = "1122m3344p5566s7z 7z";
     /// let sp_test = Hand::from(sp_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::calc_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
+    ///   HandAnalyzer::new_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
     ///   -1
     /// );
     ///
@@ -88,29 +100,21 @@ impl HandAnalyzer {
     /// let nm_test_str = "1112345678999m 5m";
     /// let nm_test = Hand::from(nm_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::calc_by_form(&nm_test, WinningHandForm::Normal).shanten,
+    ///   HandAnalyzer::new_by_form(&nm_test, WinningHandForm::Normal).shanten,
     ///   -1
     /// );
     /// ```
-    pub fn calc_by_form(hand: &Hand, form: WinningHandForm) -> HandAnalyzer {
+    pub fn new_by_form(hand: &Hand, form: WinningHandForm) -> HandAnalyzer {
         return match form {
-            WinningHandForm::SevenPairs => HandAnalyzer {
-                shanten: HandAnalyzer::calc_seven_pairs(hand),
-                form: WinningHandForm::SevenPairs,
-            },
-            WinningHandForm::ThirteenOrphens => HandAnalyzer {
-                shanten: HandAnalyzer::calc_thirteen_orphens(hand),
-                form: WinningHandForm::ThirteenOrphens,
-            },
-            WinningHandForm::Normal => HandAnalyzer {
-                shanten: HandAnalyzer::calc_normal_form(hand),
-                form: WinningHandForm::Normal,
-            },
+            WinningHandForm::SevenPairs => HandAnalyzer::calc_seven_pairs(hand),
+            WinningHandForm::ThirteenOrphens => HandAnalyzer::calc_thirteen_orphens(hand),
+            WinningHandForm::Normal => HandAnalyzer::calc_normal_form(hand),
         };
     }
 
     /// 七対子への向聴数を計算する
-    fn calc_seven_pairs(hand: &Hand) -> i32 {
+    /// Vecへの詰め込みは未実装
+    fn calc_seven_pairs(hand: &Hand) -> HandAnalyzer {
         let mut pair: u32 = 0;
         let mut kind: u32 = 0;
         let t = hand.summarize_tiles();
@@ -124,11 +128,20 @@ impl HandAnalyzer {
             }
         }
         let num_to_win: i32 = (7 - pair + if kind < 7 { 7 - kind } else { 0 }) as i32;
-        return num_to_win - 1;
+        return HandAnalyzer {
+            shanten: num_to_win - 1,
+            form: WinningHandForm::SevenPairs,
+            same3: Vec::new(),
+            sequential3: Vec::new(),
+            same2: Vec::new(),
+            sequential2: Vec::new(),
+            single: Vec::new(),
+        };
     }
 
     /// 国士無双への向聴数を計算する
-    fn calc_thirteen_orphens(hand: &Hand) -> i32 {
+    /// Vecへの詰め込みは未実装
+    fn calc_thirteen_orphens(hand: &Hand) -> HandAnalyzer {
         let to_tiles = [
             Tile::M1,
             Tile::M9,
@@ -157,11 +170,19 @@ impl HandAnalyzer {
             }
         }
         let num_to_win: i32 = (14 - kind - if pair > 0 { 1 } else { 0 }) as i32;
-        return num_to_win - 1;
+        return HandAnalyzer {
+            shanten: num_to_win - 1,
+            form: WinningHandForm::ThirteenOrphens,
+            same3: Vec::new(),
+            sequential3: Vec::new(),
+            same2: Vec::new(),
+            sequential2: Vec::new(),
+            single: Vec::new(),
+        };
     }
 
     /// 通常の役への向聴数を計算する
-    fn calc_normal_form(hand: &Hand) -> i32 {
+    fn calc_normal_form(hand: &Hand) -> HandAnalyzer {
         let mut t = hand.summarize_tiles();
         let mut shanten: i32 = 100;
 
@@ -171,10 +192,9 @@ impl HandAnalyzer {
         let mut sequential2: Vec<[TileType; 2]> = Vec::new();
 
         // 先に独立した牌を抜き出しておく
-        let independent_same3 = HandAnalyzer::count_independent_same_3(&mut t);
-        let independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
-        //let independent_single = HandAnalyzer::count_independent_single(&mut t);
-        HandAnalyzer::count_independent_single(&mut t);
+        let mut independent_same3 = HandAnalyzer::count_independent_same_3(&mut t);
+        let mut independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
+        let mut independent_single = HandAnalyzer::count_independent_single(&mut t);
 
         // 雀頭を抜き出す
         for i in Tile::M1..=Tile::Z7 {
@@ -209,7 +229,29 @@ impl HandAnalyzer {
             &mut t,
             &mut shanten,
         );
-        return shanten;
+
+        // 残った牌をVecに詰める
+        let mut single: Vec<TileType> = Vec::new();
+        for i in Tile::M1..=Tile::Z7 {
+            for _ in 0..t[i as usize] {
+                single.push(i);
+            }
+        }
+
+        // 最後に結合
+        same3.append(&mut independent_same3);
+        sequential3.append(&mut independent_sequential3);
+        single.append(&mut independent_single);
+
+        return HandAnalyzer {
+            shanten,
+            form: WinningHandForm::Normal,
+            same3,
+            sequential3,
+            same2,
+            sequential2,
+            single,
+        };
     }
     /// 独立した（順子になり得ない）刻子の数を返す
     fn count_independent_same_3(summarized_hand: &mut TileSummarize) -> Vec<[TileType; 3]> {
@@ -317,7 +359,7 @@ impl HandAnalyzer {
                         summarized_hand[l] -= i;
                         summarized_hand[l + 1] -= i;
                         summarized_hand[l + 2] -= i;
-                        for m in 0..i {
+                        for _ in 0..i {
                             result.push([l as TileType, (l + 1) as TileType, (l + 2) as TileType]);
                         }
                     }
@@ -328,8 +370,8 @@ impl HandAnalyzer {
     }
 
     /// 独立した（他の順子や刻子などと複合し得ない）牌の数を返す
-    fn count_independent_single(summarized_hand: &mut TileSummarize) -> u32 {
-        let mut result: u32 = 0;
+    fn count_independent_single(summarized_hand: &mut TileSummarize) -> Vec<TileType> {
+        let mut result: Vec<TileType> = Vec::new();
         for i in Tile::M1..=Tile::Z7 {
             match i {
                 Tile::M1 | Tile::P1 | Tile::S1 => {
@@ -338,7 +380,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 Tile::M2 | Tile::P2 | Tile::S2 => {
@@ -348,7 +390,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 Tile::M3..=Tile::M7 | Tile::P3..=Tile::P7 | Tile::S3..=Tile::S7 => {
@@ -359,7 +401,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 Tile::M8 | Tile::P8 | Tile::S8 => {
@@ -369,7 +411,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 1] == 0
                     {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 Tile::M9 | Tile::P9 | Tile::S9 => {
@@ -378,13 +420,13 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize] == 1
                     {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 Tile::Z1..=Tile::Z7 => {
                     if summarized_hand[i as usize] == 1 {
                         summarized_hand[i as usize] -= 1;
-                        result += 1;
+                        result.push(i);
                     }
                 }
                 _ => {
@@ -625,7 +667,7 @@ mod tests {
         let test_str = "226699m99p228s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
             0
         );
     }
@@ -635,7 +677,7 @@ mod tests {
         let test_str = "226699m99p222s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
             0
         );
     }
@@ -645,7 +687,7 @@ mod tests {
         let test_str = "19m19p11s1234567z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
             0
         );
     }
@@ -656,7 +698,7 @@ mod tests {
         let test_str = "1122m3344p5555s1z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
             1
         );
     }
@@ -667,7 +709,7 @@ mod tests {
         let test_str = "123m444p789s1112z 2z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }
@@ -678,7 +720,7 @@ mod tests {
         let test_str = "333m456p1789s 333z 1s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }
@@ -689,7 +731,7 @@ mod tests {
         let test_str = "234567m6789s 111z 6s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }
@@ -699,7 +741,7 @@ mod tests {
         let test_str = "5m123456p888s 777z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }
@@ -709,7 +751,7 @@ mod tests {
         let test_str = "234m8s 567m 333p 456s 8s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }
@@ -720,7 +762,7 @@ mod tests {
         let test_str = "123567m234p6799s 5s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::calc_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
             -1
         );
     }

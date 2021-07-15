@@ -239,7 +239,7 @@ impl Wind {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    //use super::*;
     /*
     /// 萬子の属性テスト
     #[test]
