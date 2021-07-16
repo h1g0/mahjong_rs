@@ -14,7 +14,8 @@ pub enum WinningHandForm {
 }
 
 /// 役の名前
-/// https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku による英語名
+///
+/// <https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku>による英語名
 pub const HAND_NAME: [&'static str; 40] = [
     // 立直
     "ready_hand",
