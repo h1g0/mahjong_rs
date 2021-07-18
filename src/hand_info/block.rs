@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use crate::tile::*;
 
 /// ブロック（対子、順子、刻子）の振る舞いを定義する
@@ -89,6 +91,7 @@ fn is_same_suit(t1: TileType, t2: TileType) -> bool {
     return false;
 }
 
+#[derive(Debug, Eq)]
 /// 対子（同じ2枚）
 pub struct Same2 {
     tiles: [TileType; 2],
@@ -106,7 +109,23 @@ impl Same2 {
         self.tiles
     }
 }
+impl Ord for Same2 {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.tiles.cmp(&other.tiles)
+    }
+}
 
+impl PartialOrd for Same2 {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Same2 {
+    fn eq(&self, other: &Self) -> bool {
+        self.tiles == other.tiles
+    }
+}
 impl BlockProperty for Same2 {
     fn has_1_or_9(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
@@ -134,6 +153,7 @@ impl BlockProperty for Same2 {
     }
 }
 
+#[derive(Debug, Eq)]
 /// 刻子（同じ3枚）
 pub struct Same3 {
     tiles: [TileType; 3],
@@ -152,7 +172,23 @@ impl Same3 {
         self.tiles
     }
 }
+impl Ord for Same3 {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.tiles.cmp(&other.tiles)
+    }
+}
 
+impl PartialOrd for Same3 {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Same3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.tiles == other.tiles
+    }
+}
 impl BlockProperty for Same3 {
     fn has_1_or_9(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
@@ -176,6 +212,70 @@ impl BlockProperty for Same3 {
     }
 }
 
+#[derive(Debug, Eq)]
+/// 塔子（連続した牌が2枚）もしくは嵌張（順子の真ん中が抜けている2枚）
+pub struct Sequential2 {
+    tiles: [TileType; 2],
+}
+impl Sequential2 {
+    pub fn new(tile1: TileType, tile2: TileType) -> Sequential2 {
+        // まず連続でなければパニック
+        if !(tile2 == tile1 + 1 || tile2 == tile1 + 2) {
+            panic!("Not sequential tiles in `Sequential2`!");
+        }
+        // 字牌は順子にならない
+        if has_honor(tile1) || has_honor(tile2) {
+            panic!("Cannot assign Honor tiles to `Sequential2`!");
+        }
+        if !is_same_suit(tile1, tile2) {
+            panic!("Cannot assign different suits to `Sequential2`!");
+        }
+        Sequential2 {
+            tiles: [tile1, tile2],
+        }
+    }
+    /// 牌の配列を返す
+    pub fn get(&self) -> [TileType; 2] {
+        self.tiles
+    }
+}
+impl Ord for Sequential2 {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.tiles.cmp(&other.tiles)
+    }
+}
+
+impl PartialOrd for Sequential2 {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Sequential2 {
+    fn eq(&self, other: &Self) -> bool {
+        self.tiles == other.tiles
+    }
+}
+impl BlockProperty for Sequential2 {
+    fn has_1_or_9(&self) -> bool {
+        has_1_or_9(self.tiles[0]) || has_1_or_9(self.tiles[1])
+    }
+    fn has_honor(&self) -> bool {
+        //字牌は塔子にならない
+        false
+    }
+    fn is_character(&self) -> bool {
+        is_character(self.tiles[0])
+    }
+    fn is_circle(&self) -> bool {
+        is_circle(self.tiles[0])
+    }
+    fn is_bamboo(&self) -> bool {
+        is_bamboo(self.tiles[0])
+    }
+}
+
+#[derive(Debug, Eq)]
 /// 順子（連続した3枚）
 pub struct Sequential3 {
     tiles: [TileType; 3],
@@ -203,59 +303,29 @@ impl Sequential3 {
         self.tiles
     }
 }
+impl Ord for Sequential3 {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.tiles.cmp(&other.tiles)
+    }
+}
 
+impl PartialOrd for Sequential3 {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Sequential3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.tiles == other.tiles
+    }
+}
 impl BlockProperty for Sequential3 {
     fn has_1_or_9(&self) -> bool {
         has_1_or_9(self.tiles[0]) || has_1_or_9(self.tiles[2])
     }
     fn has_honor(&self) -> bool {
         //字牌は順子にならない
-        false
-    }
-    fn is_character(&self) -> bool {
-        is_character(self.tiles[0])
-    }
-    fn is_circle(&self) -> bool {
-        is_circle(self.tiles[0])
-    }
-    fn is_bamboo(&self) -> bool {
-        is_bamboo(self.tiles[0])
-    }
-}
-
-/// 塔子（連続した牌が2枚）もしくは嵌張（順子の真ん中が抜けている2枚）
-pub struct Sequential2 {
-    tiles: [TileType; 2],
-}
-impl Sequential2 {
-    pub fn new(tile1: TileType, tile2: TileType) -> Sequential2 {
-        // まず連続でなければパニック
-        if !(tile2 == tile1 + 1 || tile2 == tile1 + 2) {
-            panic!("Not sequential tiles in `Sequential2`!");
-        }
-        // 字牌は順子にならない
-        if has_honor(tile1) || has_honor(tile2) {
-            panic!("Cannot assign Honor tiles to `Sequential2`!");
-        }
-        if !is_same_suit(tile1, tile2) {
-            panic!("Cannot assign different suits to `Sequential2`!");
-        }
-        Sequential2 {
-            tiles: [tile1, tile2],
-        }
-    }
-    /// 牌の配列を返す
-    pub fn get(&self) -> [TileType; 2] {
-        self.tiles
-    }
-}
-
-impl BlockProperty for Sequential2 {
-    fn has_1_or_9(&self) -> bool {
-        has_1_or_9(self.tiles[0]) || has_1_or_9(self.tiles[1])
-    }
-    fn has_honor(&self) -> bool {
-        //字牌は塔子にならない
         false
     }
     fn is_character(&self) -> bool {
