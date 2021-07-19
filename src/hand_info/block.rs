@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use crate::tile::*;
 
 /// ブロック（対子、順子、刻子）の振る舞いを定義する
-trait BlockProperty {
+pub trait BlockProperty {
     /// 么九牌が含まれているか
     fn has_1_or_9(&self) -> bool;
     /// 字牌が含まれているか
@@ -16,8 +16,12 @@ trait BlockProperty {
     fn is_bamboo(&self) -> bool;
 }
 
+fn is_proper_tile(tile: TileType) -> bool {
+    matches!(tile, Tile::M1..=Tile::Z7)
+}
+
 fn has_1_or_9(t: TileType) -> bool {
-    if t >= Tile::LEN as TileType {
+    if !is_proper_tile(t) {
         panic!("has_1_or_9: invalid tile type");
     }
     match t {
@@ -29,7 +33,7 @@ fn has_1_or_9(t: TileType) -> bool {
 }
 
 fn has_honor(t: TileType) -> bool {
-    if t >= Tile::LEN as TileType {
+    if !is_proper_tile(t) {
         panic!("has_honor: invalid tile type");
     }
     match t {
@@ -39,7 +43,7 @@ fn has_honor(t: TileType) -> bool {
 }
 
 fn is_character(t: TileType) -> bool {
-    if t >= Tile::LEN as TileType {
+    if !is_proper_tile(t) {
         panic!("is_character: invalid tile type");
     }
     match t {
@@ -49,7 +53,7 @@ fn is_character(t: TileType) -> bool {
 }
 
 fn is_circle(t: TileType) -> bool {
-    if t >= Tile::LEN as TileType {
+    if !is_proper_tile(t) {
         panic!("is_circle: invalid tile type");
     }
     match t {
@@ -59,7 +63,7 @@ fn is_circle(t: TileType) -> bool {
 }
 
 fn is_bamboo(t: TileType) -> bool {
-    if t >= Tile::LEN as TileType {
+    if !is_proper_tile(t) {
         panic!("is_bamboo: invalid tile type");
     }
     match t {
@@ -101,6 +105,11 @@ impl Same2 {
         if tile1 != tile2 {
             panic!("Not same tiles in `Same2`!");
         }
+
+        if !is_proper_tile(tile1) || !is_proper_tile(tile2) {
+            panic!("Not proper tile in `Same2`!");
+        }
+
         Same2 {
             tiles: [tile1, tile2],
         }
@@ -127,26 +136,27 @@ impl PartialEq for Same2 {
     }
 }
 impl BlockProperty for Same2 {
+    /// 么九牌が含まれているか
     fn has_1_or_9(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         has_1_or_9(self.tiles[0])
     }
-
+    /// 字牌が含まれているか
     fn has_honor(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         has_honor(self.tiles[0])
     }
-
+    /// 萬子のブロックか
     fn is_character(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         is_character(self.tiles[0])
     }
-
+    /// 筒子のブロックか
     fn is_circle(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         is_circle(self.tiles[0])
     }
-
+    /// 索子のブロックか
     fn is_bamboo(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         is_bamboo(self.tiles[0])
@@ -163,6 +173,11 @@ impl Same3 {
         if tile1 != tile2 || tile1 != tile3 {
             panic!("Not same tiles in `Same3`!");
         }
+
+        if !is_proper_tile(tile1) || !is_proper_tile(tile2) || !is_proper_tile(tile3) {
+            panic!("Not proper tile in `Same3`!");
+        }
+
         Same3 {
             tiles: [tile1, tile2, tile3],
         }
@@ -190,22 +205,27 @@ impl PartialEq for Same3 {
     }
 }
 impl BlockProperty for Same3 {
+    /// 么九牌が含まれているか
     fn has_1_or_9(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         has_1_or_9(self.tiles[0])
     }
+    /// 字牌が含まれているか
     fn has_honor(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         has_honor(self.tiles[0])
     }
+    /// 萬子のブロックか
     fn is_character(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         is_character(self.tiles[0])
     }
+    /// 筒子のブロックか
     fn is_circle(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         is_circle(self.tiles[0])
     }
+    /// 索子のブロックか
     fn is_bamboo(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         is_bamboo(self.tiles[0])
@@ -223,6 +243,11 @@ impl Sequential2 {
         if !(tile2 == tile1 + 1 || tile2 == tile1 + 2) {
             panic!("Not sequential tiles in `Sequential2`!");
         }
+
+        if !is_proper_tile(tile1) || !is_proper_tile(tile2) {
+            panic!("Not proper tile in `Sequential2`!");
+        }
+
         // 字牌は順子にならない
         if has_honor(tile1) || has_honor(tile2) {
             panic!("Cannot assign Honor tiles to `Sequential2`!");
@@ -257,19 +282,24 @@ impl PartialEq for Sequential2 {
     }
 }
 impl BlockProperty for Sequential2 {
+    /// 么九牌が含まれているか
     fn has_1_or_9(&self) -> bool {
         has_1_or_9(self.tiles[0]) || has_1_or_9(self.tiles[1])
     }
+    /// 字牌が含まれているか
     fn has_honor(&self) -> bool {
         //字牌は塔子にならない
         false
     }
+    /// 萬子のブロックか
     fn is_character(&self) -> bool {
         is_character(self.tiles[0])
     }
+    /// 筒子のブロックか
     fn is_circle(&self) -> bool {
         is_circle(self.tiles[0])
     }
+    /// 索子のブロックか
     fn is_bamboo(&self) -> bool {
         is_bamboo(self.tiles[0])
     }
@@ -286,6 +316,11 @@ impl Sequential3 {
         if tile2 != tile1 + 1 || tile3 != tile2 + 1 {
             panic!("Not sequential tiles in `Sequential3`!");
         }
+
+        if !is_proper_tile(tile1) || !is_proper_tile(tile2) || !is_proper_tile(tile3) {
+            panic!("Not proper tile in `Sequential3`!");
+        }
+
         // 字牌は順子にならない
         if has_honor(tile1) || has_honor(tile2) || has_honor(tile3) {
             panic!("Cannot assign Honor tiles to `Sequential3`!");
@@ -321,19 +356,24 @@ impl PartialEq for Sequential3 {
     }
 }
 impl BlockProperty for Sequential3 {
+    /// 么九牌が含まれているか
     fn has_1_or_9(&self) -> bool {
         has_1_or_9(self.tiles[0]) || has_1_or_9(self.tiles[2])
     }
+    /// 字牌が含まれているか
     fn has_honor(&self) -> bool {
         //字牌は順子にならない
         false
     }
+    /// 萬子のブロックか
     fn is_character(&self) -> bool {
         is_character(self.tiles[0])
     }
+    /// 筒子のブロックか
     fn is_circle(&self) -> bool {
         is_circle(self.tiles[0])
     }
+    /// 索子のブロックか
     fn is_bamboo(&self) -> bool {
         is_bamboo(self.tiles[0])
     }

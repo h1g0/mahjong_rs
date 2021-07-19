@@ -3,13 +3,13 @@ use crate::tile::Wind;
 /// 手牌の（牌以外の）状態
 pub struct Status {
     /// 立直したか
-    has_claimed_ready: bool,
+    pub has_claimed_ready: bool,
     /// 鳴いたか
-    has_claimed_open: bool,
+    pub has_claimed_open: bool,
     /// 自風
-    player_wind: Wind,
+    pub player_wind: Wind,
     /// 場風
-    prevailed_wind: Wind,
+    pub prevailed_wind: Wind,
 }
 
 impl Status {
