@@ -1,7 +1,11 @@
+use crate::board::Rules;
 use crate::hand_info::hand_analyzer::HandAnalyzer;
 use crate::hand_info::status::Status;
+
 /// 役を判定する
 use std::collections::HashMap;
+
+use super::block::BlockProperty;
 
 /// 和了時の手牌の形態
 #[derive(Debug, Eq, PartialEq)]
@@ -103,6 +107,7 @@ pub const HAND_NAME: [&'static str; 40] = [
 pub fn check<'a, 'b>(
     hand: &'a HandAnalyzer,
     status: &'b Status,
+    rules: &'b Rules,
 ) -> HashMap<&'a str, (String, bool, u32)> {
     let mut result = HashMap::new();
     for i in 0..HAND_NAME.len() {
@@ -112,7 +117,7 @@ pub fn check<'a, 'b>(
     // 立直
     result.insert("ready_hand", check_ready_hand(hand, status));
     // 七対子
-    result.insert("seven_pairs", check_seven_pairs(hand, status));
+    result.insert("seven_pairs", check_seven_pairs(hand));
     // 流し満貫
     result.insert("nagashi_mangan", check_nagashi_mangan(hand, status));
     // 門前清自摸和
@@ -164,7 +169,7 @@ pub fn check<'a, 'b>(
         check_three_colour_triplets(hand, status),
     );
     // 断么九
-    result.insert("all_simples", check_all_simples(hand, status));
+    result.insert("all_simples", check_all_simples(hand, status, rules));
     // 役牌（自風牌）
     result.insert(
         "honor_tiles_players_wind",
@@ -205,7 +210,7 @@ pub fn check<'a, 'b>(
     // 清一色
     result.insert("flush", check_flush(hand, status));
     // 国士無双
-    result.insert("thirteen_orphans", check_thirteen_orphans(hand, status));
+    result.insert("thirteen_orphans", check_thirteen_orphans(hand));
     // 四暗刻
     result.insert(
         "four_concealed_triplets",
@@ -256,7 +261,7 @@ fn check_ready_hand(hand: &HandAnalyzer, status: &Status) -> (String, bool, u32)
     };
 }
 /// 七対子
-fn check_seven_pairs(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_seven_pairs(hand: &HandAnalyzer) -> (String, bool, u32) {
     let name = "七対子".to_string();
     if !has_won(hand) {
         return (name, false, 0);
@@ -386,11 +391,33 @@ fn check_three_colour_triplets(hand: &HandAnalyzer, _status: &Status) -> (String
     unimplemented!();
 }
 /// 断么九
-fn check_all_simples(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_all_simples(hand: &HandAnalyzer, status: &Status, rules: &Rules) -> (String, bool, u32) {
+    let name = "断么九".to_string();
     if !has_won(hand) {
-        return ("断么九".to_string(), false, 0);
+        return (name, false, 0);
     }
-    unimplemented!();
+    // 喰いタンなしなら鳴いている時点で抜ける
+    if !rules.openned_all_simples && status.has_claimed_open {
+        return (name, false, 0);
+    }
+    let mut has_1_9_honor = false;
+    for same in &hand.same3 {
+        if same.has_1_or_9() || same.has_honor() {
+            has_1_9_honor = true;
+        }
+    }
+
+    for seq in &hand.sequential3 {
+        if seq.has_1_or_9() {
+            has_1_9_honor = true;
+        }
+    }
+
+    if has_1_9_honor {
+        return (name, false, 0);
+    }
+
+    return (name, true, 1);
 }
 /// 役牌（自風牌）
 fn check_honor_tiles_players_wind(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -459,7 +486,7 @@ fn check_flush(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     unimplemented!();
 }
 /// 国士無双
-fn check_thirteen_orphans(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_thirteen_orphans(hand: &HandAnalyzer) -> (String, bool, u32) {
     let name = "国士無双".to_string();
     if !has_won(hand) {
         return (name, false, 0);
@@ -560,9 +587,8 @@ mod tests {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
-        let status = Status::new();
         assert_eq!(
-            check_seven_pairs(&test_analyzer, &status),
+            check_seven_pairs(&test_analyzer),
             ("七対子".to_string(), true, 2)
         );
     }
@@ -573,9 +599,8 @@ mod tests {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
-        let status = Status::new();
         assert_eq!(
-            check_thirteen_orphans(&test_analyzer, &status),
+            check_thirteen_orphans(&test_analyzer),
             ("国士無双".to_string(), true, 13)
         );
     }
@@ -593,4 +618,70 @@ mod tests {
             ("立直".to_string(), true, 1)
         );
     }
+
+    #[test]
+    /// 断么九で和了った（喰い断あり鳴きなし）
+    fn win_by_all_simples_open_rule_close_hand() {
+        let test_str = "222m456m777p56s88s 7s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断あり鳴きなし
+        rules.openned_all_simples = true;
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 断么九で和了った（喰い断あり鳴きあり）
+    fn win_by_all_simples_open_rule_open_hand() {
+        let test_str = "234m567m234p345s3s 3s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断あり鳴きあり
+        rules.openned_all_simples = true;
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 断么九で和了った（喰い断なし鳴きなし）
+    fn win_by_all_simples_close_rule_close_hand() {
+        let test_str = "678m23455p33345ss 5p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断なし鳴きなし
+        rules.openned_all_simples = false;
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 断么九で和了った（喰い断なし鳴きあり）->役無し
+    fn win_by_all_simples_close_rule_open_hand() {
+        let test_str = "222m456m777p56s88s 7s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断なし鳴きあり（役無し）
+        rules.openned_all_simples = false;
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), false, 0)
+        );
+    }
+
 }
