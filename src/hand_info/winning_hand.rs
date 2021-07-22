@@ -401,14 +401,24 @@ fn check_all_simples(hand: &HandAnalyzer, status: &Status, rules: &Rules) -> (St
         return (name, false, 0);
     }
     let mut has_1_9_honor = false;
+    // 面子
+
+    // 刻子
     for same in &hand.same3 {
         if same.has_1_or_9() || same.has_honor() {
             has_1_9_honor = true;
         }
     }
-
+    // 順子
     for seq in &hand.sequential3 {
         if seq.has_1_or_9() {
+            has_1_9_honor = true;
+        }
+    }
+
+    // 雀頭
+    for head in &hand.same2{
+        if head.has_1_or_9() || head.has_honor(){
             has_1_9_honor = true;
         }
     }
@@ -622,7 +632,7 @@ mod tests {
     #[test]
     /// 断么九で和了った（喰い断あり鳴きなし）
     fn win_by_all_simples_open_rule_close_hand() {
-        let test_str = "222m456m777p56s88s 7s";
+        let test_str = "222456m777p56s88s 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
         let mut status = Status::new();
@@ -633,6 +643,54 @@ mod tests {
         assert_eq!(
             check_all_simples(&test_analyzer, &status, &rules),
             ("断么九".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 么九牌ありでは断么九にならない（一）
+    fn not_win_by_all_simples_with_1() {
+        let test_str = "111456m777p56s88s 7s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断あり鳴きなし
+        rules.openned_all_simples = true;
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), false, 0)
+        );
+    }
+    #[test]
+    /// 么九牌ありでは断么九にならない（九）
+    fn not_win_by_all_simples_with_9() {
+        let test_str = "222456m777p5699s 7s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断あり鳴きなし
+        rules.openned_all_simples = true;
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), false, 0)
+        );
+    }
+    #[test]
+    /// 么九牌ありでは断么九にならない（字牌）
+    fn not_win_by_all_simples_with_honor() {
+        let test_str = "222456m56s88s111z 7s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        let mut rules = Rules::new();
+        // 喰い断あり鳴きなし
+        rules.openned_all_simples = true;
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_all_simples(&test_analyzer, &status, &rules),
+            ("断么九".to_string(), false, 0)
         );
     }
     #[test]

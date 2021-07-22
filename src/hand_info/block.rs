@@ -95,7 +95,7 @@ fn is_same_suit(t1: TileType, t2: TileType) -> bool {
     return false;
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq,Clone, Copy)]
 /// 対子（同じ2枚）
 pub struct Same2 {
     tiles: [TileType; 2],
@@ -163,7 +163,7 @@ impl BlockProperty for Same2 {
     }
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq,Clone, Copy)]
 /// 刻子（同じ3枚）
 pub struct Same3 {
     tiles: [TileType; 3],
@@ -232,7 +232,7 @@ impl BlockProperty for Same3 {
     }
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq,Clone, Copy)]
 /// 塔子（連続した牌が2枚）もしくは嵌張（順子の真ん中が抜けている2枚）
 pub struct Sequential2 {
     tiles: [TileType; 2],
@@ -305,7 +305,7 @@ impl BlockProperty for Sequential2 {
     }
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq,Clone, Copy)]
 /// 順子（連続した3枚）
 pub struct Sequential3 {
     tiles: [TileType; 3],

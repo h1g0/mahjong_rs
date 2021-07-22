@@ -114,7 +114,10 @@ impl HandAnalyzer {
     }
 
     /// 七対子への向聴数を計算する
+    ///
     /// Vecへの詰め込みは未実装
+    /// TODO: 詰め込みを実装する。
+    /// 七対子はVecを使用する役として断么九・混老頭・対々和・混一色・清一色と複合しうる
     fn calc_seven_pairs(hand: &Hand) -> HandAnalyzer {
         let mut pair: u32 = 0;
         let mut kind: u32 = 0;
@@ -141,7 +144,8 @@ impl HandAnalyzer {
     }
 
     /// 国士無双への向聴数を計算する
-    /// Vecへの詰め込みは未実装
+    ///
+    /// Vecへの詰め込みは未実装（詰め込んでも意味がない）
     fn calc_thirteen_orphens(hand: &Hand) -> HandAnalyzer {
         let to_tiles = [
             Tile::M1,
@@ -186,12 +190,17 @@ impl HandAnalyzer {
     fn calc_normal_form(hand: &Hand) -> HandAnalyzer {
         let mut t = hand.summarize_tiles();
         let mut shanten: i32 = 100;
-
+        // 計算用
         let mut same3: Vec<Same3> = Vec::new();
         let mut sequential3: Vec<Sequential3> = Vec::new();
         let mut same2: Vec<Same2> = Vec::new();
         let mut sequential2: Vec<Sequential2> = Vec::new();
-
+        // 結果保存用
+        let mut same3_result: Vec<Same3> = Vec::new();
+        let mut sequential3_result: Vec<Sequential3> = Vec::new();
+        let mut same2_result: Vec<Same2> = Vec::new();
+        let mut sequential2_result: Vec<Sequential2> = Vec::new();
+        let mut single_result: Vec<TileType> = Vec::new();
         // 先に独立した牌を抜き出しておく
         let mut independent_same3 = HandAnalyzer::count_independent_same_3(&mut t);
         let mut independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
@@ -212,6 +221,11 @@ impl HandAnalyzer {
                     &mut sequential2,
                     &mut t,
                     &mut shanten,
+                    &mut same3_result,
+                    &mut sequential3_result,
+                    &mut same2_result,
+                    &mut sequential2_result,
+                    &mut single_result,
                 );
                 t[i as usize] += 2;
                 same2.pop();
@@ -229,29 +243,26 @@ impl HandAnalyzer {
             &mut sequential2,
             &mut t,
             &mut shanten,
+            &mut same3_result,
+            &mut sequential3_result,
+            &mut same2_result,
+            &mut sequential2_result,
+            &mut single_result,
         );
 
-        // 残った牌をVecに詰める
-        let mut single: Vec<TileType> = Vec::new();
-        for i in Tile::M1..=Tile::Z7 {
-            for _ in 0..t[i as usize] {
-                single.push(i);
-            }
-        }
-
         // 最後に結合
-        same3.append(&mut independent_same3);
-        sequential3.append(&mut independent_sequential3);
-        single.append(&mut independent_single);
+        same3_result.append(&mut independent_same3);
+        sequential3_result.append(&mut independent_sequential3);
+        single_result.append(&mut independent_single);
 
         return HandAnalyzer {
             shanten,
             form: WinningHandForm::Normal,
-            same3,
-            sequential3,
-            same2,
-            sequential2,
-            single,
+            same3: same3_result,
+            sequential3: sequential3_result,
+            same2: same2_result,
+            sequential2: sequential2_result,
+            single: single_result,
         };
     }
     /// 独立した（順子になり得ない）刻子の数を返す
@@ -453,7 +464,13 @@ fn count_normal_shanten_recursively(
     same2: &mut Vec<Same2>,
     sequential2: &mut Vec<Sequential2>,
     summarized_hand: &mut TileSummarize,
+
     shanten_min: &mut i32,
+    same3_result: &mut Vec<Same3>,
+    sequential3_result: &mut Vec<Sequential3>,
+    same2_result: &mut Vec<Same2>,
+    sequential2_result: &mut Vec<Sequential2>,
+    single_result: &mut Vec<TileType>,
 ) -> i32 {
     count_same_or_sequential_3(
         idx,
@@ -465,6 +482,11 @@ fn count_normal_shanten_recursively(
         sequential2,
         summarized_hand,
         shanten_min,
+        same3_result,
+        sequential3_result,
+        same2_result,
+        sequential2_result,
+        single_result,
     );
     count_same_or_sequential_2(
         idx,
@@ -476,6 +498,11 @@ fn count_normal_shanten_recursively(
         sequential2,
         summarized_hand,
         shanten_min,
+        same3_result,
+        sequential3_result,
+        same2_result,
+        sequential2_result,
+        single_result,
     );
     let shanten = calc_normal_shanten(
         independent_same3,
@@ -487,8 +514,16 @@ fn count_normal_shanten_recursively(
     );
     if shanten < *shanten_min {
         *shanten_min = shanten;
-        //println!("shanten_min: {}",shanten_min);
-        //println!("hand: {}",Hand::from_summarized(&summarized_hand).to_short_string());
+        *same3_result = same3.clone();
+        *sequential3_result = sequential3.clone();
+        *same2_result = same2.clone();
+        *sequential2_result = sequential2.clone();
+        single_result.clear();
+        for i in Tile::M1..=Tile::Z7 {
+            for _ in 0..summarized_hand[i as usize] {
+                single_result.push(i);
+            }
+        }
     }
     return *shanten_min;
 }
@@ -506,6 +541,11 @@ fn count_same_or_sequential_3(
     sequential2: &mut Vec<Sequential2>,
     summarized_hand: &mut TileSummarize,
     shanten_min: &mut i32,
+    same3_result: &mut Vec<Same3>,
+    sequential3_result: &mut Vec<Sequential3>,
+    same2_result: &mut Vec<Same2>,
+    sequential2_result: &mut Vec<Sequential2>,
+    single_result: &mut Vec<TileType>,
 ) {
     for i in idx..=Tile::Z7 {
         // 刻子カウント
@@ -523,6 +563,11 @@ fn count_same_or_sequential_3(
                 sequential2,
                 summarized_hand,
                 shanten_min,
+                same3_result,
+                sequential3_result,
+                same2_result,
+                sequential2_result,
+                single_result,
             );
             summarized_hand[i as usize] += 3;
             same3.pop();
@@ -551,6 +596,11 @@ fn count_same_or_sequential_3(
                 sequential2,
                 summarized_hand,
                 shanten_min,
+                same3_result,
+                sequential3_result,
+                same2_result,
+                sequential2_result,
+                single_result,
             );
             summarized_hand[i as usize] += 1;
             summarized_hand[i as usize + 1] += 1;
@@ -574,6 +624,11 @@ fn count_same_or_sequential_2(
     sequential2: &mut Vec<Sequential2>,
     summarized_hand: &mut TileSummarize,
     shanten_min: &mut i32,
+    same3_result: &mut Vec<Same3>,
+    sequential3_result: &mut Vec<Sequential3>,
+    same2_result: &mut Vec<Same2>,
+    sequential2_result: &mut Vec<Sequential2>,
+    single_result: &mut Vec<TileType>,
 ) {
     for i in idx..=Tile::Z7 {
         // 対子
@@ -590,6 +645,11 @@ fn count_same_or_sequential_2(
                 sequential2,
                 summarized_hand,
                 shanten_min,
+                same3_result,
+                sequential3_result,
+                same2_result,
+                sequential2_result,
+                single_result,
             );
             summarized_hand[i as usize] += 2;
             same2.pop();
@@ -614,6 +674,11 @@ fn count_same_or_sequential_2(
                     sequential2,
                     summarized_hand,
                     shanten_min,
+                    same3_result,
+                    sequential3_result,
+                    same2_result,
+                    sequential2_result,
+                    single_result,
                 );
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 1] += 1;
@@ -637,6 +702,11 @@ fn count_same_or_sequential_2(
                     sequential2,
                     summarized_hand,
                     shanten_min,
+                    same3_result,
+                    sequential3_result,
+                    same2_result,
+                    sequential2_result,
+                    single_result,
                 );
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 2] += 1;
