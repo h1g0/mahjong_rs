@@ -7,8 +7,8 @@ use crate::tile::*;
 
 /// 与えられた手牌について、向聴数が最小になる時の面子・対子等の組み合わせを計算して格納する
 ///
-/// 通常形の場合は面子・対子等の情報もVecに格納される。
-/// 七対子・国士無双の場合は（今のところ）向聴数のみが格納される。
+/// 通常形・七対子の場合は面子・対子等の情報もVecに格納される。
+/// 国士無双の場合は（今のところ）向聴数のみが格納される。
 #[derive(Debug, Eq)]
 pub struct HandAnalyzer {
     /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
@@ -115,31 +115,41 @@ impl HandAnalyzer {
 
     /// 七対子への向聴数を計算する
     ///
-    /// Vecへの詰め込みは未実装
-    /// TODO: 詰め込みを実装する。
-    /// 七対子はVecを使用する役として断么九・混老頭・対々和・混一色・清一色と複合しうる
+    /// Vecへの詰め込みは`same2`（対子）以外は`single`（単独）に詰め込まれる。
+    /// 七対子はVecを使用する役として断么九・混老頭・混一色・清一色と複合しうる
     fn calc_seven_pairs(hand: &Hand) -> HandAnalyzer {
         let mut pair: u32 = 0;
         let mut kind: u32 = 0;
-        let t = hand.summarize_tiles();
+        let mut t = hand.summarize_tiles();
+        let mut same2: Vec<Same2> = Vec::new();
 
         for i in 0..Tile::LEN {
             if t[i] > 0 {
                 kind += 1;
                 if t[i] >= 2 {
                     pair += 1;
+                    same2.push(Same2::new(i as TileType, i as TileType));
+                    t[i] -= 2;
                 }
             }
         }
         let num_to_win: i32 = (7 - pair + if kind < 7 { 7 - kind } else { 0 }) as i32;
+        let mut single: Vec<TileType> = Vec::new();
+        for i in 0..Tile::LEN {
+            if t[i] > 0 {
+                for _ in 0..i{
+                    single.push(i as TileType);
+                }
+            }
+        }
         return HandAnalyzer {
             shanten: num_to_win - 1,
             form: WinningHandForm::SevenPairs,
             same3: Vec::new(),
             sequential3: Vec::new(),
-            same2: Vec::new(),
+            same2,
             sequential2: Vec::new(),
-            single: Vec::new(),
+            single,
         };
     }
 
