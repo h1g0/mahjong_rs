@@ -338,12 +338,32 @@ fn check_no_points_hand(hand: &HandAnalyzer, _status: &Status) -> (String, bool,
 /// 一盃口
 fn check_one_set_of_identical_sequences(
     hand: &HandAnalyzer,
-    _status: &Status,
+    status: &Status,
 ) -> (String, bool, u32) {
+    let name = "一盃口".to_string();
     if !has_won(hand) {
-        return ("一盃口".to_string(), false, 0);
+        return (name, false, 0);
     }
-    unimplemented!();
+    // 鳴いていたら一盃口は成立しない
+    if status.has_claimed_open {
+        return (name, false, 0);
+    }
+    // 順子が1つもなければ一盃口はありえない
+    if hand.sequential3.len() < 1 {
+        return (name, false, 0);
+    }
+    for i in 0..hand.sequential3.len() - 1 {
+        if let Some(v) = hand.sequential3.get(i) {
+            for j in i + 1..hand.sequential3.len() {
+                if let Some(v2) = hand.sequential3.get(j) {
+                    if *v == *v2 {
+                        return (name, true, 1);
+                    }
+                }
+            }
+        }
+    }
+    return (name, false, 0);
 }
 /// 三色同順
 fn check_three_colour_straight(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -417,8 +437,8 @@ fn check_all_simples(hand: &HandAnalyzer, status: &Status, rules: &Rules) -> (St
     }
 
     // 雀頭
-    for head in &hand.same2{
-        if head.has_1_or_9() || head.has_honor(){
+    for head in &hand.same2 {
+        if head.has_1_or_9() || head.has_honor() {
             has_1_9_honor = true;
         }
     }
@@ -593,7 +613,7 @@ mod tests {
 
     #[test]
     /// 七対子で和了った
-    fn win_by_seven_pairs() {
+    fn test_win_by_seven_pairs() {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -605,7 +625,7 @@ mod tests {
 
     #[test]
     /// 国士無双で和了った
-    fn win_by_thirteen_orphens() {
+    fn test_win_by_thirteen_orphens() {
         let test_str = "19m19p19s1234567z 1m";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -617,7 +637,7 @@ mod tests {
 
     #[test]
     /// 立直で和了った
-    fn win_by_ready_hand() {
+    fn test_win_by_ready_hand() {
         let test_str = "123m45678p999s11z 9p";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -631,7 +651,7 @@ mod tests {
 
     #[test]
     /// 断么九で和了った（喰い断あり鳴きなし）
-    fn win_by_all_simples_open_rule_close_hand() {
+    fn test_win_by_all_simples_open_rule_close_hand() {
         let test_str = "222456m777p56s88s 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -647,7 +667,7 @@ mod tests {
     }
     #[test]
     /// 么九牌ありでは断么九にならない（一）
-    fn not_win_by_all_simples_with_1() {
+    fn test_not_win_by_all_simples_with_1() {
         let test_str = "111456m777p56s88s 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -663,7 +683,7 @@ mod tests {
     }
     #[test]
     /// 么九牌ありでは断么九にならない（九）
-    fn not_win_by_all_simples_with_9() {
+    fn test_not_win_by_all_simples_with_9() {
         let test_str = "222456m777p5699s 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -679,7 +699,7 @@ mod tests {
     }
     #[test]
     /// 么九牌ありでは断么九にならない（字牌）
-    fn not_win_by_all_simples_with_honor() {
+    fn test_not_win_by_all_simples_with_honor() {
         let test_str = "222456m56s88s111z 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -695,7 +715,7 @@ mod tests {
     }
     #[test]
     /// 断么九で和了った（喰い断あり鳴きあり）
-    fn win_by_all_simples_open_rule_open_hand() {
+    fn test_win_by_all_simples_open_rule_open_hand() {
         let test_str = "234m567m234p345s3s 3s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -711,7 +731,7 @@ mod tests {
     }
     #[test]
     /// 断么九で和了った（喰い断なし鳴きなし）
-    fn win_by_all_simples_close_rule_close_hand() {
+    fn test_win_by_all_simples_close_rule_close_hand() {
         let test_str = "678m23455p33345ss 5p";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -727,7 +747,7 @@ mod tests {
     }
     #[test]
     /// 断么九で和了った（喰い断なし鳴きあり）->役無し
-    fn win_by_all_simples_close_rule_open_hand() {
+    fn test_win_by_all_simples_close_rule_open_hand() {
         let test_str = "222m456m777p56s88s 7s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -741,5 +761,32 @@ mod tests {
             ("断么九".to_string(), false, 0)
         );
     }
+    #[test]
+    /// 一盃口で和了った
+    fn test_win_by_one_set_of_identical_sequences() {
+        let test_str = "112233m456p456s7z 7z";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
 
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_one_set_of_identical_sequences(&test_analyzer, &status),
+            ("一盃口".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 一盃口で和了った（鳴きあり）→役なし
+    fn test_no_win_by_one_set_of_identical_sequences_with_openned() {
+        let test_str = "112233m456p456s7z 7z";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_one_set_of_identical_sequences(&test_analyzer, &status),
+            ("一盃口".to_string(), false, 0)
+        );
+    }
 }
