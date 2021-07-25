@@ -137,7 +137,7 @@ impl HandAnalyzer {
         let mut single: Vec<TileType> = Vec::new();
         for i in 0..Tile::LEN {
             if t[i] > 0 {
-                for _ in 0..i{
+                for _ in 0..i {
                     single.push(i as TileType);
                 }
             }
