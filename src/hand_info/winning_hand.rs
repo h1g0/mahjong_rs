@@ -348,8 +348,8 @@ fn check_one_set_of_identical_sequences(
     if status.has_claimed_open {
         return (name, false, 0);
     }
-    // 順子が1つもなければ一盃口はありえない
-    if hand.sequential3.len() < 1 {
+    // 順子が2つ以上なければ一盃口はありえない
+    if hand.sequential3.len() < 2 {
         return (name, false, 0);
     }
     for i in 0..hand.sequential3.len() - 1 {
