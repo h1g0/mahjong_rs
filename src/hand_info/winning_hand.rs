@@ -475,11 +475,29 @@ fn check_honor_tiles_players_wind(hand: &HandAnalyzer, status: &Status) -> (Stri
     }
 }
 /// 役牌（場風牌）
-fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer, status: &Status) -> (String, bool, u32) {
+    let name = "役牌（場風牌）".to_string();
     if !has_won(hand) {
-        return ("役牌（場風牌）".to_string(), false, 0);
+        return (name, false, 0);
     }
-    unimplemented!();
+    let mut has_prevailing_wind = false;
+    // 刻子
+    for same in &hand.same3 {
+        if same.has_wind(status.prevailing_wind) {
+            has_prevailing_wind = true;
+        }
+    }
+    // 雀頭
+    for head in &hand.same2 {
+        if head.has_wind(status.prevailing_wind) {
+            has_prevailing_wind = true;
+        }
+    }
+    if has_prevailing_wind{
+        (name, true, 1)
+    }else{
+        (name, false, 0)
+    }
 }
 /// 役牌（三元牌）
 fn check_honor_tiles_dragons(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -809,16 +827,34 @@ mod tests {
     }
     #[test]
     /// 自風で和了った
-    fn test_win_by_honor_tiles_prevailing_wind() {
+    fn test_win_by_honor_tiles_players_wind() {
         let test_str = "222m456m777p5s 222z 5s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
         let mut status = Status::new();
+        // 東場
+        status.prevailing_wind = Wind::East;
         // プレイヤーは南家=`2z`
         status.player_wind = Wind::South;
         assert_eq!(
             check_honor_tiles_players_wind(&test_analyzer, &status),
             ("役牌（自風牌）".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 場風で和了った
+    fn test_win_by_honor_tiles_prevailing_wind() {
+        let test_str = "222m456m777p5s 111z 5s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        // 東場
+        status.prevailing_wind = Wind::East;
+        // プレイヤーは南家=`2z`
+        status.player_wind = Wind::South;
+        assert_eq!(
+            check_honor_tiles_prevailing_wind(&test_analyzer, &status),
+            ("役牌（場風牌）".to_string(), true, 1)
         );
     }
 }

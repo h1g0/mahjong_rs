@@ -9,7 +9,7 @@ pub struct Status {
     /// 自風
     pub player_wind: Wind,
     /// 場風
-    pub prevailed_wind: Wind,
+    pub prevailing_wind: Wind,
 }
 
 impl Status {
@@ -18,7 +18,7 @@ impl Status {
             has_claimed_ready: false,
             has_claimed_open: false,
             player_wind: Wind::East,
-            prevailed_wind: Wind::East,
+            prevailing_wind: Wind::East,
         }
     }
 }
