@@ -8,6 +8,8 @@ pub trait BlockProperty {
     fn has_1_or_9(&self) -> bool;
     /// 字牌が含まれているか
     fn has_honor(&self) -> bool;
+    /// 特定の風牌が含まれているか
+    fn has_wind(&self, wind: Wind) -> bool;
     /// 萬子のブロックか
     fn is_character(&self) -> bool;
     /// 筒子のブロックか
@@ -39,6 +41,17 @@ fn has_honor(t: TileType) -> bool {
     match t {
         Tile::Z1..=Tile::Z7 => true,
         _ => false,
+    }
+}
+
+fn has_wind(t: TileType, wind: Wind) -> bool {
+    if !is_proper_tile(t) {
+        panic!("has_wind: invalid tile type");
+    }
+    if let Some(w) = Wind::is_tile_type(t) {
+        w == wind
+    } else {
+        false
     }
 }
 
@@ -95,7 +108,7 @@ fn is_same_suit(t1: TileType, t2: TileType) -> bool {
     return false;
 }
 
-#[derive(Debug, Eq,Clone, Copy)]
+#[derive(Debug, Eq, Clone, Copy)]
 /// 対子（同じ2枚）
 pub struct Same2 {
     tiles: [TileType; 2],
@@ -146,6 +159,11 @@ impl BlockProperty for Same2 {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         has_honor(self.tiles[0])
     }
+    /// 特定の風牌が含まれているか
+    fn has_wind(&self, wind: Wind) -> bool {
+        // 2枚は同じ牌なので１枚目のみ調べれば良い
+        has_wind(self.tiles[0], wind)
+    }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
@@ -163,7 +181,7 @@ impl BlockProperty for Same2 {
     }
 }
 
-#[derive(Debug, Eq,Clone, Copy)]
+#[derive(Debug, Eq, Clone, Copy)]
 /// 刻子（同じ3枚）
 pub struct Same3 {
     tiles: [TileType; 3],
@@ -215,6 +233,11 @@ impl BlockProperty for Same3 {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
         has_honor(self.tiles[0])
     }
+    /// 特定の風牌が含まれているか
+    fn has_wind(&self, wind: Wind) -> bool {
+        // 2枚は同じ牌なので１枚目のみ調べれば良い
+        has_wind(self.tiles[0], wind)
+    }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
         // 3枚は同じ牌なので１枚目のみ調べれば良い
@@ -232,7 +255,7 @@ impl BlockProperty for Same3 {
     }
 }
 
-#[derive(Debug, Eq,Clone, Copy)]
+#[derive(Debug, Eq, Clone, Copy)]
 /// 塔子（連続した牌が2枚）もしくは嵌張（順子の真ん中が抜けている2枚）
 pub struct Sequential2 {
     tiles: [TileType; 2],
@@ -291,6 +314,11 @@ impl BlockProperty for Sequential2 {
         //字牌は塔子にならない
         false
     }
+    /// 特定の風牌が含まれているか
+    fn has_wind(&self, _: Wind) -> bool {
+        // 字牌は塔子にならない
+        false
+    }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
         is_character(self.tiles[0])
@@ -305,7 +333,7 @@ impl BlockProperty for Sequential2 {
     }
 }
 
-#[derive(Debug, Eq,Clone, Copy)]
+#[derive(Debug, Eq, Clone, Copy)]
 /// 順子（連続した3枚）
 pub struct Sequential3 {
     tiles: [TileType; 3],
@@ -363,6 +391,11 @@ impl BlockProperty for Sequential3 {
     /// 字牌が含まれているか
     fn has_honor(&self) -> bool {
         //字牌は順子にならない
+        false
+    }
+    /// 特定の風牌が含まれているか
+    fn has_wind(&self, _: Wind) -> bool {
+        // 字牌は塔子にならない
         false
     }
     /// 萬子のブロックか

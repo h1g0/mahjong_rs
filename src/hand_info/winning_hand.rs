@@ -450,11 +450,29 @@ fn check_all_simples(hand: &HandAnalyzer, status: &Status, rules: &Rules) -> (St
     return (name, true, 1);
 }
 /// 役牌（自風牌）
-fn check_honor_tiles_players_wind(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_honor_tiles_players_wind(hand: &HandAnalyzer, status: &Status) -> (String, bool, u32) {
+    let name = "役牌（自風牌）".to_string();
     if !has_won(hand) {
-        return ("役牌（自風牌）".to_string(), false, 0);
+        return (name, false, 0);
     }
-    unimplemented!();
+    let mut has_player_wind = false;
+    // 刻子
+    for same in &hand.same3 {
+        if same.has_wind(status.player_wind) {
+            has_player_wind = true;
+        }
+    }
+    // 雀頭
+    for head in &hand.same2 {
+        if head.has_wind(status.player_wind) {
+            has_player_wind = true;
+        }
+    }
+    if has_player_wind{
+        (name, true, 1)
+    }else{
+        (name, false, 0)
+    }
 }
 /// 役牌（場風牌）
 fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -609,7 +627,7 @@ fn check_hand_of_earth(hand: &HandAnalyzer, _status: &Status) -> (String, bool, 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::hand::*;
+    use crate::{hand::*, tile::*};
 
     #[test]
     /// 七対子で和了った
@@ -787,6 +805,20 @@ mod tests {
         assert_eq!(
             check_one_set_of_identical_sequences(&test_analyzer, &status),
             ("一盃口".to_string(), false, 0)
+        );
+    }
+    #[test]
+    /// 自風で和了った
+    fn test_win_by_honor_tiles_prevailing_wind() {
+        let test_str = "222m456m777p5s 222z 5s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        // プレイヤーは南家=`2z`
+        status.player_wind = Wind::South;
+        assert_eq!(
+            check_honor_tiles_players_wind(&test_analyzer, &status),
+            ("役牌（自風牌）".to_string(), true, 1)
         );
     }
 }

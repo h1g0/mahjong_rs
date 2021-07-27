@@ -218,22 +218,30 @@ impl Tile {
 }
 
 /// 自風／場風
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Wind {
+    /// 東家（`Tile::Z1`）
     East = Tile::Z1 as isize,
+    /// 南家（`Tile::Z2`）
     South = Tile::Z2 as isize,
+    /// 西家（`Tile::Z3`）
     West = Tile::Z3 as isize,
+    /// 北家（`Tile::Z4`）
     North = Tile::Z4 as isize,
 }
 
 impl Wind {
-    pub fn is_tile(tile: &Tile) -> Option<Wind> {
-        match tile.get() {
+    pub fn is_tile_type(tile_type: TileType) -> Option<Wind> {
+        match tile_type {
             Tile::Z1 => Some(Wind::East),
             Tile::Z2 => Some(Wind::South),
             Tile::Z3 => Some(Wind::West),
             Tile::Z4 => Some(Wind::North),
             _ => None,
         }
+    }
+    pub fn is_tile(tile: &Tile) -> Option<Wind> {
+        Wind::is_tile_type(tile.get())
     }
 }
 
