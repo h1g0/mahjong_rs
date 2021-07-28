@@ -1,6 +1,7 @@
 use crate::board::Rules;
 use crate::hand_info::hand_analyzer::HandAnalyzer;
 use crate::hand_info::status::Status;
+use crate::tile::Dragon;
 
 /// 役を判定する
 use std::collections::HashMap;
@@ -21,7 +22,7 @@ pub enum WinningHandForm {
 /// 役の名前
 ///
 /// <https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku>による英語名
-pub const HAND_NAME: [&'static str; 40] = [
+pub const HAND_NAME: [&'static str; 42] = [
     // 立直
     "ready_hand",
     // 七対子
@@ -64,8 +65,12 @@ pub const HAND_NAME: [&'static str; 40] = [
     "honor_tiles_players_wind",
     // 役牌（場風牌）
     "honor_tiles_prevailing_wind",
-    // 役牌（三元牌）
-    "honor_tiles_dragons",
+    // 役牌（白）
+    "honor_tiles_white_dragon",
+    // 役牌（發）
+    "honor_tiles_green_dragon",
+    // 役牌（中）
+    "honor_tiles_red_dragon",
     // 混全帯么九
     "terminal_or_honor_in_each_set",
     // 純全帯么九
@@ -180,10 +185,20 @@ pub fn check<'a, 'b>(
         "honor_tiles_prevailing_wind",
         check_honor_tiles_prevailing_wind(hand, status),
     );
-    // 役牌（三元牌）
+    // 役牌（白）
     result.insert(
-        "honor_tiles_dragons",
-        check_honor_tiles_dragons(hand, status),
+        "honor_tiles_white_dragon",
+        check_honor_tiles_white_dragon(hand),
+    );
+    // 役牌（發）
+    result.insert(
+        "honor_tiles_green_dragon",
+        check_honor_tiles_green_dragon(hand),
+    );
+    // 役牌（中）
+    result.insert(
+        "honor_tiles_red_dragons",
+        check_honor_tiles_red_dragon(hand),
     );
     // 混全帯么九
     result.insert(
@@ -462,15 +477,10 @@ fn check_honor_tiles_players_wind(hand: &HandAnalyzer, status: &Status) -> (Stri
             has_player_wind = true;
         }
     }
-    // 雀頭
-    for head in &hand.same2 {
-        if head.has_wind(status.player_wind) {
-            has_player_wind = true;
-        }
-    }
-    if has_player_wind{
+
+    if has_player_wind {
         (name, true, 1)
-    }else{
+    } else {
         (name, false, 0)
     }
 }
@@ -487,24 +497,60 @@ fn check_honor_tiles_prevailing_wind(hand: &HandAnalyzer, status: &Status) -> (S
             has_prevailing_wind = true;
         }
     }
-    // 雀頭
-    for head in &hand.same2 {
-        if head.has_wind(status.prevailing_wind) {
-            has_prevailing_wind = true;
-        }
-    }
-    if has_prevailing_wind{
+
+    if has_prevailing_wind {
         (name, true, 1)
-    }else{
+    } else {
         (name, false, 0)
     }
 }
-/// 役牌（三元牌）
-fn check_honor_tiles_dragons(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+
+/// 面子に三元牌の順子が含まれるか調べる
+fn check_honor_tiles_dragons(hand: &HandAnalyzer, dragon: Dragon) -> bool {
     if !has_won(hand) {
-        return ("役牌（三元牌）".to_string(), false, 0);
+        return false;
     }
-    unimplemented!();
+    let mut has_dragon = false;
+    // 刻子
+    for same in &hand.same3 {
+        if same.has_dragon(dragon) {
+            has_dragon = true;
+        }
+    }
+
+    if has_dragon {
+        true
+    } else {
+        false
+    }
+}
+
+/// 役牌（白）
+fn check_honor_tiles_white_dragon(hand: &HandAnalyzer) -> (String, bool, u32) {
+    let name = "役牌（白）".to_string();
+    if check_honor_tiles_dragons(hand, Dragon::White) {
+        (name, true, 1)
+    } else {
+        (name, false, 0)
+    }
+}
+/// 役牌（發）
+fn check_honor_tiles_green_dragon(hand: &HandAnalyzer) -> (String, bool, u32) {
+    let name = "役牌（發）".to_string();
+    if check_honor_tiles_dragons(hand, Dragon::Green) {
+        (name, true, 1)
+    } else {
+        (name, false, 0)
+    }
+}
+/// 役牌（中）
+fn check_honor_tiles_red_dragon(hand: &HandAnalyzer) -> (String, bool, u32) {
+    let name = "役牌（中）".to_string();
+    if check_honor_tiles_dragons(hand, Dragon::Red) {
+        (name, true, 1)
+    } else {
+        (name, false, 0)
+    }
 }
 /// 混全帯么九
 fn check_terminal_or_honor_in_each_set(
@@ -855,6 +901,54 @@ mod tests {
         assert_eq!(
             check_honor_tiles_prevailing_wind(&test_analyzer, &status),
             ("役牌（場風牌）".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 三元牌（白）で和了った
+    fn test_win_by_honor_tiles_white_dragon() {
+        let test_str = "222m456m777p5s 555z 5s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        // 東場
+        status.prevailing_wind = Wind::East;
+        // プレイヤーは南家=`2z`
+        status.player_wind = Wind::South;
+        assert_eq!(
+            check_honor_tiles_white_dragon(&test_analyzer),
+            ("役牌（白）".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 三元牌（發）で和了った
+    fn test_win_by_honor_tiles_green_dragon() {
+        let test_str = "222m456m777p5s 666z 5s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        // 東場
+        status.prevailing_wind = Wind::East;
+        // プレイヤーは南家=`2z`
+        status.player_wind = Wind::South;
+        assert_eq!(
+            check_honor_tiles_green_dragon(&test_analyzer),
+            ("役牌（發）".to_string(), true, 1)
+        );
+    }
+    #[test]
+    /// 三元牌（中）で和了った
+    fn test_win_by_honor_tiles_red_dragon() {
+        let test_str = "222m456m777p5s 777z 5s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        // 東場
+        status.prevailing_wind = Wind::East;
+        // プレイヤーは南家=`2z`
+        status.player_wind = Wind::South;
+        assert_eq!(
+            check_honor_tiles_red_dragon(&test_analyzer),
+            ("役牌（中）".to_string(), true, 1)
         );
     }
 }

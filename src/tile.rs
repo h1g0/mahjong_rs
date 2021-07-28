@@ -245,6 +245,31 @@ impl Wind {
     }
 }
 
+/// 三元牌
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum Dragon {
+    /// 白（`Tile::Z5`）
+    White = Tile::Z5 as isize,
+    /// 發（`Tile::Z6`）
+    Green = Tile::Z6 as isize,
+    /// 中（`Tile::Z7`）
+    Red = Tile::Z7 as isize,
+}
+
+impl Dragon {
+    pub fn is_tile_type(tile_type: TileType) -> Option<Dragon> {
+        match tile_type {
+            Tile::Z5 => Some(Dragon::White),
+            Tile::Z6 => Some(Dragon::Green),
+            Tile::Z7 => Some(Dragon::Red),
+            _ => None,
+        }
+    }
+    pub fn is_tile(tile: &Tile) -> Option<Dragon> {
+        Dragon::is_tile_type(tile.get())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     //use super::*;

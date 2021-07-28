@@ -10,6 +10,8 @@ pub trait BlockProperty {
     fn has_honor(&self) -> bool;
     /// 特定の風牌が含まれているか
     fn has_wind(&self, wind: Wind) -> bool;
+    /// 特定の三元牌が含まれているか
+    fn has_dragon(&self, dragon: Dragon) -> bool;
     /// 萬子のブロックか
     fn is_character(&self) -> bool;
     /// 筒子のブロックか
@@ -50,6 +52,17 @@ fn has_wind(t: TileType, wind: Wind) -> bool {
     }
     if let Some(w) = Wind::is_tile_type(t) {
         w == wind
+    } else {
+        false
+    }
+}
+
+fn has_dragon(t: TileType, dragon: Dragon) -> bool {
+    if !is_proper_tile(t) {
+        panic!("has_dragon: invalid tile type");
+    }
+    if let Some(d) = Dragon::is_tile_type(t) {
+        d == dragon
     } else {
         false
     }
@@ -164,6 +177,11 @@ impl BlockProperty for Same2 {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
         has_wind(self.tiles[0], wind)
     }
+    /// 特定の三元牌が含まれているか
+    fn has_dragon(&self, dragon: Dragon) -> bool {
+        // 2枚は同じ牌なので１枚目のみ調べれば良い
+        has_dragon(self.tiles[0], dragon)
+    }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
         // 2枚は同じ牌なので１枚目のみ調べれば良い
@@ -235,8 +253,13 @@ impl BlockProperty for Same3 {
     }
     /// 特定の風牌が含まれているか
     fn has_wind(&self, wind: Wind) -> bool {
-        // 2枚は同じ牌なので１枚目のみ調べれば良い
+        // 3枚は同じ牌なので１枚目のみ調べれば良い
         has_wind(self.tiles[0], wind)
+    }
+    /// 特定の三元牌が含まれているか
+    fn has_dragon(&self, dragon: Dragon) -> bool {
+        // 3枚は同じ牌なので１枚目のみ調べれば良い
+        has_dragon(self.tiles[0], dragon)
     }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
@@ -319,6 +342,11 @@ impl BlockProperty for Sequential2 {
         // 字牌は塔子にならない
         false
     }
+    /// 特定の三元牌が含まれているか
+    fn has_dragon(&self, _: Dragon) -> bool {
+        // 字牌は塔子にならない
+        false
+    }
     /// 萬子のブロックか
     fn is_character(&self) -> bool {
         is_character(self.tiles[0])
@@ -395,7 +423,12 @@ impl BlockProperty for Sequential3 {
     }
     /// 特定の風牌が含まれているか
     fn has_wind(&self, _: Wind) -> bool {
-        // 字牌は塔子にならない
+        // 字牌は順子にならない
+        false
+    }
+    /// 特定の三元牌が含まれているか
+    fn has_dragon(&self, _: Dragon) -> bool {
+        // 字牌は順子にならない
         false
     }
     /// 萬子のブロックか
