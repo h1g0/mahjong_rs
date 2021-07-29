@@ -109,6 +109,9 @@ pub const HAND_NAME: [&'static str; 42] = [
     "hand_of_earth",
 ];
 
+/// 食い下がりした場合に役名に付く接尾辞
+const OPEN_SUFFIX: &str = "（鳴）";
+
 pub fn check<'a, 'b>(
     hand: &'a HandAnalyzer,
     status: &'b Status,
@@ -555,12 +558,48 @@ fn check_honor_tiles_red_dragon(hand: &HandAnalyzer) -> (String, bool, u32) {
 /// 混全帯么九
 fn check_terminal_or_honor_in_each_set(
     hand: &HandAnalyzer,
-    _status: &Status,
+    status: &Status,
 ) -> (String, bool, u32) {
+    let name = "混全帯么九".to_string();
     if !has_won(hand) {
-        return ("混全帯么九".to_string(), false, 0);
+        return (name, false, 0);
     }
-    unimplemented!();
+
+    // 混老頭とは複合しないため、必ず順子が含まれる
+    if hand.sequential3.len() == 0 {
+        return (name, false, 0);
+    }
+
+    let mut no_1_9_honor = false;
+    // 面子
+
+    // 刻子
+    for same in &hand.same3 {
+        if !same.has_1_or_9() && !same.has_honor() {
+            no_1_9_honor = true;
+        }
+    }
+    // 順子
+    for seq in &hand.sequential3 {
+        if !seq.has_1_or_9() {
+            no_1_9_honor = true;
+        }
+    }
+
+    // 雀頭
+    for head in &hand.same2 {
+        if !head.has_1_or_9() && !head.has_honor() {
+            no_1_9_honor = true;
+        }
+    }
+
+    if no_1_9_honor {
+        return (name, false, 0);
+    }
+    if status.has_claimed_open {
+        return (name + OPEN_SUFFIX, true, 1);
+    }
+    return (name, true, 2);
 }
 /// 純全帯么九
 fn check_terminal_in_each_set(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -949,6 +988,35 @@ mod tests {
         assert_eq!(
             check_honor_tiles_red_dragon(&test_analyzer),
             ("役牌（中）".to_string(), true, 1)
+        );
+    }
+
+    #[test]
+    /// 混全帯么九で和了った
+    fn test_terminal_or_honor_in_each_set(){
+        let test_str = "123999m111p79s44z 8s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status),
+            ("混全帯么九".to_string(), true, 2)
+        );
+    }
+    #[test]
+    /// 混全帯么九で和了った（食い下がり1翻）
+    fn test_terminal_or_honor_in_each_set_open(){
+        let test_str = "123m111p79s44z 789m 8s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status),
+            ("混全帯么九（鳴）".to_string(), true, 1)
         );
     }
 }
