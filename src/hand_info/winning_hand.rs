@@ -295,63 +295,63 @@ fn check_nagashi_mangan(hand: &HandAnalyzer, _status: &Status) -> (String, bool,
     if !has_won(hand) {
         return ("流し満貫".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 門前清自摸和
 fn check_self_pick(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("門前清自摸和".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 一発
 fn check_one_shot(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("一発".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 海底撈月
 fn check_last_tile_from_the_wall(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("海底撈月".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 河底撈魚
 fn check_last_discard(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("河底撈魚".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 嶺上開花
 fn check_dead_wall_draw(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("嶺上開花".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 搶槓
 fn check_robbing_a_quad(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("搶槓".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// ダブル立直
 fn check_double_ready(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("ダブル立直".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 平和
 fn check_no_points_hand(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("平和".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 一盃口
 fn check_one_set_of_identical_sequences(
@@ -388,14 +388,14 @@ fn check_three_colour_straight(hand: &HandAnalyzer, _status: &Status) -> (String
     if !has_won(hand) {
         return ("三色同順".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 一気通貫
 fn check_straight(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("一気通貫".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 二盃口
 fn check_two_sets_of_identical_sequences(
@@ -405,28 +405,28 @@ fn check_two_sets_of_identical_sequences(
     if !has_won(hand) {
         return ("二盃口".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 対々和
 fn check_all_triplet_hand(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("対々和".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 三暗刻
 fn check_three_closed_triplets(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("三暗刻".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 三色同刻
 fn check_three_colour_triplets(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("三色同刻".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 断么九
 fn check_all_simples(hand: &HandAnalyzer, status: &Status, rules: &Rules) -> (String, bool, u32) {
@@ -606,35 +606,35 @@ fn check_terminal_in_each_set(hand: &HandAnalyzer, _status: &Status) -> (String,
     if !has_won(hand) {
         return ("純全帯么九".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 混老頭
 fn check_all_terminals_and_honors(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("混老頭".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 小三元
 fn check_little_three_dragons(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("小三元".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 混一色
 fn check_half_flush(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("混一色".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 清一色
 fn check_flush(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("清一色".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 国士無双
 fn check_thirteen_orphans(hand: &HandAnalyzer) -> (String, bool, u32) {
@@ -653,77 +653,77 @@ fn check_four_concealed_triplets(hand: &HandAnalyzer, _status: &Status) -> (Stri
     if !has_won(hand) {
         return ("四暗刻".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 大三元
 fn check_big_three_dragons(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("大三元".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 小四喜
 fn check_little_four_winds(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("小四喜".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 大四喜
 fn check_big_four_winds(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("大四喜".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 字一色
 fn check_all_honors(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("字一色".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 清老頭
 fn check_all_terminals(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("清老頭".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 緑一色
 fn check_all_green(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("緑一色".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 九蓮宝燈
 fn check_nine_gates(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("九蓮宝燈".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 四槓子
 fn check_four_kans(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("四槓子".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 天和
 fn check_heavenly_hand(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("天和".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 /// 地和
 fn check_hand_of_earth(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
     if !has_won(hand) {
         return ("地和".to_string(), false, 0);
     }
-    unimplemented!();
+    todo!();
 }
 
 /// ユニットテスト
@@ -993,7 +993,7 @@ mod tests {
 
     #[test]
     /// 混全帯么九で和了った
-    fn test_terminal_or_honor_in_each_set(){
+    fn test_terminal_or_honor_in_each_set() {
         let test_str = "123999m111p79s44z 8s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
@@ -1007,7 +1007,7 @@ mod tests {
     }
     #[test]
     /// 混全帯么九で和了った（食い下がり1翻）
-    fn test_terminal_or_honor_in_each_set_open(){
+    fn test_terminal_or_honor_in_each_set_open() {
         let test_str = "123m111p79s44z 789m 8s";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test);
