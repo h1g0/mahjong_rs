@@ -165,7 +165,7 @@ pub fn check<'a, 'b>(
         check_two_sets_of_identical_sequences(hand, status),
     );
     // 対々和
-    result.insert("all_triplet_hand", check_all_triplet_hand(hand, status));
+    result.insert("all_triplet_hand", check_all_triplet_hand(hand));
     // 三暗刻
     result.insert(
         "three_closed_triplets",
@@ -408,11 +408,15 @@ fn check_two_sets_of_identical_sequences(
     todo!();
 }
 /// 対々和
-fn check_all_triplet_hand(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_all_triplet_hand(hand: &HandAnalyzer) -> (String, bool, u32) {
+    let name = "対々和".to_string();
     if !has_won(hand) {
-        return ("対々和".to_string(), false, 0);
+        return (name, false, 0);
     }
-    todo!();
+    if hand.same3.len() == 4 && hand.same2.len() == 1 {
+        return (name, true, 2);
+    }
+    return (name, false, 0);
 }
 /// 三暗刻
 fn check_three_closed_triplets(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
@@ -1017,6 +1021,18 @@ mod tests {
         assert_eq!(
             check_terminal_or_honor_in_each_set(&test_analyzer, &status),
             ("混全帯么九（鳴）".to_string(), true, 1)
+        );
+    }
+
+    #[test]
+    /// 対々和で和了った
+    fn test_all_triplet_hand() {
+        let test_str = "777m333p22z 555m 999s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        assert_eq!(
+            check_all_triplet_hand(&test_analyzer),
+            ("対々和".to_string(), true, 2)
         );
     }
 }
