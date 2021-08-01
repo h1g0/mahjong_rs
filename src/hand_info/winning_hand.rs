@@ -1,7 +1,7 @@
 use crate::board::Rules;
 use crate::hand_info::hand_analyzer::HandAnalyzer;
 use crate::hand_info::status::Status;
-use crate::tile::Dragon;
+use crate::tile::{Dragon, Tile};
 
 /// 役を判定する
 use std::collections::HashMap;
@@ -391,11 +391,38 @@ fn check_three_colour_straight(hand: &HandAnalyzer, _status: &Status) -> (String
     todo!();
 }
 /// 一気通貫
-fn check_straight(hand: &HandAnalyzer, _status: &Status) -> (String, bool, u32) {
+fn check_straight(hand: &HandAnalyzer, status: &Status) -> (String, bool, u32) {
+    let name = "一気通貫".to_string();
     if !has_won(hand) {
-        return ("一気通貫".to_string(), false, 0);
+        return (name, false, 0);
     }
-    todo!();
+    let mut m = [false; 3];
+    let mut p = [false; 3];
+    let mut s = [false; 3];
+
+    for v in &hand.sequential3 {
+        match v.get() {
+            [Tile::M1, Tile::M2, Tile::M3] => m[0] = true,
+            [Tile::M4, Tile::M5, Tile::M6] => m[1] = true,
+            [Tile::M7, Tile::M8, Tile::M9] => m[2] = true,
+            [Tile::P1, Tile::P2, Tile::P3] => p[0] = true,
+            [Tile::P4, Tile::P5, Tile::P6] => p[1] = true,
+            [Tile::P7, Tile::P8, Tile::P9] => p[2] = true,
+            [Tile::S1, Tile::S2, Tile::S3] => s[0] = true,
+            [Tile::S4, Tile::S5, Tile::S6] => s[1] = true,
+            [Tile::S7, Tile::S8, Tile::S9] => s[2] = true,
+            _ => {}
+        }
+    }
+
+    if (m[0] && m[1] && m[2]) || (p[0] && p[1] && p[2]) || (s[0] && s[1] && s[2]) {
+        if status.has_claimed_open {
+            return (name + OPEN_SUFFIX, true, 1);
+        } else {
+            return (name, true, 2);
+        }
+    }
+    return (name, false, 0);
 }
 /// 二盃口
 fn check_two_sets_of_identical_sequences(
@@ -1033,6 +1060,36 @@ mod tests {
         assert_eq!(
             check_all_triplet_hand(&test_analyzer),
             ("対々和".to_string(), true, 2)
+        );
+    }
+
+    #[test]
+    /// 一気通貫で和了った
+    fn test_straight(){
+        let test_str = "123456789m78p22z 9p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_straight(&test_analyzer, &status),
+            ("一気通貫".to_string(), true, 2)
+        );
+    }
+
+    #[test]
+    /// 一気通貫で和了った（食い下がり1翻）
+    fn test_straight_open(){
+        let test_str = "123m1p123s 456s 789s 1p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_straight(&test_analyzer, &status),
+            ("一気通貫（鳴）".to_string(), true, 1)
         );
     }
 }
