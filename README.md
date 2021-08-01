@@ -6,9 +6,12 @@ Implementation for Japanese Mahjong in Rust.
 
 Currently,
 
-- Implementation of calculating Shanten number is completed.
-- Now implementing [Yaku](https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku) (winning hand) evaluation.
+- [x] Implementation of calculating Shanten number (Number showing the minimum number of tile changes to win.) is completed.
+- [ ] Now implementing [Yaku](https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku) (winning hand) evaluation.
 
 麻雀のRustでの実装
 
-現在はシャンテン数の計算が実装完了、役の判定を実装中。
+現在は
+
+- [x] シャンテン数の計算を実装完了
+- [ ] 役の判定を実装中
