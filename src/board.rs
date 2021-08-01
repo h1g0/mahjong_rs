@@ -1,5 +1,5 @@
 /// ルールを設定する
-pub struct Rules{
+pub struct Rules {
     /// 喰いタンありかなしか（デフォルトはあり）
     pub openned_all_simples: bool,
 }
@@ -10,5 +10,4 @@ impl Rules {
             openned_all_simples: true,
         }
     }
-
 }
