@@ -403,7 +403,7 @@ fn check_three_colour_straight(hand: &HandAnalyzer, _status: &Status) -> (&'stat
 /// 一気通貫
 fn check_straight(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool, u32) {
     let name: &'static str = "一気通貫";
-    let name_open:&'static str = "一気通貫（鳴）";
+    let name_open: &'static str = "一気通貫（鳴）";
 
     if !has_won(hand) {
         return (name, false, 0);
