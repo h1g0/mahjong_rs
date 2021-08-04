@@ -628,12 +628,19 @@ fn check_terminal_or_honor_in_each_set(
     }
 
     let mut no_1_9_honor = false;
+    // 純全帯么九とは複合しないため、必ず三元牌が含まれる
+    let mut has_honor = false;
+
     // 面子
 
     // 刻子
     for same in &hand.same3 {
         if !same.has_1_or_9() && !same.has_honor() {
             no_1_9_honor = true;
+        }
+
+        if same.has_honor() {
+            has_honor = true;
         }
     }
     // 順子
@@ -648,9 +655,12 @@ fn check_terminal_or_honor_in_each_set(
         if !head.has_1_or_9() && !head.has_honor() {
             no_1_9_honor = true;
         }
+        if head.has_honor() {
+            has_honor = true;
+        }
     }
 
-    if no_1_9_honor {
+    if no_1_9_honor|| !has_honor {
         return (name, false, 0);
     }
     if status.has_claimed_open {
@@ -659,12 +669,47 @@ fn check_terminal_or_honor_in_each_set(
     return (name, true, 2);
 }
 /// 純全帯么九
-fn check_terminal_in_each_set(hand: &HandAnalyzer, _status: &Status) -> (&'static str, bool, u32) {
+fn check_terminal_in_each_set(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool, u32) {
     let name = "純全帯么九";
+    let name_open = "純全帯么九（鳴）";
     if !has_won(hand) {
         return (name, false, 0);
     }
-    todo!();
+    // 清老頭とは複合しないため、必ず順子が含まれる
+    if hand.sequential3.len() == 0 {
+        return (name, false, 0);
+    }
+
+    let mut no_1_9 = false;
+    // 面子
+
+    // 刻子
+    for same in &hand.same3 {
+        if !same.has_1_or_9(){
+            no_1_9 = true;
+        }
+    }
+    // 順子
+    for seq in &hand.sequential3 {
+        if !seq.has_1_or_9() {
+            no_1_9 = true;
+        }
+    }
+
+    // 雀頭
+    for head in &hand.same2 {
+        if !head.has_1_or_9() {
+            no_1_9 = true;
+        }
+    }
+
+    if no_1_9 {
+        return (name, false, 0);
+    }
+    if status.has_claimed_open {
+        return (name_open, true, 2);
+    }
+    return (name, true, 3);
 }
 /// 混老頭
 fn check_all_terminals_and_honors(
@@ -1092,7 +1137,71 @@ mod tests {
             ("混全帯么九（鳴）", true, 1)
         );
     }
+    #[test]
+    /// 純全帯么九で和了った
+    fn test_terminal_in_each_set() {
+        let test_str = "123999m11p11179s 8s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
 
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_terminal_in_each_set(&test_analyzer, &status),
+            ("純全帯么九", true, 3)
+        );
+    }
+    #[test]
+    /// 純全帯么九で和了った（食い下がり2翻）
+    fn test_terminal_in_each_set_open() {
+        let test_str = "123m111p7999s 789m 8s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_terminal_in_each_set(&test_analyzer, &status),
+            ("純全帯么九（鳴）", true, 2)
+        );
+    }
+
+    #[test]
+    /// 混全帯么九は純全帯么九と複合しない
+    fn test_terminal_or_honor_in_each_set_does_not_combined_with_terminal_in_each_set() {
+        let test_str = "111789m111p99s11z 1z";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status).1,
+            true
+        );
+        assert_eq!(
+            check_terminal_in_each_set(&test_analyzer, &status).1,
+            false
+        );
+    }
+    #[test]
+    /// 純全帯么九は混全帯么九と複合しない
+    fn test_terminal_in_each_set_does_not_combined_with_terminal_or_honor_in_each_set() {
+        let test_str = "111789m111p1199s 9s";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+
+        status.has_claimed_open = false;
+        assert_eq!(
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status).1,
+            false
+        );
+        assert_eq!(
+            check_terminal_in_each_set(&test_analyzer, &status).1,
+            true
+        );
+    }
     #[test]
     /// 対々和で和了った
     fn test_all_triplet_hand() {
