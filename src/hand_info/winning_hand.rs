@@ -660,7 +660,7 @@ fn check_terminal_or_honor_in_each_set(
         }
     }
 
-    if no_1_9_honor|| !has_honor {
+    if no_1_9_honor || !has_honor {
         return (name, false, 0);
     }
     if status.has_claimed_open {
@@ -685,7 +685,7 @@ fn check_terminal_in_each_set(hand: &HandAnalyzer, status: &Status) -> (&'static
 
     // 刻子
     for same in &hand.same3 {
-        if !same.has_1_or_9(){
+        if !same.has_1_or_9() {
             no_1_9 = true;
         }
     }
@@ -1179,10 +1179,7 @@ mod tests {
             check_terminal_or_honor_in_each_set(&test_analyzer, &status).1,
             true
         );
-        assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status).1,
-            false
-        );
+        assert_eq!(check_terminal_in_each_set(&test_analyzer, &status).1, false);
     }
     #[test]
     /// 純全帯么九は混全帯么九と複合しない
@@ -1197,10 +1194,7 @@ mod tests {
             check_terminal_or_honor_in_each_set(&test_analyzer, &status).1,
             false
         );
-        assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status).1,
-            true
-        );
+        assert_eq!(check_terminal_in_each_set(&test_analyzer, &status).1, true);
     }
     #[test]
     /// 対々和で和了った
