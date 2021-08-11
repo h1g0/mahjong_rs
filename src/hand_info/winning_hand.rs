@@ -114,7 +114,7 @@ pub fn check<'a, 'b>(
     status: &'b Status,
     rules: &'b Rules,
 ) -> HashMap<&'a str, (&'static str, bool, u32)> {
-    let mut result = HashMap::new();
+    let mut result = HashMap::with_capacity(HAND_NAME.len());
     for i in 0..HAND_NAME.len() {
         result.insert(HAND_NAME[i], ("unknown", false, 0));
     }
