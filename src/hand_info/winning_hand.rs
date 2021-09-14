@@ -301,7 +301,7 @@ fn check_self_pick(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool,
     if !has_won(hand) {
         return (name, false, 0);
     }
-    if !status.has_claimed_open && status.is_self_picked{
+    if !status.has_claimed_open && status.is_self_picked {
         return (name, true, 1);
     }
     return (name, false, 0);
@@ -898,7 +898,24 @@ mod tests {
         let test_analyzer = HandAnalyzer::new(&test);
         let mut status = Status::new();
         status.is_self_picked = true;
-        assert_eq!(check_self_pick(&test_analyzer, &status), ("門前清自摸和", true, 1));
+        assert_eq!(
+            check_self_pick(&test_analyzer, &status),
+            ("門前清自摸和", true, 1)
+        );
+    }
+    #[test]
+    /// 鳴いている場合は門前清自摸和は付かない
+    fn test_not_win_by_self_pick_with_claiming_open() {
+        let test_str = "123m45678p999s11z 9p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        status.is_self_picked = true;
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_self_pick(&test_analyzer, &status),
+            ("門前清自摸和", false, 0)
+        );
     }
     #[test]
     /// 断么九で和了った（喰い断あり鳴きなし）
