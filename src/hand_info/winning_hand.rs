@@ -120,137 +120,137 @@ pub fn check<'a, 'b>(
     }
 
     // 立直
-    result.insert(HAND_NAME[0], check_ready_hand(hand, status));
+    result.insert("ready_hand", check_ready_hand(hand, status));
     // 七対子
-    result.insert(HAND_NAME[1], check_seven_pairs(hand));
+    result.insert("seven_pairs", check_seven_pairs(hand));
     // 流し満貫
-    result.insert(HAND_NAME[2], check_nagashi_mangan(hand, status));
+    result.insert("nagashi_mangan", check_nagashi_mangan(hand, status));
     // 門前清自摸和
-    result.insert(HAND_NAME[3], check_self_pick(hand, status));
+    result.insert("self_pick", check_self_pick(hand, status));
     // 一発
-    result.insert(HAND_NAME[4], check_one_shot(hand, status));
+    result.insert("one_shot", check_one_shot(hand, status));
     // 海底撈月
     result.insert(
-        HAND_NAME[5],
+        "last_tile_from_the_wall",
         check_last_tile_from_the_wall(hand, status),
     );
     // 河底撈魚
-    result.insert(HAND_NAME[6], check_last_discard(hand, status));
+    result.insert("last_discard", check_last_discard(hand, status));
     // 嶺上開花
-    result.insert(HAND_NAME[7], check_dead_wall_draw(hand, status));
+    result.insert("dead_wall_draw", check_dead_wall_draw(hand, status));
     // 搶槓
-    result.insert(HAND_NAME[8], check_robbing_a_quad(hand, status));
+    result.insert("robbing_a_quad", check_robbing_a_quad(hand, status));
     // ダブル立直
-    result.insert(HAND_NAME[9], check_double_ready(hand, status));
+    result.insert("double_ready", check_double_ready(hand, status));
     // 平和
-    result.insert(HAND_NAME[10], check_no_points_hand(hand, status));
+    result.insert("no_points_hand", check_no_points_hand(hand, status));
     // 一盃口
     result.insert(
-        HAND_NAME[11],
+        "one_set_of_identical_sequences",
         check_one_set_of_identical_sequences(hand, status),
     );
     // 三色同順
     result.insert(
-        HAND_NAME[12],
+        "three_colour_straight",
         check_three_colour_straight(hand, status),
     );
     // 一気通貫
-    result.insert(HAND_NAME[13], check_straight(hand, status));
+    result.insert("straight", check_straight(hand, status));
     // 二盃口
     result.insert(
-        HAND_NAME[14],
+        "two_sets_of_identical_sequences",
         check_two_sets_of_identical_sequences(hand, status),
     );
     // 対々和
-    result.insert(HAND_NAME[15], check_all_triplet_hand(hand));
+    result.insert("all_triplet_hand", check_all_triplet_hand(hand));
     // 三暗刻
     result.insert(
-        HAND_NAME[16],
+        "three_closed_triplets",
         check_three_closed_triplets(hand, status),
     );
     // 三色同刻
     result.insert(
-        HAND_NAME[17],
+        "three_colour_triplets",
         check_three_colour_triplets(hand, status),
     );
     // 断么九
-    result.insert(HAND_NAME[18], check_all_simples(hand, status, rules));
+    result.insert("all_simples", check_all_simples(hand, status, rules));
     // 役牌（自風牌）
     result.insert(
-        HAND_NAME[19],
+        "honor_tiles_players_wind",
         check_honor_tiles_players_wind(hand, status),
     );
     // 役牌（場風牌）
     result.insert(
-        HAND_NAME[20],
+        "honor_tiles_prevailing_wind",
         check_honor_tiles_prevailing_wind(hand, status),
     );
     // 役牌（白）
     result.insert(
-        HAND_NAME[21],
+        "honor_tiles_white_dragon",
         check_honor_tiles_white_dragon(hand),
     );
     // 役牌（發）
     result.insert(
-        HAND_NAME[22],
+        "honor_tiles_green_dragon",
         check_honor_tiles_green_dragon(hand),
     );
     // 役牌（中）
     result.insert(
-        HAND_NAME[23],
+        "honor_tiles_red_dragons",
         check_honor_tiles_red_dragon(hand),
     );
     // 混全帯么九
     result.insert(
-        HAND_NAME[24],
+        "terminal_or_honor_in_each_set",
         check_terminal_or_honor_in_each_set(hand, status),
     );
     // 純全帯么九
     result.insert(
-        HAND_NAME[25],
+        "terminal_in_each_set",
         check_terminal_in_each_set(hand, status),
     );
     // 混老頭
     result.insert(
-        HAND_NAME[26],
+        "all_terminals_and_honors",
         check_all_terminals_and_honors(hand, status),
     );
     // 小三元
     result.insert(
-        HAND_NAME[27],
+        "little_three_dragons",
         check_little_three_dragons(hand, status),
     );
     // 混一色
-    result.insert(HAND_NAME[28], check_half_flush(hand, status));
+    result.insert("half_flush", check_half_flush(hand, status));
     // 清一色
-    result.insert(HAND_NAME[29], check_flush(hand, status));
+    result.insert("flush", check_flush(hand, status));
     // 国士無双
-    result.insert(HAND_NAME[30], check_thirteen_orphans(hand));
+    result.insert("thirteen_orphans", check_thirteen_orphans(hand));
     // 四暗刻
     result.insert(
-        HAND_NAME[31],
+        "four_concealed_triplets",
         check_four_concealed_triplets(hand, status),
     );
     // 大三元
-    result.insert(HAND_NAME[32], check_big_three_dragons(hand, status));
+    result.insert("big_three_dragons", check_big_three_dragons(hand, status));
     // 小四喜
-    result.insert(HAND_NAME[33], check_little_four_winds(hand, status));
+    result.insert("little_four_winds", check_little_four_winds(hand, status));
     // 大四喜
-    result.insert(HAND_NAME[34], check_big_four_winds(hand, status));
+    result.insert("big_four_winds", check_big_four_winds(hand, status));
     // 字一色
-    result.insert(HAND_NAME[35], check_all_honors(hand, status));
+    result.insert("all_honors", check_all_honors(hand, status));
     // 清老頭
-    result.insert(HAND_NAME[36], check_all_terminals(hand, status));
+    result.insert("all_terminals", check_all_terminals(hand, status));
     // 緑一色
-    result.insert(HAND_NAME[37], check_all_green(hand, status));
+    result.insert("all_green", check_all_green(hand, status));
     // 九蓮宝燈
-    result.insert(HAND_NAME[38], check_nine_gates(hand, status));
+    result.insert("nine_gates", check_nine_gates(hand, status));
     // 四槓子
-    result.insert(HAND_NAME[39], check_four_kans(hand, status));
+    result.insert("four_kans", check_four_kans(hand, status));
     // 天和
-    result.insert(HAND_NAME[40], check_heavenly_hand(hand, status));
+    result.insert("heavenly_hand", check_heavenly_hand(hand, status));
     // 地和
-    result.insert(HAND_NAME[41], check_hand_of_earth(hand, status));
+    result.insert("hand_of_earth", check_hand_of_earth(hand, status));
 
     return result;
 }
