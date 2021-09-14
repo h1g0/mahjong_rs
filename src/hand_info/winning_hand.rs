@@ -296,12 +296,15 @@ fn check_nagashi_mangan(hand: &HandAnalyzer, _status: &Status) -> (&'static str,
     todo!();
 }
 /// 門前清自摸和
-fn check_self_pick(hand: &HandAnalyzer, _status: &Status) -> (&'static str, bool, u32) {
+fn check_self_pick(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool, u32) {
     let name = "門前清自摸和";
     if !has_won(hand) {
         return (name, false, 0);
     }
-    todo!();
+    if !status.has_claimed_open && status.is_self_picked{
+        return (name, true, 1);
+    }
+    return (name, false, 0);
 }
 /// 一発
 fn check_one_shot(hand: &HandAnalyzer, _status: &Status) -> (&'static str, bool, u32) {
@@ -887,7 +890,16 @@ mod tests {
         status.has_claimed_ready = true;
         assert_eq!(check_ready_hand(&test_analyzer, &status), ("立直", true, 1));
     }
-
+    #[test]
+    /// 門前清自摸和で和了った
+    fn test_win_by_self_pick() {
+        let test_str = "123m45678p999s11z 9p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        status.is_self_picked = true;
+        assert_eq!(check_self_pick(&test_analyzer, &status), ("門前清自摸和", true, 1));
+    }
     #[test]
     /// 断么九で和了った（喰い断あり鳴きなし）
     fn test_win_by_all_simples_open_rule_close_hand() {

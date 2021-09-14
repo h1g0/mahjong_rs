@@ -6,6 +6,10 @@ pub struct Status {
     pub has_claimed_ready: bool,
     /// 鳴いたか
     pub has_claimed_open: bool,
+    /// 自摸しているか
+    pub is_self_picked: bool,
+    /// 一発が有効な間立てるフラグ
+    pub is_one_shot: bool,
     /// 自風
     pub player_wind: Wind,
     /// 場風
@@ -17,6 +21,8 @@ impl Status {
         Status {
             has_claimed_ready: false,
             has_claimed_open: false,
+            is_self_picked: false,
+            is_one_shot: false,
             player_wind: Wind::East,
             prevailing_wind: Wind::East,
         }
