@@ -307,12 +307,18 @@ fn check_self_pick(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool,
     return (name, false, 0);
 }
 /// 一発
-fn check_one_shot(hand: &HandAnalyzer, _status: &Status) -> (&'static str, bool, u32) {
+fn check_one_shot(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool, u32) {
     let name = "一発";
     if !has_won(hand) {
         return (name, false, 0);
     }
-    todo!();
+    if !check_ready_hand(hand,status).1 {
+        return (name, false, 0);
+    }
+    if status.is_one_shot {
+        return (name, true, 1);
+    }
+    return (name, false, 0);
 }
 /// 海底撈月
 fn check_last_tile_from_the_wall(
@@ -889,6 +895,17 @@ mod tests {
         let mut status = Status::new();
         status.has_claimed_ready = true;
         assert_eq!(check_ready_hand(&test_analyzer, &status), ("立直", true, 1));
+    }
+    #[test]
+    /// 立直に一発が付いた
+    fn test_win_by_one_shot() {
+        let test_str = "123m45678p999s11z 9p";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test);
+        let mut status = Status::new();
+        status.has_claimed_ready = true;
+        status.is_one_shot = true;
+        assert_eq!(check_one_shot(&test_analyzer, &status), ("一発", true, 1));
     }
     #[test]
     /// 門前清自摸和で和了った
