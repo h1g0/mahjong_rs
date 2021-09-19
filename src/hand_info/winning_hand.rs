@@ -312,7 +312,7 @@ fn check_one_shot(hand: &HandAnalyzer, status: &Status) -> (&'static str, bool, 
     if !has_won(hand) {
         return (name, false, 0);
     }
-    if !check_ready_hand(hand,status).1 {
+    if !check_ready_hand(hand, status).1 {
         return (name, false, 0);
     }
     if status.is_one_shot {
