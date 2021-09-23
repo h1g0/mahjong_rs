@@ -8,3 +8,6 @@ edition = "2018"
 
 [dependencies]
 rand = "0.8.1"
+strum = "0.21"
+strum_macros = "0.21"
+ 
