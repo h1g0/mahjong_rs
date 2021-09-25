@@ -112,6 +112,14 @@ pub enum WinningHandKind {
     HandOfEarth,
 }
 
+/// 役の名前をどの言語にするかの列挙型
+pub enum WinningHandNameLang {
+    /// 英語
+    En,
+    /// 日本語
+    Ja,
+}
+
 pub fn check<'a, 'b>(
     hand: &'a HandAnalyzer,
     status: &'b Status,
@@ -127,7 +135,10 @@ pub fn check<'a, 'b>(
     // 七対子
     result.insert(WinningHandKind::SevenPairs, check_seven_pairs(hand));
     // 流し満貫
-    result.insert(WinningHandKind::NagashiMangan, check_nagashi_mangan(hand, status));
+    result.insert(
+        WinningHandKind::NagashiMangan,
+        check_nagashi_mangan(hand, status),
+    );
     // 門前清自摸和
     result.insert(WinningHandKind::SelfPick, check_self_pick(hand, status));
     // 一発
@@ -138,15 +149,30 @@ pub fn check<'a, 'b>(
         check_last_tile_from_the_wall(hand, status),
     );
     // 河底撈魚
-    result.insert(WinningHandKind::LastDiscard, check_last_discard(hand, status));
+    result.insert(
+        WinningHandKind::LastDiscard,
+        check_last_discard(hand, status),
+    );
     // 嶺上開花
-    result.insert(WinningHandKind::DeadWallDraw, check_dead_wall_draw(hand, status));
+    result.insert(
+        WinningHandKind::DeadWallDraw,
+        check_dead_wall_draw(hand, status),
+    );
     // 搶槓
-    result.insert(WinningHandKind::RobbingAQuad, check_robbing_a_quad(hand, status));
+    result.insert(
+        WinningHandKind::RobbingAQuad,
+        check_robbing_a_quad(hand, status),
+    );
     // ダブル立直
-    result.insert(WinningHandKind::DoubleReady, check_double_ready(hand, status));
+    result.insert(
+        WinningHandKind::DoubleReady,
+        check_double_ready(hand, status),
+    );
     // 平和
-    result.insert(WinningHandKind::NoPointsHand, check_no_points_hand(hand, status));
+    result.insert(
+        WinningHandKind::NoPointsHand,
+        check_no_points_hand(hand, status),
+    );
     // 一盃口
     result.insert(
         WinningHandKind::OneSetOfIdenticalSequences,
@@ -165,7 +191,10 @@ pub fn check<'a, 'b>(
         check_two_sets_of_identical_sequences(hand, status),
     );
     // 対々和
-    result.insert(WinningHandKind::AllTripletHand, check_all_triplet_hand(hand));
+    result.insert(
+        WinningHandKind::AllTripletHand,
+        check_all_triplet_hand(hand),
+    );
     // 三暗刻
     result.insert(
         WinningHandKind::ThreeClosedTriplets,
@@ -177,7 +206,10 @@ pub fn check<'a, 'b>(
         check_three_colour_triplets(hand, status),
     );
     // 断么九
-    result.insert(WinningHandKind::AllSimples, check_all_simples(hand, status, rules));
+    result.insert(
+        WinningHandKind::AllSimples,
+        check_all_simples(hand, status, rules),
+    );
     // 役牌（自風牌）
     result.insert(
         WinningHandKind::HonorTilesPlayersWind,
@@ -228,7 +260,10 @@ pub fn check<'a, 'b>(
     // 清一色
     result.insert(WinningHandKind::Flush, check_flush(hand, status));
     // 国士無双
-    result.insert(WinningHandKind::ThirteenOrphans, check_thirteen_orphans(hand));
+    result.insert(
+        WinningHandKind::ThirteenOrphans,
+        check_thirteen_orphans(hand),
+    );
     // 四暗刻
     result.insert(
         WinningHandKind::FourConcealedTriplets,
@@ -245,11 +280,17 @@ pub fn check<'a, 'b>(
         check_little_four_winds(hand, status),
     );
     // 大四喜
-    result.insert(WinningHandKind::BigFourWinds, check_big_four_winds(hand, status));
+    result.insert(
+        WinningHandKind::BigFourWinds,
+        check_big_four_winds(hand, status),
+    );
     // 字一色
     result.insert(WinningHandKind::AllHonors, check_all_honors(hand, status));
     // 清老頭
-    result.insert(WinningHandKind::AllTerminals, check_all_terminals(hand, status));
+    result.insert(
+        WinningHandKind::AllTerminals,
+        check_all_terminals(hand, status),
+    );
     // 緑一色
     result.insert(WinningHandKind::AllGreen, check_all_green(hand, status));
     // 九蓮宝燈
@@ -257,13 +298,157 @@ pub fn check<'a, 'b>(
     // 四槓子
     result.insert(WinningHandKind::FourKans, check_four_kans(hand, status));
     // 天和
-    result.insert(WinningHandKind::HeavenlyHand, check_heavenly_hand(hand, status));
+    result.insert(
+        WinningHandKind::HeavenlyHand,
+        check_heavenly_hand(hand, status),
+    );
     // 地和
-    result.insert(WinningHandKind::HandOfEarth, check_hand_of_earth(hand, status));
+    result.insert(
+        WinningHandKind::HandOfEarth,
+        check_hand_of_earth(hand, status),
+    );
 
     return result;
 }
 
+pub fn get_winning_hand_name(
+    hand_kind: WinningHandKind,
+    has_openned: bool,
+    lang: WinningHandNameLang,
+) -> &'static str {
+    match lang {
+        WinningHandNameLang::En => get_winning_hand_name_en(hand_kind, has_openned),
+        WinningHandNameLang::Ja => get_winning_hand_name_ja(hand_kind, has_openned),
+    }
+}
+
+fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'static str {
+    match hand_kind {
+        // 立直
+        WinningHandKind::ReadyHand => "Ready Hand",
+        // 七対子
+        WinningHandKind::SevenPairs => "Seven Pairs",
+        // 流し満貫
+        WinningHandKind::NagashiMangan => "Nagashi Mangan",
+        // 門前清自摸和
+        WinningHandKind::SelfPick => "Self Pick",
+        // 一発
+        WinningHandKind::OneShot => "One Shot",
+        // 海底撈月
+        WinningHandKind::LastTileFromTheWall => "Last Tile From The Wall",
+        // 河底撈魚
+        WinningHandKind::LastDiscard => "Last Discard",
+        // 嶺上開花
+        WinningHandKind::DeadWallDraw => "Dead Wall Draw",
+        // 搶槓
+        WinningHandKind::RobbingAQuad => "Robbing A Quad",
+        // ダブル立直
+        WinningHandKind::DoubleReady => "Double Ready",
+        // 平和
+        WinningHandKind::NoPointsHand => "No Points Hand",
+        // 一盃口
+        WinningHandKind::OneSetOfIdenticalSequences => "One Set Of Identical Sequences",
+        // 三色同順
+        WinningHandKind::ThreeColourStraight => {
+            if has_openned {
+                "Three Colour Straight (Open)"
+            } else {
+                "Three Colour Straight"
+            }
+        }
+        // 一気通貫
+        WinningHandKind::Straight => {
+            if has_openned {
+                "Straight (Open)"
+            } else {
+                "Straight"
+            }
+        }
+        // 二盃口
+        WinningHandKind::TwoSetsOfIdenticalSequences => "Two Sets Of Identical Sequences",
+        // 対々和
+        WinningHandKind::AllTripletHand => "All Triplet Hand",
+        // 三暗刻
+        WinningHandKind::ThreeClosedTriplets => "Three Closed Triplets",
+        // 三色同刻
+        WinningHandKind::ThreeColourTriplets => "Three Colour Triplets",
+        // 断么九
+        WinningHandKind::AllSimples => "All Simples",
+        // 役牌（自風牌）
+        WinningHandKind::HonorTilesPlayersWind => "Honor Tiles (Players Wind)",
+        // 役牌（場風牌）
+        WinningHandKind::HonorTilesPrevailingWind => "Honor Tiles (Prevailing Wind)",
+        // 役牌（白）
+        WinningHandKind::HonorTilesWhiteDragon => "Honor Tiles (White Dragon)",
+        // 役牌（發）
+        WinningHandKind::HonorTilesGreenDragon => "Honor Tiles (Green Dragon)",
+        // 役牌（中）
+        WinningHandKind::HonorTilesRedDragon => "Honor Tiles (Red Dragon)",
+        // 混全帯么九
+        WinningHandKind::TerminalOrHonorInEachSet => {
+            if has_openned {
+                "Terminal Or Honor In Each Set (Open)"
+            } else {
+                "Terminal Or Honor In Each Set"
+            }
+        }
+        // 純全帯么九
+        WinningHandKind::TerminalInEachSet => {
+            if has_openned {
+                "Terminal In Each Set (Open)"
+            } else {
+                "Terminal In Each Set"
+            }
+        }
+        // 混老頭
+        WinningHandKind::AllTerminalsAndHonors => "All Terminals And Honors",
+        // 小三元
+        WinningHandKind::LittleThreeDragons => "Little Three Dragons",
+        // 混一色
+        WinningHandKind::HalfFlush => {
+            if has_openned {
+                "Half Flush (Open)"
+            } else {
+                "Half Flush"
+            }
+        }
+        // 清一色
+        WinningHandKind::Flush => {
+            if has_openned {
+                "Flush (Open)"
+            } else {
+                "Flush"
+            }
+        }
+        // 国士無双
+        WinningHandKind::ThirteenOrphans => "Thirteen Orphans",
+        // 四暗刻
+        WinningHandKind::FourConcealedTriplets => "Four Concealed Triplets",
+        // 大三元
+        WinningHandKind::BigThreeDragons => "Big Three Dragons",
+        // 小四喜
+        WinningHandKind::LittleFourWinds => "Little Four Winds",
+        // 大四喜
+        WinningHandKind::BigFourWinds => "Big Four Winds",
+        // 字一色
+        WinningHandKind::AllHonors => "All Honors",
+        // 清老頭
+        WinningHandKind::AllTerminals => "All Terminals",
+        // 緑一色
+        WinningHandKind::AllGreen => "All Green",
+        // 九蓮宝燈
+        WinningHandKind::NineGates => "Nine Gates",
+        // 四槓子
+        WinningHandKind::FourKans => "Four Kans",
+        // 天和
+        WinningHandKind::HeavenlyHand => "Heavenly Hand",
+        // 地和
+        WinningHandKind::HandOfEarth => "Hand Of Earth",
+    }
+}
+fn get_winning_hand_name_ja(_hand_kind: WinningHandKind, _has_openned: bool) -> &'static str {
+    return "Unknown";
+}
 /// 和了しているか否か
 fn has_won(hand: &HandAnalyzer) -> bool {
     hand.shanten == -1
