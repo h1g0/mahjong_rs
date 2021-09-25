@@ -25,7 +25,7 @@ pub enum WinningHandForm {
 ///
 /// <https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku>による英語名
 #[derive(Debug, PartialEq, Eq, Hash, EnumCountMacro, EnumIter)]
-pub enum HandKind {
+pub enum WinningHandKind {
     /// 立直
     ReadyHand,
     /// 七対子
@@ -116,150 +116,150 @@ pub fn check<'a, 'b>(
     hand: &'a HandAnalyzer,
     status: &'b Status,
     rules: &'b Rules,
-) -> HashMap<HandKind, (&'static str, bool, u32)> {
-    let mut result = HashMap::with_capacity(HandKind::COUNT);
-    for hand_kind in HandKind::iter() {
+) -> HashMap<WinningHandKind, (&'static str, bool, u32)> {
+    let mut result = HashMap::with_capacity(WinningHandKind::COUNT);
+    for hand_kind in WinningHandKind::iter() {
         result.insert(hand_kind, ("Unknown", false, 0));
     }
 
     // 立直
-    result.insert(HandKind::ReadyHand, check_ready_hand(hand, status));
+    result.insert(WinningHandKind::ReadyHand, check_ready_hand(hand, status));
     // 七対子
-    result.insert(HandKind::SevenPairs, check_seven_pairs(hand));
+    result.insert(WinningHandKind::SevenPairs, check_seven_pairs(hand));
     // 流し満貫
-    result.insert(HandKind::NagashiMangan, check_nagashi_mangan(hand, status));
+    result.insert(WinningHandKind::NagashiMangan, check_nagashi_mangan(hand, status));
     // 門前清自摸和
-    result.insert(HandKind::SelfPick, check_self_pick(hand, status));
+    result.insert(WinningHandKind::SelfPick, check_self_pick(hand, status));
     // 一発
-    result.insert(HandKind::OneShot, check_one_shot(hand, status));
+    result.insert(WinningHandKind::OneShot, check_one_shot(hand, status));
     // 海底撈月
     result.insert(
-        HandKind::LastTileFromTheWall,
+        WinningHandKind::LastTileFromTheWall,
         check_last_tile_from_the_wall(hand, status),
     );
     // 河底撈魚
-    result.insert(HandKind::LastDiscard, check_last_discard(hand, status));
+    result.insert(WinningHandKind::LastDiscard, check_last_discard(hand, status));
     // 嶺上開花
-    result.insert(HandKind::DeadWallDraw, check_dead_wall_draw(hand, status));
+    result.insert(WinningHandKind::DeadWallDraw, check_dead_wall_draw(hand, status));
     // 搶槓
-    result.insert(HandKind::RobbingAQuad, check_robbing_a_quad(hand, status));
+    result.insert(WinningHandKind::RobbingAQuad, check_robbing_a_quad(hand, status));
     // ダブル立直
-    result.insert(HandKind::DoubleReady, check_double_ready(hand, status));
+    result.insert(WinningHandKind::DoubleReady, check_double_ready(hand, status));
     // 平和
-    result.insert(HandKind::NoPointsHand, check_no_points_hand(hand, status));
+    result.insert(WinningHandKind::NoPointsHand, check_no_points_hand(hand, status));
     // 一盃口
     result.insert(
-        HandKind::OneSetOfIdenticalSequences,
+        WinningHandKind::OneSetOfIdenticalSequences,
         check_one_set_of_identical_sequences(hand, status),
     );
     // 三色同順
     result.insert(
-        HandKind::ThreeColourStraight,
+        WinningHandKind::ThreeColourStraight,
         check_three_colour_straight(hand, status),
     );
     // 一気通貫
-    result.insert(HandKind::Straight, check_straight(hand, status));
+    result.insert(WinningHandKind::Straight, check_straight(hand, status));
     // 二盃口
     result.insert(
-        HandKind::TwoSetsOfIdenticalSequences,
+        WinningHandKind::TwoSetsOfIdenticalSequences,
         check_two_sets_of_identical_sequences(hand, status),
     );
     // 対々和
-    result.insert(HandKind::AllTripletHand, check_all_triplet_hand(hand));
+    result.insert(WinningHandKind::AllTripletHand, check_all_triplet_hand(hand));
     // 三暗刻
     result.insert(
-        HandKind::ThreeClosedTriplets,
+        WinningHandKind::ThreeClosedTriplets,
         check_three_closed_triplets(hand, status),
     );
     // 三色同刻
     result.insert(
-        HandKind::ThreeColourTriplets,
+        WinningHandKind::ThreeColourTriplets,
         check_three_colour_triplets(hand, status),
     );
     // 断么九
-    result.insert(HandKind::AllSimples, check_all_simples(hand, status, rules));
+    result.insert(WinningHandKind::AllSimples, check_all_simples(hand, status, rules));
     // 役牌（自風牌）
     result.insert(
-        HandKind::HonorTilesPlayersWind,
+        WinningHandKind::HonorTilesPlayersWind,
         check_honor_tiles_players_wind(hand, status),
     );
     // 役牌（場風牌）
     result.insert(
-        HandKind::HonorTilesPrevailingWind,
+        WinningHandKind::HonorTilesPrevailingWind,
         check_honor_tiles_prevailing_wind(hand, status),
     );
     // 役牌（白）
     result.insert(
-        HandKind::HonorTilesWhiteDragon,
+        WinningHandKind::HonorTilesWhiteDragon,
         check_honor_tiles_white_dragon(hand),
     );
     // 役牌（發）
     result.insert(
-        HandKind::HonorTilesGreenDragon,
+        WinningHandKind::HonorTilesGreenDragon,
         check_honor_tiles_green_dragon(hand),
     );
     // 役牌（中）
     result.insert(
-        HandKind::HonorTilesRedDragon,
+        WinningHandKind::HonorTilesRedDragon,
         check_honor_tiles_red_dragon(hand),
     );
     // 混全帯么九
     result.insert(
-        HandKind::TerminalOrHonorInEachSet,
+        WinningHandKind::TerminalOrHonorInEachSet,
         check_terminal_or_honor_in_each_set(hand, status),
     );
     result.insert(
-        HandKind::TerminalInEachSet,
+        WinningHandKind::TerminalInEachSet,
         check_terminal_in_each_set(hand, status),
     );
     // 混老頭
     result.insert(
-        HandKind::AllTerminalsAndHonors,
+        WinningHandKind::AllTerminalsAndHonors,
         check_all_terminals_and_honors(hand, status),
     );
     // 小三元
     result.insert(
-        HandKind::LittleThreeDragons,
+        WinningHandKind::LittleThreeDragons,
         check_little_three_dragons(hand, status),
         // 純全帯么九
     );
     // 混一色
-    result.insert(HandKind::HalfFlush, check_half_flush(hand, status));
+    result.insert(WinningHandKind::HalfFlush, check_half_flush(hand, status));
     // 清一色
-    result.insert(HandKind::Flush, check_flush(hand, status));
+    result.insert(WinningHandKind::Flush, check_flush(hand, status));
     // 国士無双
-    result.insert(HandKind::ThirteenOrphans, check_thirteen_orphans(hand));
+    result.insert(WinningHandKind::ThirteenOrphans, check_thirteen_orphans(hand));
     // 四暗刻
     result.insert(
-        HandKind::FourConcealedTriplets,
+        WinningHandKind::FourConcealedTriplets,
         check_four_concealed_triplets(hand, status),
     );
     // 大三元
     result.insert(
-        HandKind::BigThreeDragons,
+        WinningHandKind::BigThreeDragons,
         check_big_three_dragons(hand, status),
     );
     // 小四喜
     result.insert(
-        HandKind::LittleFourWinds,
+        WinningHandKind::LittleFourWinds,
         check_little_four_winds(hand, status),
     );
     // 大四喜
-    result.insert(HandKind::BigFourWinds, check_big_four_winds(hand, status));
+    result.insert(WinningHandKind::BigFourWinds, check_big_four_winds(hand, status));
     // 字一色
-    result.insert(HandKind::AllHonors, check_all_honors(hand, status));
+    result.insert(WinningHandKind::AllHonors, check_all_honors(hand, status));
     // 清老頭
-    result.insert(HandKind::AllTerminals, check_all_terminals(hand, status));
+    result.insert(WinningHandKind::AllTerminals, check_all_terminals(hand, status));
     // 緑一色
-    result.insert(HandKind::AllGreen, check_all_green(hand, status));
+    result.insert(WinningHandKind::AllGreen, check_all_green(hand, status));
     // 九蓮宝燈
-    result.insert(HandKind::NineGates, check_nine_gates(hand, status));
+    result.insert(WinningHandKind::NineGates, check_nine_gates(hand, status));
     // 四槓子
-    result.insert(HandKind::FourKans, check_four_kans(hand, status));
+    result.insert(WinningHandKind::FourKans, check_four_kans(hand, status));
     // 天和
-    result.insert(HandKind::HeavenlyHand, check_heavenly_hand(hand, status));
+    result.insert(WinningHandKind::HeavenlyHand, check_heavenly_hand(hand, status));
     // 地和
-    result.insert(HandKind::HandOfEarth, check_hand_of_earth(hand, status));
+    result.insert(WinningHandKind::HandOfEarth, check_hand_of_earth(hand, status));
 
     return result;
 }
