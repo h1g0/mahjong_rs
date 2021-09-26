@@ -1,3 +1,5 @@
+/// ルールなどの設定
+pub mod settings;
 /// 牌
 pub mod tile;
 /// 手牌
