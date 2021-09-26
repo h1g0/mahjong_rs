@@ -2,7 +2,7 @@ use std::cmp::*;
 
 use crate::hand::Hand;
 use crate::hand_info::block::*;
-use crate::hand_info::winning_hand::WinningHandForm;
+use crate::winning_hand::checker::WinningHandForm;
 use crate::tile::*;
 
 /// 与えられた手牌について、向聴数が最小になる時の面子・対子等の組み合わせを計算して格納する
@@ -51,7 +51,7 @@ impl HandAnalyzer {
     /// ```
     /// use mahjong_rs::hand::*;
     /// use mahjong_rs::hand_info::hand_analyzer::*;
-    /// use mahjong_rs::hand_info::winning_hand::*;
+    /// use mahjong_rs::winning_hand::checker::*;
     ///
     /// // 通常型で和了る
     /// let nm_test_str = "222333444666s6z 6z";
@@ -79,7 +79,7 @@ impl HandAnalyzer {
     /// ```
     /// use mahjong_rs::hand::*;
     /// use mahjong_rs::hand_info::hand_analyzer::*;
-    /// use mahjong_rs::hand_info::winning_hand::*;
+    /// use mahjong_rs::winning_hand::checker::*;
     ///
     /// // 国士無双で和了る
     /// let to_test_str = "19m19p19s1234567z 1m";

@@ -1,15 +1,15 @@
-use crate::hand_info::hand_analyzer::HandAnalyzer;
-use crate::hand_info::status::Status;
-use crate::hand_info::winning_hand_name::get_winning_hand_name;
-use crate::settings::*;
-use crate::tile::{Dragon, Tile};
-use strum::{EnumCount, IntoEnumIterator};
-use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
-
 /// 役を判定する
 use std::collections::HashMap;
 
-use super::block::BlockProperty;
+use strum::{EnumCount, IntoEnumIterator};
+use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
+
+use crate::hand_info::block::BlockProperty;
+use crate::hand_info::hand_analyzer::HandAnalyzer;
+use crate::hand_info::status::Status;
+use crate::winning_hand::name::get_winning_hand_name;
+use crate::settings::*;
+use crate::tile::{Dragon, Tile};
 
 /// 和了時の手牌の形態
 #[derive(Debug, Eq, PartialEq)]

@@ -1,5 +1,5 @@
 use crate::settings::Lang;
-use crate::hand_info::winning_hand::*;
+use crate::winning_hand::checker::*;
 
 pub fn get_winning_hand_name(
     hand_kind: WinningHandKind,
