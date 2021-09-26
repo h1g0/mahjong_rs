@@ -446,8 +446,129 @@ fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::HandOfEarth => "Hand Of Earth",
     }
 }
-fn get_winning_hand_name_ja(_hand_kind: WinningHandKind, _has_openned: bool) -> &'static str {
-    return "Unknown";
+fn get_winning_hand_name_ja(hand_kind: WinningHandKind, has_openned: bool) -> &'static str {
+    match hand_kind {
+        // 立直
+        WinningHandKind::ReadyHand => "立直",
+        // 七対子
+        WinningHandKind::SevenPairs => "七対子",
+        // 流し満貫
+        WinningHandKind::NagashiMangan => "流し満貫",
+        // 門前清自摸和
+        WinningHandKind::SelfPick => "門前清自摸和",
+        // 一発
+        WinningHandKind::OneShot => "一発",
+        // 海底撈月
+        WinningHandKind::LastTileFromTheWall => "海底撈月",
+        // 河底撈魚
+        WinningHandKind::LastDiscard => "河底撈魚",
+        // 嶺上開花
+        WinningHandKind::DeadWallDraw => "嶺上開花",
+        // 搶槓
+        WinningHandKind::RobbingAQuad => "搶槓",
+        // ダブル立直
+        WinningHandKind::DoubleReady => "ダブル立直",
+        // 平和
+        WinningHandKind::NoPointsHand => "平和",
+        // 一盃口
+        WinningHandKind::OneSetOfIdenticalSequences => "一盃口",
+        // 三色同順
+        WinningHandKind::ThreeColourStraight => {
+            if has_openned {
+                "三色同順（鳴）"
+            } else {
+                "三色同順"
+            }
+        }
+        // 一気通貫
+        WinningHandKind::Straight => {
+            if has_openned {
+                "一気通貫（鳴）"
+            } else {
+                "一気通貫"
+            }
+        }
+        // 二盃口
+        WinningHandKind::TwoSetsOfIdenticalSequences => "二盃口",
+        // 対々和
+        WinningHandKind::AllTripletHand => "対々和",
+        // 三暗刻
+        WinningHandKind::ThreeClosedTriplets => "三暗刻",
+        // 三色同刻
+        WinningHandKind::ThreeColourTriplets => "三色同刻",
+        // 断么九
+        WinningHandKind::AllSimples => "断么九",
+        // 役牌（自風牌）
+        WinningHandKind::HonorTilesPlayersWind => "役牌（自風牌）",
+        // 役牌（場風牌）
+        WinningHandKind::HonorTilesPrevailingWind => "役牌（場風牌）",
+        // 役牌（白）
+        WinningHandKind::HonorTilesWhiteDragon => "役牌（白）",
+        // 役牌（發）
+        WinningHandKind::HonorTilesGreenDragon => "役牌（發）",
+        // 役牌（中）
+        WinningHandKind::HonorTilesRedDragon => "役牌（中）",
+        // 混全帯么九
+        WinningHandKind::TerminalOrHonorInEachSet => {
+            if has_openned {
+                "混全帯么九（鳴）"
+            } else {
+                "混全帯么九"
+            }
+        }
+        // 純全帯么九
+        WinningHandKind::TerminalInEachSet => {
+            if has_openned {
+                "純全帯么九（鳴）"
+            } else {
+                "純全帯么九"
+            }
+        }
+        // 混老頭
+        WinningHandKind::AllTerminalsAndHonors => "混老頭",
+        // 小三元
+        WinningHandKind::LittleThreeDragons => "小三元",
+        // 混一色
+        WinningHandKind::HalfFlush => {
+            if has_openned {
+                "混一色（鳴）"
+            } else {
+                "混一色"
+            }
+        }
+        // 清一色
+        WinningHandKind::Flush => {
+            if has_openned {
+                "清一色（鳴）"
+            } else {
+                "清一色"
+            }
+        }
+        // 国士無双
+        WinningHandKind::ThirteenOrphans => "国士無双",
+        // 四暗刻
+        WinningHandKind::FourConcealedTriplets => "四暗刻",
+        // 大三元
+        WinningHandKind::BigThreeDragons => "大三元",
+        // 小四喜
+        WinningHandKind::LittleFourWinds => "小四喜",
+        // 大四喜
+        WinningHandKind::BigFourWinds => "大四喜",
+        // 字一色
+        WinningHandKind::AllHonors => "字一色",
+        // 清老頭
+        WinningHandKind::AllTerminals => "清老頭",
+        // 緑一色
+        WinningHandKind::AllGreen => "緑一色",
+        // 九蓮宝燈
+        WinningHandKind::NineGates => "九蓮宝燈",
+        // 四槓子
+        WinningHandKind::FourKans => "四槓子",
+        // 天和
+        WinningHandKind::HeavenlyHand => "天和",
+        // 地和
+        WinningHandKind::HandOfEarth => "地和",
+    }
 }
 /// 和了しているか否か
 fn has_won(hand: &HandAnalyzer) -> bool {
