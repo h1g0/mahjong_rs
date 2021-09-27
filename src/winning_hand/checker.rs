@@ -2,116 +2,13 @@
 use std::collections::HashMap;
 
 use strum::{EnumCount, IntoEnumIterator};
-use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
 
 use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::HandAnalyzer;
 use crate::hand_info::status::Status;
-use crate::winning_hand::name::get_winning_hand_name;
+use crate::winning_hand::name::*;
 use crate::settings::*;
 use crate::tile::{Dragon, Tile};
-
-/// 和了時の手牌の形態
-#[derive(Debug, Eq, PartialEq)]
-pub enum WinningHandForm {
-    /// 七対子
-    SevenPairs,
-    /// 国士無双
-    ThirteenOrphens,
-    /// 通常（4面子1雀頭）の手牌
-    Normal,
-}
-
-/// 役を表す列挙型
-///
-/// <https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku>による英語名
-#[derive(Debug, PartialEq, Eq, Hash, EnumCountMacro, EnumIter)]
-pub enum WinningHandKind {
-    /// 立直
-    ReadyHand,
-    /// 七対子
-    SevenPairs,
-    /// 流し満貫
-    NagashiMangan,
-    /// 門前清自摸和
-    SelfPick,
-    /// 一発
-    OneShot,
-    /// 海底撈月
-    LastTileFromTheWall,
-    /// 河底撈魚
-    LastDiscard,
-    /// 嶺上開花
-    DeadWallDraw,
-    /// 搶槓
-    RobbingAQuad,
-    /// ダブル立直
-    DoubleReady,
-    /// 平和
-    NoPointsHand,
-    /// 一盃口
-    OneSetOfIdenticalSequences,
-    /// 三色同順
-    ThreeColourStraight,
-    /// 一気通貫
-    Straight,
-    /// 二盃口
-    TwoSetsOfIdenticalSequences,
-    /// 対々和
-    AllTripletHand,
-    /// 三暗刻
-    ThreeClosedTriplets,
-    /// 三色同刻
-    ThreeColourTriplets,
-    /// 断么九
-    AllSimples,
-    /// 役牌（自風牌）
-    HonorTilesPlayersWind,
-    /// 役牌（場風牌）
-    HonorTilesPrevailingWind,
-    /// 役牌（白）
-    HonorTilesWhiteDragon,
-    /// 役牌（發）
-    HonorTilesGreenDragon,
-    /// 役牌（中）
-    HonorTilesRedDragon,
-    /// 混全帯么九
-    TerminalOrHonorInEachSet,
-    /// 純全帯么九
-    TerminalInEachSet,
-    /// 混老頭
-    AllTerminalsAndHonors,
-    /// 小三元
-    LittleThreeDragons,
-    /// 混一色
-    HalfFlush,
-    /// 清一色
-    Flush,
-    /// 国士無双
-    ThirteenOrphans,
-    /// 四暗刻
-    FourConcealedTriplets,
-    /// 大三元
-    BigThreeDragons,
-    /// 小四喜
-    LittleFourWinds,
-    /// 大四喜
-    BigFourWinds,
-    /// 字一色
-    AllHonors,
-    /// 清老頭
-    AllTerminals,
-    /// 緑一色
-    AllGreen,
-    /// 九蓮宝燈
-    NineGates,
-    /// 四槓子
-    FourKans,
-    /// 天和
-    HeavenlyHand,
-    /// 地和
-    HandOfEarth,
-}
 
 pub fn check(
     hand: &HandAnalyzer,
