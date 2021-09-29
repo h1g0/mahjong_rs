@@ -2,8 +2,8 @@ use std::cmp::*;
 
 use crate::hand::Hand;
 use crate::hand_info::block::*;
-use crate::winning_hand::name::WinningHandForm;
 use crate::tile::*;
+use crate::winning_hand::name::WinningHandForm;
 
 /// 与えられた手牌について、向聴数が最小になる時の面子・対子等の組み合わせを計算して格納する
 ///
