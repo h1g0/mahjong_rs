@@ -463,7 +463,10 @@ impl HandAnalyzer {
         return result;
     }
 }
-
+/// 和了しているか否か
+pub fn has_won(hand: &HandAnalyzer) -> bool {
+    hand.shanten == -1
+}
 /// 再帰的にシャンテン数が最小のものを探す
 fn count_normal_shanten_recursively(
     idx: TileType,
