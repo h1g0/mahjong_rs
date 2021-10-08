@@ -1,7 +1,6 @@
 use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
 
 use crate::settings::Lang;
-//use crate::winning_hand::checker::*;
 
 /// 和了時の手牌の形態
 #[derive(Debug, Eq, PartialEq)]
@@ -122,6 +121,28 @@ pub fn get_winning_hand_name(
     }
 }
 
+/// 喰い下がり役に対しては「（鳴）」を付けるマクロ
+///
+/// # Examples
+/// 
+/// ```
+/// assert_eq!(oppened_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
+/// assert_eq!(oppened_name!("三色同順", false, Lang::Ja), "三色同順");
+/// assert_eq!(oppened_name!("Three Colour Triplets", true, Lang::En), "Three Colour Triplets (Open)");
+/// assert_eq!(oppened_name!("Three Colour Triplets", false, Lang::En), "Three Colour Triplets");
+/// ```
+macro_rules! openned_name {
+    ($str:expr, $open:expr, $lang:expr) => {
+        match $open {
+            true => match $lang {
+                Lang::En => concat!($str, " (Open)"),
+                Lang::Ja => concat!($str, "（鳴）"),
+            },
+            _ => $str,
+        }
+    };
+}
+
 fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'static str {
     match hand_kind {
         // 立直
@@ -150,20 +171,11 @@ fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::OneSetOfIdenticalSequences => "One Set Of Identical Sequences",
         // 三色同順
         WinningHandKind::ThreeColourStraight => {
-            if has_openned {
-                "Three Colour Straight (Open)"
-            } else {
-                "Three Colour Straight"
-            }
+            openned_name!("Three Colour Straight", has_openned, Lang::En)
         }
         // 一気通貫
-        WinningHandKind::Straight => {
-            if has_openned {
-                "Straight (Open)"
-            } else {
-                "Straight"
-            }
-        }
+        WinningHandKind::Straight => openned_name!("Straight", has_openned, Lang::En),
+
         // 二盃口
         WinningHandKind::TwoSetsOfIdenticalSequences => "Two Sets Of Identical Sequences",
         // 対々和
@@ -186,19 +198,11 @@ fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::HonorTilesRedDragon => "Honor Tiles (Red Dragon)",
         // 混全帯么九
         WinningHandKind::TerminalOrHonorInEachSet => {
-            if has_openned {
-                "Terminal Or Honor In Each Set (Open)"
-            } else {
-                "Terminal Or Honor In Each Set"
-            }
+            openned_name!("Terminal Or Honor In Each Set", has_openned, Lang::En)
         }
         // 純全帯么九
         WinningHandKind::TerminalInEachSet => {
-            if has_openned {
-                "Terminal In Each Set (Open)"
-            } else {
-                "Terminal In Each Set"
-            }
+            openned_name!("Terminal In Each Set", has_openned, Lang::En)
         }
         // 混老頭
         WinningHandKind::AllTerminalsAndHonors => "All Terminals And Honors",
@@ -206,19 +210,11 @@ fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::LittleThreeDragons => "Little Three Dragons",
         // 混一色
         WinningHandKind::HalfFlush => {
-            if has_openned {
-                "Half Flush (Open)"
-            } else {
-                "Half Flush"
-            }
+            openned_name!("Half Flush", has_openned, Lang::En)
         }
         // 清一色
         WinningHandKind::Flush => {
-            if has_openned {
-                "Flush (Open)"
-            } else {
-                "Flush"
-            }
+            openned_name!("Flush", has_openned, Lang::En)
         }
         // 国士無双
         WinningHandKind::ThirteenOrphans => "Thirteen Orphans",
@@ -274,19 +270,11 @@ fn get_winning_hand_name_ja(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::OneSetOfIdenticalSequences => "一盃口",
         // 三色同順
         WinningHandKind::ThreeColourStraight => {
-            if has_openned {
-                "三色同順（鳴）"
-            } else {
-                "三色同順"
-            }
+            openned_name!("三色同順", has_openned, Lang::Ja)
         }
         // 一気通貫
         WinningHandKind::Straight => {
-            if has_openned {
-                "一気通貫（鳴）"
-            } else {
-                "一気通貫"
-            }
+            openned_name!("一気通貫", has_openned, Lang::Ja)
         }
         // 二盃口
         WinningHandKind::TwoSetsOfIdenticalSequences => "二盃口",
@@ -310,19 +298,11 @@ fn get_winning_hand_name_ja(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::HonorTilesRedDragon => "役牌（中）",
         // 混全帯么九
         WinningHandKind::TerminalOrHonorInEachSet => {
-            if has_openned {
-                "混全帯么九（鳴）"
-            } else {
-                "混全帯么九"
-            }
+            openned_name!("混全帯么九", has_openned, Lang::Ja)
         }
         // 純全帯么九
         WinningHandKind::TerminalInEachSet => {
-            if has_openned {
-                "純全帯么九（鳴）"
-            } else {
-                "純全帯么九"
-            }
+            openned_name!("純全帯么九", has_openned, Lang::Ja)
         }
         // 混老頭
         WinningHandKind::AllTerminalsAndHonors => "混老頭",
@@ -330,19 +310,11 @@ fn get_winning_hand_name_ja(hand_kind: WinningHandKind, has_openned: bool) -> &'
         WinningHandKind::LittleThreeDragons => "小三元",
         // 混一色
         WinningHandKind::HalfFlush => {
-            if has_openned {
-                "混一色（鳴）"
-            } else {
-                "混一色"
-            }
+            openned_name!("混一色", has_openned, Lang::Ja)
         }
         // 清一色
         WinningHandKind::Flush => {
-            if has_openned {
-                "清一色（鳴）"
-            } else {
-                "清一色"
-            }
+            openned_name!("清一色", has_openned, Lang::Ja)
         }
         // 国士無双
         WinningHandKind::ThirteenOrphans => "国士無双",
