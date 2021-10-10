@@ -124,7 +124,7 @@ pub fn get_winning_hand_name(
 /// 喰い下がり役に対しては「（鳴）」を付けるマクロ
 ///
 /// # Examples
-/// 
+///
 /// ```
 /// assert_eq!(oppened_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
 /// assert_eq!(oppened_name!("三色同順", false, Lang::Ja), "三色同順");
