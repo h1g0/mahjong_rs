@@ -63,7 +63,7 @@ impl HandAnalyzer {
     /// );
     /// assert_eq!(
     ///   analyzer.form,
-    ///   WinningHandForm::Normal
+    ///   Form::Normal
     /// );
     /// ```
     pub fn new(hand: &Hand) -> HandAnalyzer {
@@ -85,7 +85,7 @@ impl HandAnalyzer {
     /// let to_test_str = "19m19p19s1234567z 1m";
     /// let to_test = Hand::from(to_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&to_test, WinningHandForm::ThirteenOrphens).shanten,
+    ///   HandAnalyzer::new_by_form(&to_test, Form::ThirteenOrphens).shanten,
     ///   -1
     /// );
     ///
@@ -93,7 +93,7 @@ impl HandAnalyzer {
     /// let sp_test_str = "1122m3344p5566s7z 7z";
     /// let sp_test = Hand::from(sp_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&sp_test, WinningHandForm::SevenPairs).shanten,
+    ///   HandAnalyzer::new_by_form(&sp_test, Form::SevenPairs).shanten,
     ///   -1
     /// );
     ///
@@ -101,7 +101,7 @@ impl HandAnalyzer {
     /// let nm_test_str = "1112345678999m 5m";
     /// let nm_test = Hand::from(nm_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&nm_test, WinningHandForm::Normal).shanten,
+    ///   HandAnalyzer::new_by_form(&nm_test, Form::Normal).shanten,
     ///   -1
     /// );
     /// ```
