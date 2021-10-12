@@ -11,15 +11,15 @@ pub fn check_seven_pairs(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::SevenPairs,
+    let name = get(
+        Kind::SevenPairs,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
         return (name, false, 0);
     }
-    return if hand.form == WinningHandForm::SevenPairs {
+    return if hand.form == Form::SevenPairs {
         (name, true, 2)
     } else {
         (name, false, 0)
@@ -32,8 +32,8 @@ pub fn check_three_colour_straight(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::ThreeColourStraight,
+    let name = get(
+        Kind::ThreeColourStraight,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -48,8 +48,8 @@ pub fn check_straight(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::Straight,
+    let name = get(
+        Kind::Straight,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -91,8 +91,8 @@ pub fn check_all_triplet_hand(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllTripletHand,
+    let name = get(
+        Kind::AllTripletHand,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -110,8 +110,8 @@ pub fn check_three_closed_triplets(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::ThreeClosedTriplets,
+    let name = get(
+        Kind::ThreeClosedTriplets,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -126,8 +126,8 @@ pub fn check_three_colour_triplets(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::ThreeColourTriplets,
+    let name = get(
+        Kind::ThreeColourTriplets,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -142,8 +142,8 @@ pub fn check_terminal_or_honor_in_each_set(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::TerminalOrHonorInEachSet,
+    let name = get(
+        Kind::TerminalOrHonorInEachSet,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -203,8 +203,8 @@ pub fn check_all_terminals_and_honors(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllTerminalsAndHonors,
+    let name = get(
+        Kind::AllTerminalsAndHonors,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -219,8 +219,8 @@ pub fn check_little_three_dragons(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::LittleThreeDragons,
+    let name = get(
+        Kind::LittleThreeDragons,
         status.has_claimed_open,
         settings.display_lang,
     );

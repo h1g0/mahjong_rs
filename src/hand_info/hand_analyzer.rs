@@ -3,7 +3,7 @@ use std::cmp::*;
 use crate::hand::Hand;
 use crate::hand_info::block::*;
 use crate::tile::*;
-use crate::winning_hand::name::WinningHandForm;
+use crate::winning_hand::name::Form;
 
 /// 与えられた手牌について、向聴数が最小になる時の面子・対子等の組み合わせを計算して格納する
 ///
@@ -14,7 +14,7 @@ pub struct HandAnalyzer {
     /// 向聴数：あと牌を何枚交換すれば聴牌できるかの最小数。聴牌状態が`0`、和了が`-1`。
     pub shanten: i32,
     /// どの和了形か
-    pub form: WinningHandForm,
+    pub form: Form,
     /// 刻子（同じ牌が3枚）が入るVec
     pub same3: Vec<Same3>,
     /// 順子（連続した牌が3枚）が入るVec
@@ -67,9 +67,9 @@ impl HandAnalyzer {
     /// );
     /// ```
     pub fn new(hand: &Hand) -> HandAnalyzer {
-        let sp = HandAnalyzer::new_by_form(hand, WinningHandForm::SevenPairs);
-        let to = HandAnalyzer::new_by_form(hand, WinningHandForm::ThirteenOrphens);
-        let normal = HandAnalyzer::new_by_form(hand, WinningHandForm::Normal);
+        let sp = HandAnalyzer::new_by_form(hand, Form::SevenPairs);
+        let to = HandAnalyzer::new_by_form(hand, Form::ThirteenOrphens);
+        let normal = HandAnalyzer::new_by_form(hand, Form::Normal);
         return min(min(sp, to), normal);
     }
 
@@ -105,11 +105,11 @@ impl HandAnalyzer {
     ///   -1
     /// );
     /// ```
-    pub fn new_by_form(hand: &Hand, form: WinningHandForm) -> HandAnalyzer {
+    pub fn new_by_form(hand: &Hand, form: Form) -> HandAnalyzer {
         return match form {
-            WinningHandForm::SevenPairs => HandAnalyzer::calc_seven_pairs(hand),
-            WinningHandForm::ThirteenOrphens => HandAnalyzer::calc_thirteen_orphens(hand),
-            WinningHandForm::Normal => HandAnalyzer::calc_normal_form(hand),
+            Form::SevenPairs => HandAnalyzer::calc_seven_pairs(hand),
+            Form::ThirteenOrphens => HandAnalyzer::calc_thirteen_orphens(hand),
+            Form::Normal => HandAnalyzer::calc_normal_form(hand),
         };
     }
 
@@ -144,7 +144,7 @@ impl HandAnalyzer {
         }
         return HandAnalyzer {
             shanten: num_to_win - 1,
-            form: WinningHandForm::SevenPairs,
+            form: Form::SevenPairs,
             same3: Vec::new(),
             sequential3: Vec::new(),
             same2,
@@ -187,7 +187,7 @@ impl HandAnalyzer {
         let num_to_win: i32 = (14 - kind - if pair > 0 { 1 } else { 0 }) as i32;
         return HandAnalyzer {
             shanten: num_to_win - 1,
-            form: WinningHandForm::ThirteenOrphens,
+            form: Form::ThirteenOrphens,
             same3: Vec::new(),
             sequential3: Vec::new(),
             same2: Vec::new(),
@@ -267,7 +267,7 @@ impl HandAnalyzer {
 
         return HandAnalyzer {
             shanten,
-            form: WinningHandForm::Normal,
+            form: Form::Normal,
             same3: same3_result,
             sequential3: sequential3_result,
             same2: same2_result,
@@ -755,7 +755,7 @@ mod tests {
         let test_str = "226699m99p228s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
             0
         );
     }
@@ -765,7 +765,7 @@ mod tests {
         let test_str = "226699m99p222s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
             0
         );
     }
@@ -775,7 +775,7 @@ mod tests {
         let test_str = "19m19p11s1234567z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::ThirteenOrphens).shanten,
+            HandAnalyzer::new_by_form(&test, Form::ThirteenOrphens).shanten,
             0
         );
     }
@@ -786,7 +786,7 @@ mod tests {
         let test_str = "1122m3344p5555s1z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
             1
         );
     }
@@ -797,7 +797,7 @@ mod tests {
         let test_str = "123m444p789s1112z 2z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }
@@ -808,7 +808,7 @@ mod tests {
         let test_str = "333m456p1789s 333z 1s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }
@@ -819,7 +819,7 @@ mod tests {
         let test_str = "234567m6789s 111z 6s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }
@@ -829,7 +829,7 @@ mod tests {
         let test_str = "5m123456p888s 777z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }
@@ -839,7 +839,7 @@ mod tests {
         let test_str = "234m8s 567m 333p 456s 8s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }
@@ -850,7 +850,7 @@ mod tests {
         let test_str = "123567m234p6799s 5s";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, WinningHandForm::Normal).shanten,
+            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
             -1
         );
     }

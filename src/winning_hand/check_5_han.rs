@@ -9,8 +9,8 @@ pub fn check_nagashi_mangan(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::NagashiMangan,
+    let name = get(
+        Kind::NagashiMangan,
         status.has_claimed_open,
         settings.display_lang,
     );

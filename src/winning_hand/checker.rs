@@ -18,217 +18,217 @@ pub fn check(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> HashMap<WinningHandKind, (&'static str, bool, u32)> {
-    let mut result = HashMap::with_capacity(WinningHandKind::COUNT);
-    for hand_kind in WinningHandKind::iter() {
+) -> HashMap<Kind, (&'static str, bool, u32)> {
+    let mut result = HashMap::with_capacity(Kind::COUNT);
+    for hand_kind in Kind::iter() {
         result.insert(hand_kind, ("Unknown", false, 0));
     }
 
     // 立直
     result.insert(
-        WinningHandKind::ReadyHand,
+        Kind::ReadyHand,
         check_ready_hand(hand, status, settings),
     );
     // 七対子
     result.insert(
-        WinningHandKind::SevenPairs,
+        Kind::SevenPairs,
         check_seven_pairs(hand, status, settings),
     );
     // 流し満貫
     result.insert(
-        WinningHandKind::NagashiMangan,
+        Kind::NagashiMangan,
         check_nagashi_mangan(hand, status, settings),
     );
     // 門前清自摸和
     result.insert(
-        WinningHandKind::SelfPick,
+        Kind::SelfPick,
         check_self_pick(hand, status, settings),
     );
     // 一発
     result.insert(
-        WinningHandKind::OneShot,
+        Kind::OneShot,
         check_one_shot(hand, status, settings),
     );
     // 海底撈月
     result.insert(
-        WinningHandKind::LastTileFromTheWall,
+        Kind::LastTileFromTheWall,
         check_last_tile_from_the_wall(hand, status, settings),
     );
     // 河底撈魚
     result.insert(
-        WinningHandKind::LastDiscard,
+        Kind::LastDiscard,
         check_last_discard(hand, status, settings),
     );
     // 嶺上開花
     result.insert(
-        WinningHandKind::DeadWallDraw,
+        Kind::DeadWallDraw,
         check_dead_wall_draw(hand, status, settings),
     );
     // 搶槓
     result.insert(
-        WinningHandKind::RobbingAQuad,
+        Kind::RobbingAQuad,
         check_robbing_a_quad(hand, status, settings),
     );
     // ダブル立直
     result.insert(
-        WinningHandKind::DoubleReady,
+        Kind::DoubleReady,
         check_double_ready(hand, status, settings),
     );
     // 平和
     result.insert(
-        WinningHandKind::NoPointsHand,
+        Kind::NoPointsHand,
         check_no_points_hand(hand, status, settings),
     );
     // 一盃口
     result.insert(
-        WinningHandKind::OneSetOfIdenticalSequences,
+        Kind::OneSetOfIdenticalSequences,
         check_one_set_of_identical_sequences(hand, status, settings),
     );
     // 三色同順
     result.insert(
-        WinningHandKind::ThreeColourStraight,
+        Kind::ThreeColourStraight,
         check_three_colour_straight(hand, status, settings),
     );
     // 一気通貫
     result.insert(
-        WinningHandKind::Straight,
+        Kind::Straight,
         check_straight(hand, status, settings),
     );
     // 二盃口
     result.insert(
-        WinningHandKind::TwoSetsOfIdenticalSequences,
+        Kind::TwoSetsOfIdenticalSequences,
         check_two_sets_of_identical_sequences(hand, status, settings),
     );
     // 対々和
     result.insert(
-        WinningHandKind::AllTripletHand,
+        Kind::AllTripletHand,
         check_all_triplet_hand(hand, status, settings),
     );
     // 三暗刻
     result.insert(
-        WinningHandKind::ThreeClosedTriplets,
+        Kind::ThreeClosedTriplets,
         check_three_closed_triplets(hand, status, settings),
     );
     // 三色同刻
     result.insert(
-        WinningHandKind::ThreeColourTriplets,
+        Kind::ThreeColourTriplets,
         check_three_colour_triplets(hand, status, settings),
     );
     // 断么九
     result.insert(
-        WinningHandKind::AllSimples,
+        Kind::AllSimples,
         check_all_simples(hand, status, settings),
     );
     // 役牌（自風牌）
     result.insert(
-        WinningHandKind::HonorTilesPlayersWind,
+        Kind::HonorTilesPlayersWind,
         check_honor_tiles_players_wind(hand, status, settings),
     );
     // 役牌（場風牌）
     result.insert(
-        WinningHandKind::HonorTilesPrevailingWind,
+        Kind::HonorTilesPrevailingWind,
         check_honor_tiles_prevailing_wind(hand, status, settings),
     );
     // 役牌（白）
     result.insert(
-        WinningHandKind::HonorTilesWhiteDragon,
+        Kind::HonorTilesWhiteDragon,
         check_honor_tiles_white_dragon(hand, status, settings),
     );
     // 役牌（發）
     result.insert(
-        WinningHandKind::HonorTilesGreenDragon,
+        Kind::HonorTilesGreenDragon,
         check_honor_tiles_green_dragon(hand, status, settings),
     );
     // 役牌（中）
     result.insert(
-        WinningHandKind::HonorTilesRedDragon,
+        Kind::HonorTilesRedDragon,
         check_honor_tiles_red_dragon(hand, status, settings),
     );
     // 混全帯么九
     result.insert(
-        WinningHandKind::TerminalOrHonorInEachSet,
+        Kind::TerminalOrHonorInEachSet,
         check_terminal_or_honor_in_each_set(hand, status, settings),
     );
     result.insert(
-        WinningHandKind::TerminalInEachSet,
+        Kind::TerminalInEachSet,
         check_terminal_in_each_set(hand, status, settings),
     );
     // 混老頭
     result.insert(
-        WinningHandKind::AllTerminalsAndHonors,
+        Kind::AllTerminalsAndHonors,
         check_all_terminals_and_honors(hand, status, settings),
     );
     // 小三元
     result.insert(
-        WinningHandKind::LittleThreeDragons,
+        Kind::LittleThreeDragons,
         check_little_three_dragons(hand, status, settings),
         // 純全帯么九
     );
     // 混一色
     result.insert(
-        WinningHandKind::HalfFlush,
+        Kind::HalfFlush,
         check_half_flush(hand, status, settings),
     );
     // 清一色
-    result.insert(WinningHandKind::Flush, check_flush(hand, status, settings));
+    result.insert(Kind::Flush, check_flush(hand, status, settings));
     // 国士無双
     result.insert(
-        WinningHandKind::ThirteenOrphans,
+        Kind::ThirteenOrphans,
         check_thirteen_orphans(hand, status, settings),
     );
     // 四暗刻
     result.insert(
-        WinningHandKind::FourConcealedTriplets,
+        Kind::FourConcealedTriplets,
         check_four_concealed_triplets(hand, status, settings),
     );
     // 大三元
     result.insert(
-        WinningHandKind::BigThreeDragons,
+        Kind::BigThreeDragons,
         check_big_three_dragons(hand, status, settings),
     );
     // 小四喜
     result.insert(
-        WinningHandKind::LittleFourWinds,
+        Kind::LittleFourWinds,
         check_little_four_winds(hand, status, settings),
     );
     // 大四喜
     result.insert(
-        WinningHandKind::BigFourWinds,
+        Kind::BigFourWinds,
         check_big_four_winds(hand, status, settings),
     );
     // 字一色
     result.insert(
-        WinningHandKind::AllHonors,
+        Kind::AllHonors,
         check_all_honors(hand, status, settings),
     );
     // 清老頭
     result.insert(
-        WinningHandKind::AllTerminals,
+        Kind::AllTerminals,
         check_all_terminals(hand, status, settings),
     );
     // 緑一色
     result.insert(
-        WinningHandKind::AllGreen,
+        Kind::AllGreen,
         check_all_green(hand, status, settings),
     );
     // 九蓮宝燈
     result.insert(
-        WinningHandKind::NineGates,
+        Kind::NineGates,
         check_nine_gates(hand, status, settings),
     );
     // 四槓子
     result.insert(
-        WinningHandKind::FourKans,
+        Kind::FourKans,
         check_four_kans(hand, status, settings),
     );
     // 天和
     result.insert(
-        WinningHandKind::HeavenlyHand,
+        Kind::HeavenlyHand,
         check_heavenly_hand(hand, status, settings),
     );
     // 地和
     result.insert(
-        WinningHandKind::HandOfEarth,
+        Kind::HandOfEarth,
         check_hand_of_earth(hand, status, settings),
     );
 

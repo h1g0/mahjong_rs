@@ -10,8 +10,8 @@ pub fn check_two_sets_of_identical_sequences(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::TwoSetsOfIdenticalSequences,
+    let name = get(
+        Kind::TwoSetsOfIdenticalSequences,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -26,8 +26,8 @@ pub fn check_terminal_in_each_set(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::TerminalInEachSet,
+    let name = get(
+        Kind::TerminalInEachSet,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -76,8 +76,8 @@ pub fn check_half_flush(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HalfFlush,
+    let name = get(
+        Kind::HalfFlush,
         status.has_claimed_open,
         settings.display_lang,
     );

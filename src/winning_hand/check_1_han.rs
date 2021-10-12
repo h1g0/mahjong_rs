@@ -11,8 +11,8 @@ pub fn check_ready_hand(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::ReadyHand,
+    let name = get(
+        Kind::ReadyHand,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -35,8 +35,8 @@ pub fn check_self_pick(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::SelfPick,
+    let name = get(
+        Kind::SelfPick,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -55,8 +55,8 @@ pub fn check_one_shot(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::OneShot,
+    let name = get(
+        Kind::OneShot,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -77,8 +77,8 @@ pub fn check_last_tile_from_the_wall(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::LastTileFromTheWall,
+    let name = get(
+        Kind::LastTileFromTheWall,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -93,8 +93,8 @@ pub fn check_last_discard(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::LastDiscard,
+    let name = get(
+        Kind::LastDiscard,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -109,8 +109,8 @@ pub fn check_dead_wall_draw(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::DeadWallDraw,
+    let name = get(
+        Kind::DeadWallDraw,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -125,8 +125,8 @@ pub fn check_robbing_a_quad(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::RobbingAQuad,
+    let name = get(
+        Kind::RobbingAQuad,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -141,8 +141,8 @@ pub fn check_double_ready(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::DoubleReady,
+    let name = get(
+        Kind::DoubleReady,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -157,8 +157,8 @@ pub fn check_no_points_hand(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::NoPointsHand,
+    let name = get(
+        Kind::NoPointsHand,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -173,8 +173,8 @@ pub fn check_one_set_of_identical_sequences(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::OneSetOfIdenticalSequences,
+    let name = get(
+        Kind::OneSetOfIdenticalSequences,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -208,8 +208,8 @@ pub fn check_all_simples(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllSimples,
+    let name = get(
+        Kind::AllSimples,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -255,8 +255,8 @@ pub fn check_honor_tiles_players_wind(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HonorTilesPlayersWind,
+    let name = get(
+        Kind::HonorTilesPlayersWind,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -283,8 +283,8 @@ pub fn check_honor_tiles_prevailing_wind(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HonorTilesPrevailingWind,
+    let name = get(
+        Kind::HonorTilesPrevailingWind,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -332,8 +332,8 @@ pub fn check_honor_tiles_white_dragon(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HonorTilesWhiteDragon,
+    let name = get(
+        Kind::HonorTilesWhiteDragon,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -349,8 +349,8 @@ pub fn check_honor_tiles_green_dragon(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HonorTilesGreenDragon,
+    let name = get(
+        Kind::HonorTilesGreenDragon,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -366,8 +366,8 @@ pub fn check_honor_tiles_red_dragon(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HonorTilesRedDragon,
+    let name = get(
+        Kind::HonorTilesRedDragon,
         status.has_claimed_open,
         settings.display_lang,
     );

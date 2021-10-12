@@ -9,8 +9,8 @@ pub fn check_flush(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::Flush,
+    let name = get(
+        Kind::Flush,
         status.has_claimed_open,
         settings.display_lang,
     );

@@ -4,7 +4,7 @@ use crate::settings::Lang;
 
 /// 和了時の手牌の形態
 #[derive(Debug, Eq, PartialEq)]
-pub enum WinningHandForm {
+pub enum Form {
     /// 七対子
     SevenPairs,
     /// 国士無双
@@ -17,7 +17,7 @@ pub enum WinningHandForm {
 ///
 /// <https://en.wikipedia.org/wiki/Japanese_Mahjong_yaku>による英語名
 #[derive(Debug, PartialEq, Eq, Hash, EnumCountMacro, EnumIter)]
-pub enum WinningHandKind {
+pub enum Kind {
     /// 立直
     ReadyHand,
     /// 七対子
@@ -110,14 +110,14 @@ pub enum WinningHandKind {
 /// * `hand_kind` - 和了役の種類
 /// * `has_opened` - 副露しているか否か（喰い下がり役は`true`にすると名前の後に「（鳴）」が付く）
 /// * `lang` - 言語
-pub fn get_winning_hand_name(
-    hand_kind: WinningHandKind,
+pub fn get(
+    hand_kind: Kind,
     has_openned: bool,
     lang: Lang,
 ) -> &'static str {
     match lang {
-        Lang::En => get_winning_hand_name_en(hand_kind, has_openned),
-        Lang::Ja => get_winning_hand_name_ja(hand_kind, has_openned),
+        Lang::En => get_en(hand_kind, has_openned),
+        Lang::Ja => get_ja(hand_kind, has_openned),
     }
 }
 
@@ -143,202 +143,202 @@ macro_rules! openned_name {
     };
 }
 
-fn get_winning_hand_name_en(hand_kind: WinningHandKind, has_openned: bool) -> &'static str {
+fn get_en(hand_kind: Kind, has_openned: bool) -> &'static str {
     match hand_kind {
         // 立直
-        WinningHandKind::ReadyHand => "Ready Hand",
+        Kind::ReadyHand => "Ready Hand",
         // 七対子
-        WinningHandKind::SevenPairs => "Seven Pairs",
+        Kind::SevenPairs => "Seven Pairs",
         // 流し満貫
-        WinningHandKind::NagashiMangan => "Nagashi Mangan",
+        Kind::NagashiMangan => "Nagashi Mangan",
         // 門前清自摸和
-        WinningHandKind::SelfPick => "Self Pick",
+        Kind::SelfPick => "Self Pick",
         // 一発
-        WinningHandKind::OneShot => "One Shot",
+        Kind::OneShot => "One Shot",
         // 海底撈月
-        WinningHandKind::LastTileFromTheWall => "Last Tile From The Wall",
+        Kind::LastTileFromTheWall => "Last Tile From The Wall",
         // 河底撈魚
-        WinningHandKind::LastDiscard => "Last Discard",
+        Kind::LastDiscard => "Last Discard",
         // 嶺上開花
-        WinningHandKind::DeadWallDraw => "Dead Wall Draw",
+        Kind::DeadWallDraw => "Dead Wall Draw",
         // 搶槓
-        WinningHandKind::RobbingAQuad => "Robbing A Quad",
+        Kind::RobbingAQuad => "Robbing A Quad",
         // ダブル立直
-        WinningHandKind::DoubleReady => "Double Ready",
+        Kind::DoubleReady => "Double Ready",
         // 平和
-        WinningHandKind::NoPointsHand => "No Points Hand",
+        Kind::NoPointsHand => "No Points Hand",
         // 一盃口
-        WinningHandKind::OneSetOfIdenticalSequences => "One Set Of Identical Sequences",
+        Kind::OneSetOfIdenticalSequences => "One Set Of Identical Sequences",
         // 三色同順
-        WinningHandKind::ThreeColourStraight => {
+        Kind::ThreeColourStraight => {
             openned_name!("Three Colour Straight", has_openned, Lang::En)
         }
         // 一気通貫
-        WinningHandKind::Straight => openned_name!("Straight", has_openned, Lang::En),
+        Kind::Straight => openned_name!("Straight", has_openned, Lang::En),
 
         // 二盃口
-        WinningHandKind::TwoSetsOfIdenticalSequences => "Two Sets Of Identical Sequences",
+        Kind::TwoSetsOfIdenticalSequences => "Two Sets Of Identical Sequences",
         // 対々和
-        WinningHandKind::AllTripletHand => "All Triplet Hand",
+        Kind::AllTripletHand => "All Triplet Hand",
         // 三暗刻
-        WinningHandKind::ThreeClosedTriplets => "Three Closed Triplets",
+        Kind::ThreeClosedTriplets => "Three Closed Triplets",
         // 三色同刻
-        WinningHandKind::ThreeColourTriplets => "Three Colour Triplets",
+        Kind::ThreeColourTriplets => "Three Colour Triplets",
         // 断么九
-        WinningHandKind::AllSimples => "All Simples",
+        Kind::AllSimples => "All Simples",
         // 役牌（自風牌）
-        WinningHandKind::HonorTilesPlayersWind => "Honor Tiles (Players Wind)",
+        Kind::HonorTilesPlayersWind => "Honor Tiles (Players Wind)",
         // 役牌（場風牌）
-        WinningHandKind::HonorTilesPrevailingWind => "Honor Tiles (Prevailing Wind)",
+        Kind::HonorTilesPrevailingWind => "Honor Tiles (Prevailing Wind)",
         // 役牌（白）
-        WinningHandKind::HonorTilesWhiteDragon => "Honor Tiles (White Dragon)",
+        Kind::HonorTilesWhiteDragon => "Honor Tiles (White Dragon)",
         // 役牌（發）
-        WinningHandKind::HonorTilesGreenDragon => "Honor Tiles (Green Dragon)",
+        Kind::HonorTilesGreenDragon => "Honor Tiles (Green Dragon)",
         // 役牌（中）
-        WinningHandKind::HonorTilesRedDragon => "Honor Tiles (Red Dragon)",
+        Kind::HonorTilesRedDragon => "Honor Tiles (Red Dragon)",
         // 混全帯么九
-        WinningHandKind::TerminalOrHonorInEachSet => {
+        Kind::TerminalOrHonorInEachSet => {
             openned_name!("Terminal Or Honor In Each Set", has_openned, Lang::En)
         }
         // 純全帯么九
-        WinningHandKind::TerminalInEachSet => {
+        Kind::TerminalInEachSet => {
             openned_name!("Terminal In Each Set", has_openned, Lang::En)
         }
         // 混老頭
-        WinningHandKind::AllTerminalsAndHonors => "All Terminals And Honors",
+        Kind::AllTerminalsAndHonors => "All Terminals And Honors",
         // 小三元
-        WinningHandKind::LittleThreeDragons => "Little Three Dragons",
+        Kind::LittleThreeDragons => "Little Three Dragons",
         // 混一色
-        WinningHandKind::HalfFlush => {
+        Kind::HalfFlush => {
             openned_name!("Half Flush", has_openned, Lang::En)
         }
         // 清一色
-        WinningHandKind::Flush => {
+        Kind::Flush => {
             openned_name!("Flush", has_openned, Lang::En)
         }
         // 国士無双
-        WinningHandKind::ThirteenOrphans => "Thirteen Orphans",
+        Kind::ThirteenOrphans => "Thirteen Orphans",
         // 四暗刻
-        WinningHandKind::FourConcealedTriplets => "Four Concealed Triplets",
+        Kind::FourConcealedTriplets => "Four Concealed Triplets",
         // 大三元
-        WinningHandKind::BigThreeDragons => "Big Three Dragons",
+        Kind::BigThreeDragons => "Big Three Dragons",
         // 小四喜
-        WinningHandKind::LittleFourWinds => "Little Four Winds",
+        Kind::LittleFourWinds => "Little Four Winds",
         // 大四喜
-        WinningHandKind::BigFourWinds => "Big Four Winds",
+        Kind::BigFourWinds => "Big Four Winds",
         // 字一色
-        WinningHandKind::AllHonors => "All Honors",
+        Kind::AllHonors => "All Honors",
         // 清老頭
-        WinningHandKind::AllTerminals => "All Terminals",
+        Kind::AllTerminals => "All Terminals",
         // 緑一色
-        WinningHandKind::AllGreen => "All Green",
+        Kind::AllGreen => "All Green",
         // 九蓮宝燈
-        WinningHandKind::NineGates => "Nine Gates",
+        Kind::NineGates => "Nine Gates",
         // 四槓子
-        WinningHandKind::FourKans => "Four Kans",
+        Kind::FourKans => "Four Kans",
         // 天和
-        WinningHandKind::HeavenlyHand => "Heavenly Hand",
+        Kind::HeavenlyHand => "Heavenly Hand",
         // 地和
-        WinningHandKind::HandOfEarth => "Hand Of Earth",
+        Kind::HandOfEarth => "Hand Of Earth",
     }
 }
-fn get_winning_hand_name_ja(hand_kind: WinningHandKind, has_openned: bool) -> &'static str {
+fn get_ja(hand_kind: Kind, has_openned: bool) -> &'static str {
     match hand_kind {
         // 立直
-        WinningHandKind::ReadyHand => "立直",
+        Kind::ReadyHand => "立直",
         // 七対子
-        WinningHandKind::SevenPairs => "七対子",
+        Kind::SevenPairs => "七対子",
         // 流し満貫
-        WinningHandKind::NagashiMangan => "流し満貫",
+        Kind::NagashiMangan => "流し満貫",
         // 門前清自摸和
-        WinningHandKind::SelfPick => "門前清自摸和",
+        Kind::SelfPick => "門前清自摸和",
         // 一発
-        WinningHandKind::OneShot => "一発",
+        Kind::OneShot => "一発",
         // 海底撈月
-        WinningHandKind::LastTileFromTheWall => "海底撈月",
+        Kind::LastTileFromTheWall => "海底撈月",
         // 河底撈魚
-        WinningHandKind::LastDiscard => "河底撈魚",
+        Kind::LastDiscard => "河底撈魚",
         // 嶺上開花
-        WinningHandKind::DeadWallDraw => "嶺上開花",
+        Kind::DeadWallDraw => "嶺上開花",
         // 搶槓
-        WinningHandKind::RobbingAQuad => "搶槓",
+        Kind::RobbingAQuad => "搶槓",
         // ダブル立直
-        WinningHandKind::DoubleReady => "ダブル立直",
+        Kind::DoubleReady => "ダブル立直",
         // 平和
-        WinningHandKind::NoPointsHand => "平和",
+        Kind::NoPointsHand => "平和",
         // 一盃口
-        WinningHandKind::OneSetOfIdenticalSequences => "一盃口",
+        Kind::OneSetOfIdenticalSequences => "一盃口",
         // 三色同順
-        WinningHandKind::ThreeColourStraight => {
+        Kind::ThreeColourStraight => {
             openned_name!("三色同順", has_openned, Lang::Ja)
         }
         // 一気通貫
-        WinningHandKind::Straight => {
+        Kind::Straight => {
             openned_name!("一気通貫", has_openned, Lang::Ja)
         }
         // 二盃口
-        WinningHandKind::TwoSetsOfIdenticalSequences => "二盃口",
+        Kind::TwoSetsOfIdenticalSequences => "二盃口",
         // 対々和
-        WinningHandKind::AllTripletHand => "対々和",
+        Kind::AllTripletHand => "対々和",
         // 三暗刻
-        WinningHandKind::ThreeClosedTriplets => "三暗刻",
+        Kind::ThreeClosedTriplets => "三暗刻",
         // 三色同刻
-        WinningHandKind::ThreeColourTriplets => "三色同刻",
+        Kind::ThreeColourTriplets => "三色同刻",
         // 断么九
-        WinningHandKind::AllSimples => "断么九",
+        Kind::AllSimples => "断么九",
         // 役牌（自風牌）
-        WinningHandKind::HonorTilesPlayersWind => "役牌（自風牌）",
+        Kind::HonorTilesPlayersWind => "役牌（自風牌）",
         // 役牌（場風牌）
-        WinningHandKind::HonorTilesPrevailingWind => "役牌（場風牌）",
+        Kind::HonorTilesPrevailingWind => "役牌（場風牌）",
         // 役牌（白）
-        WinningHandKind::HonorTilesWhiteDragon => "役牌（白）",
+        Kind::HonorTilesWhiteDragon => "役牌（白）",
         // 役牌（發）
-        WinningHandKind::HonorTilesGreenDragon => "役牌（發）",
+        Kind::HonorTilesGreenDragon => "役牌（發）",
         // 役牌（中）
-        WinningHandKind::HonorTilesRedDragon => "役牌（中）",
+        Kind::HonorTilesRedDragon => "役牌（中）",
         // 混全帯么九
-        WinningHandKind::TerminalOrHonorInEachSet => {
+        Kind::TerminalOrHonorInEachSet => {
             openned_name!("混全帯么九", has_openned, Lang::Ja)
         }
         // 純全帯么九
-        WinningHandKind::TerminalInEachSet => {
+        Kind::TerminalInEachSet => {
             openned_name!("純全帯么九", has_openned, Lang::Ja)
         }
         // 混老頭
-        WinningHandKind::AllTerminalsAndHonors => "混老頭",
+        Kind::AllTerminalsAndHonors => "混老頭",
         // 小三元
-        WinningHandKind::LittleThreeDragons => "小三元",
+        Kind::LittleThreeDragons => "小三元",
         // 混一色
-        WinningHandKind::HalfFlush => {
+        Kind::HalfFlush => {
             openned_name!("混一色", has_openned, Lang::Ja)
         }
         // 清一色
-        WinningHandKind::Flush => {
+        Kind::Flush => {
             openned_name!("清一色", has_openned, Lang::Ja)
         }
         // 国士無双
-        WinningHandKind::ThirteenOrphans => "国士無双",
+        Kind::ThirteenOrphans => "国士無双",
         // 四暗刻
-        WinningHandKind::FourConcealedTriplets => "四暗刻",
+        Kind::FourConcealedTriplets => "四暗刻",
         // 大三元
-        WinningHandKind::BigThreeDragons => "大三元",
+        Kind::BigThreeDragons => "大三元",
         // 小四喜
-        WinningHandKind::LittleFourWinds => "小四喜",
+        Kind::LittleFourWinds => "小四喜",
         // 大四喜
-        WinningHandKind::BigFourWinds => "大四喜",
+        Kind::BigFourWinds => "大四喜",
         // 字一色
-        WinningHandKind::AllHonors => "字一色",
+        Kind::AllHonors => "字一色",
         // 清老頭
-        WinningHandKind::AllTerminals => "清老頭",
+        Kind::AllTerminals => "清老頭",
         // 緑一色
-        WinningHandKind::AllGreen => "緑一色",
+        Kind::AllGreen => "緑一色",
         // 九蓮宝燈
-        WinningHandKind::NineGates => "九蓮宝燈",
+        Kind::NineGates => "九蓮宝燈",
         // 四槓子
-        WinningHandKind::FourKans => "四槓子",
+        Kind::FourKans => "四槓子",
         // 天和
-        WinningHandKind::HeavenlyHand => "天和",
+        Kind::HeavenlyHand => "天和",
         // 地和
-        WinningHandKind::HandOfEarth => "地和",
+        Kind::HandOfEarth => "地和",
     }
 }

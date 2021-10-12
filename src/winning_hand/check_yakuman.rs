@@ -9,15 +9,15 @@ pub fn check_thirteen_orphans(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::ThirteenOrphans,
+    let name = get(
+        Kind::ThirteenOrphans,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
         return (name, false, 0);
     }
-    return if hand.form == WinningHandForm::ThirteenOrphens {
+    return if hand.form == Form::ThirteenOrphens {
         (name, true, 13)
     } else {
         (name, false, 0)
@@ -29,8 +29,8 @@ pub fn check_four_concealed_triplets(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::FourConcealedTriplets,
+    let name = get(
+        Kind::FourConcealedTriplets,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -45,8 +45,8 @@ pub fn check_big_three_dragons(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::BigThreeDragons,
+    let name = get(
+        Kind::BigThreeDragons,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -61,8 +61,8 @@ pub fn check_little_four_winds(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::LittleFourWinds,
+    let name = get(
+        Kind::LittleFourWinds,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -77,8 +77,8 @@ pub fn check_big_four_winds(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::BigFourWinds,
+    let name = get(
+        Kind::BigFourWinds,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -93,8 +93,8 @@ pub fn check_all_honors(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllHonors,
+    let name = get(
+        Kind::AllHonors,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -109,8 +109,8 @@ pub fn check_all_terminals(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllTerminals,
+    let name = get(
+        Kind::AllTerminals,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -125,8 +125,8 @@ pub fn check_all_green(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::AllGreen,
+    let name = get(
+        Kind::AllGreen,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -141,8 +141,8 @@ pub fn check_nine_gates(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::NineGates,
+    let name = get(
+        Kind::NineGates,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -157,8 +157,8 @@ pub fn check_four_kans(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::FourKans,
+    let name = get(
+        Kind::FourKans,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -173,8 +173,8 @@ pub fn check_heavenly_hand(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HeavenlyHand,
+    let name = get(
+        Kind::HeavenlyHand,
         status.has_claimed_open,
         settings.display_lang,
     );
@@ -189,8 +189,8 @@ pub fn check_hand_of_earth(
     status: &Status,
     settings: &Settings,
 ) -> (&'static str, bool, u32) {
-    let name = get_winning_hand_name(
-        WinningHandKind::HandOfEarth,
+    let name = get(
+        Kind::HandOfEarth,
         status.has_claimed_open,
         settings.display_lang,
     );
