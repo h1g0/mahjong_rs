@@ -1,3 +1,6 @@
+use anyhow::Result;
+use anyhow::anyhow;
+
 use std::cmp::*;
 
 use crate::hand::Hand;
@@ -56,7 +59,7 @@ impl HandAnalyzer {
     /// // 通常型で和了る
     /// let nm_test_str = "222333444666s6z 6z";
     /// let nm_test = Hand::from(nm_test_str);
-    /// let analyzer = HandAnalyzer::new(&nm_test);
+    /// let analyzer = HandAnalyzer::new(&nm_test).unwrap();
     /// assert_eq!(
     ///   analyzer.shanten,
     ///   -1
@@ -66,11 +69,11 @@ impl HandAnalyzer {
     ///   Form::Normal
     /// );
     /// ```
-    pub fn new(hand: &Hand) -> HandAnalyzer {
-        let sp = HandAnalyzer::new_by_form(hand, Form::SevenPairs);
-        let to = HandAnalyzer::new_by_form(hand, Form::ThirteenOrphens);
-        let normal = HandAnalyzer::new_by_form(hand, Form::Normal);
-        return min(min(sp, to), normal);
+    pub fn new(hand: &Hand) -> Result<HandAnalyzer> {
+        let sp = HandAnalyzer::new_by_form(hand, Form::SevenPairs)?;
+        let to = HandAnalyzer::new_by_form(hand, Form::ThirteenOrphens)?;
+        let normal = HandAnalyzer::new_by_form(hand, Form::Normal)?;
+        Ok(min(min(sp, to), normal))
     }
 
     /// 和了形を指定して向聴数を計算する
@@ -85,7 +88,7 @@ impl HandAnalyzer {
     /// let to_test_str = "19m19p19s1234567z 1m";
     /// let to_test = Hand::from(to_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&to_test, Form::ThirteenOrphens).shanten,
+    ///   HandAnalyzer::new_by_form(&to_test, Form::ThirteenOrphens).unwrap().shanten,
     ///   -1
     /// );
     ///
@@ -93,7 +96,7 @@ impl HandAnalyzer {
     /// let sp_test_str = "1122m3344p5566s7z 7z";
     /// let sp_test = Hand::from(sp_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&sp_test, Form::SevenPairs).shanten,
+    ///   HandAnalyzer::new_by_form(&sp_test, Form::SevenPairs).unwrap().shanten,
     ///   -1
     /// );
     ///
@@ -101,23 +104,23 @@ impl HandAnalyzer {
     /// let nm_test_str = "1112345678999m 5m";
     /// let nm_test = Hand::from(nm_test_str);
     /// assert_eq!(
-    ///   HandAnalyzer::new_by_form(&nm_test, Form::Normal).shanten,
+    ///   HandAnalyzer::new_by_form(&nm_test, Form::Normal).unwrap().shanten,
     ///   -1
     /// );
     /// ```
-    pub fn new_by_form(hand: &Hand, form: Form) -> HandAnalyzer {
-        return match form {
-            Form::SevenPairs => HandAnalyzer::calc_seven_pairs(hand),
-            Form::ThirteenOrphens => HandAnalyzer::calc_thirteen_orphens(hand),
-            Form::Normal => HandAnalyzer::calc_normal_form(hand),
-        };
+    pub fn new_by_form(hand: &Hand, form: Form) -> Result<HandAnalyzer> {
+        Ok(match form {
+            Form::SevenPairs => HandAnalyzer::calc_seven_pairs(hand)?,
+            Form::ThirteenOrphens => HandAnalyzer::calc_thirteen_orphens(hand)?,
+            Form::Normal => HandAnalyzer::calc_normal_form(hand)?,
+        })
     }
 
     /// 七対子への向聴数を計算する
     ///
     /// Vecへの詰め込みは`same2`（対子）以外は`single`（単独）に詰め込まれる。
     /// 七対子はVecを使用する役として断么九・混老頭・混一色・清一色と複合しうる
-    fn calc_seven_pairs(hand: &Hand) -> HandAnalyzer {
+    fn calc_seven_pairs(hand: &Hand) -> Result<HandAnalyzer> {
         let mut pair: u32 = 0;
         let mut kind: u32 = 0;
         let mut t = hand.summarize_tiles();
@@ -128,7 +131,7 @@ impl HandAnalyzer {
                 kind += 1;
                 if t[i] >= 2 {
                     pair += 1;
-                    same2.push(Same2::new(i as TileType, i as TileType));
+                    same2.push(Same2::new(i as TileType, i as TileType)?);
                     t[i] -= 2;
                 }
             }
@@ -142,7 +145,7 @@ impl HandAnalyzer {
                 }
             }
         }
-        return HandAnalyzer {
+        Ok(HandAnalyzer {
             shanten: num_to_win - 1,
             form: Form::SevenPairs,
             same3: Vec::new(),
@@ -150,13 +153,13 @@ impl HandAnalyzer {
             same2,
             sequential2: Vec::new(),
             single,
-        };
+        })
     }
 
     /// 国士無双への向聴数を計算する
     ///
     /// Vecへの詰め込みは未実装（詰め込んでも意味がない）
-    fn calc_thirteen_orphens(hand: &Hand) -> HandAnalyzer {
+    fn calc_thirteen_orphens(hand: &Hand) -> Result<HandAnalyzer> {
         let to_tiles = [
             Tile::M1,
             Tile::M9,
@@ -185,7 +188,7 @@ impl HandAnalyzer {
             }
         }
         let num_to_win: i32 = (14 - kind - if pair > 0 { 1 } else { 0 }) as i32;
-        return HandAnalyzer {
+        Ok(HandAnalyzer {
             shanten: num_to_win - 1,
             form: Form::ThirteenOrphens,
             same3: Vec::new(),
@@ -193,11 +196,11 @@ impl HandAnalyzer {
             same2: Vec::new(),
             sequential2: Vec::new(),
             single: Vec::new(),
-        };
+        })
     }
 
     /// 通常の役への向聴数を計算する
-    fn calc_normal_form(hand: &Hand) -> HandAnalyzer {
+    fn calc_normal_form(hand: &Hand) -> Result<HandAnalyzer> {
         let mut t = hand.summarize_tiles();
         let mut shanten: i32 = 100;
         // 計算用
@@ -212,14 +215,14 @@ impl HandAnalyzer {
         let mut sequential2_result: Vec<Sequential2> = Vec::new();
         let mut single_result: Vec<TileType> = Vec::new();
         // 先に独立した牌を抜き出しておく
-        let mut independent_same3 = HandAnalyzer::count_independent_same_3(&mut t);
-        let mut independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t);
-        let mut independent_single = HandAnalyzer::count_independent_single(&mut t);
+        let mut independent_same3 = HandAnalyzer::count_independent_same_3(&mut t)?;
+        let mut independent_sequential3 = HandAnalyzer::count_independent_sequential_3(&mut t)?;
+        let mut independent_single = HandAnalyzer::count_independent_single(&mut t)?;
 
         // 雀頭を抜き出す
         for i in Tile::M1..=Tile::Z7 {
             if t[i as usize] >= 2 {
-                same2.push(Same2::new(i, i));
+                same2.push(Same2::new(i, i)?);
                 t[i as usize] -= 2;
                 shanten = count_normal_shanten_recursively(
                     0,
@@ -236,7 +239,7 @@ impl HandAnalyzer {
                     &mut same2_result,
                     &mut sequential2_result,
                     &mut single_result,
-                );
+                )?;
                 t[i as usize] += 2;
                 same2.pop();
             }
@@ -258,14 +261,14 @@ impl HandAnalyzer {
             &mut same2_result,
             &mut sequential2_result,
             &mut single_result,
-        );
+        )?;
 
         // 最後に結合
         same3_result.append(&mut independent_same3);
         sequential3_result.append(&mut independent_sequential3);
         single_result.append(&mut independent_single);
 
-        return HandAnalyzer {
+        Ok(HandAnalyzer {
             shanten,
             form: Form::Normal,
             same3: same3_result,
@@ -273,10 +276,10 @@ impl HandAnalyzer {
             same2: same2_result,
             sequential2: sequential2_result,
             single: single_result,
-        };
+        })
     }
     /// 独立した（順子になり得ない）刻子の数を返す
-    fn count_independent_same_3(summarized_hand: &mut TileSummarize) -> Vec<Same3> {
+    fn count_independent_same_3(summarized_hand: &mut TileSummarize) -> Result<Vec<Same3>> {
         let mut result: Vec<Same3> = Vec::new();
         for i in Tile::M1..=Tile::Z7 {
             match i {
@@ -286,7 +289,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 Tile::M2 | Tile::P2 | Tile::S2 => {
@@ -296,7 +299,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 Tile::M3..=Tile::M7 | Tile::P3..=Tile::P7 | Tile::S3..=Tile::S7 => {
@@ -307,7 +310,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 2] == 0
                     {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 Tile::M8 | Tile::P8 | Tile::S8 => {
@@ -317,7 +320,7 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize + 1] == 0
                     {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 Tile::M9 | Tile::P9 | Tile::S9 => {
@@ -326,26 +329,26 @@ impl HandAnalyzer {
                         && summarized_hand[i as usize] >= 3
                     {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 Tile::Z1..=Tile::Z7 => {
                     if summarized_hand[i as usize] >= 3 {
                         summarized_hand[i as usize] -= 3;
-                        result.push(Same3::new(i, i, i));
+                        result.push(Same3::new(i, i, i)?);
                     }
                 }
                 _ => {
-                    panic!("unknown tile index!");
+                    return Err(anyhow!("Unknown tile index found!"));
                 }
             }
         }
-        return result;
+        Ok(result)
     }
 
     /// 独立した（他の順子と複合し得ない）順子の数を返す
     /// i.e. xx567xxのような順子
-    fn count_independent_sequential_3(summarized_hand: &mut TileSummarize) -> Vec<Sequential3> {
+    fn count_independent_sequential_3(summarized_hand: &mut TileSummarize) -> Result<Vec<Sequential3>> {
         let mut result: Vec<Sequential3> = Vec::new();
         // 先に一盃口の処理をしてから通常の処理
         for i in (1..=2).rev() {
@@ -386,17 +389,17 @@ impl HandAnalyzer {
                                 l as TileType,
                                 (l + 1) as TileType,
                                 (l + 2) as TileType,
-                            ));
+                            )?);
                         }
                     }
                 }
             }
         }
-        return result;
+        Ok(result)
     }
 
     /// 独立した（他の順子や刻子などと複合し得ない）牌の数を返す
-    fn count_independent_single(summarized_hand: &mut TileSummarize) -> Vec<TileType> {
+    fn count_independent_single(summarized_hand: &mut TileSummarize) -> Result<Vec<TileType>> {
         let mut result: Vec<TileType> = Vec::new();
         for i in Tile::M1..=Tile::Z7 {
             match i {
@@ -456,11 +459,11 @@ impl HandAnalyzer {
                     }
                 }
                 _ => {
-                    panic!("unknown tile index!");
+                    return Err(anyhow!("Unknown tile index found!"));
                 }
             }
         }
-        return result;
+        Ok(result)
     }
 }
 /// 和了しているか否か
@@ -484,7 +487,7 @@ fn count_normal_shanten_recursively(
     same2_result: &mut Vec<Same2>,
     sequential2_result: &mut Vec<Sequential2>,
     single_result: &mut Vec<TileType>,
-) -> i32 {
+) -> Result<i32> {
     count_same_or_sequential_3(
         idx,
         independent_same3,
@@ -500,7 +503,7 @@ fn count_normal_shanten_recursively(
         same2_result,
         sequential2_result,
         single_result,
-    );
+    )?;
     count_same_or_sequential_2(
         idx,
         independent_same3,
@@ -516,7 +519,7 @@ fn count_normal_shanten_recursively(
         same2_result,
         sequential2_result,
         single_result,
-    );
+    )?;
     let shanten = calc_normal_shanten(
         independent_same3,
         independent_sequential3,
@@ -538,12 +541,10 @@ fn count_normal_shanten_recursively(
             }
         }
     }
-    return *shanten_min;
+    Ok(*shanten_min)
 }
 
-/// 面子（刻子および順子）の数を返す
-/// # returns
-/// (刻子, 順子)
+/// 面子（刻子および順子）をカウントして引数に与えられた各変数に格納する
 fn count_same_or_sequential_3(
     idx: TileType,
     independent_same3: &Vec<Same3>,
@@ -559,12 +560,12 @@ fn count_same_or_sequential_3(
     same2_result: &mut Vec<Same2>,
     sequential2_result: &mut Vec<Sequential2>,
     single_result: &mut Vec<TileType>,
-) {
+) -> Result<()> {
     for i in idx..=Tile::Z7 {
         // 刻子カウント
         if summarized_hand[i as usize] >= 3 {
             //block3 += 1;
-            same3.push(Same3::new(i, i, i));
+            same3.push(Same3::new(i, i, i)?);
             summarized_hand[i as usize] -= 3;
             *shanten_min = count_normal_shanten_recursively(
                 i,
@@ -581,7 +582,7 @@ fn count_same_or_sequential_3(
                 same2_result,
                 sequential2_result,
                 single_result,
-            );
+            )?;
             summarized_hand[i as usize] += 3;
             same3.pop();
         }
@@ -595,7 +596,7 @@ fn count_same_or_sequential_3(
             && summarized_hand[i as usize + 2] >= 1
         {
             //block3 += 1;
-            sequential3.push(Sequential3::new(i, i + 1, i + 2));
+            sequential3.push(Sequential3::new(i, i + 1, i + 2)?);
             summarized_hand[i as usize] -= 1;
             summarized_hand[i as usize + 1] -= 1;
             summarized_hand[i as usize + 2] -= 1;
@@ -614,19 +615,17 @@ fn count_same_or_sequential_3(
                 same2_result,
                 sequential2_result,
                 single_result,
-            );
+            )?;
             summarized_hand[i as usize] += 1;
             summarized_hand[i as usize + 1] += 1;
             summarized_hand[i as usize + 2] += 1;
             sequential3.pop();
         }
     }
-    //return (same3, sequential3);
+    Ok(())
 }
 
-/// 対子・塔子・嵌張カウント
-/// # returns
-/// (対子,塔子・嵌張)
+/// 対子・塔子・嵌張をカウントして引数に与えられた各変数に格納する
 fn count_same_or_sequential_2(
     idx: TileType,
     independent_same3: &Vec<Same3>,
@@ -642,11 +641,11 @@ fn count_same_or_sequential_2(
     same2_result: &mut Vec<Same2>,
     sequential2_result: &mut Vec<Sequential2>,
     single_result: &mut Vec<TileType>,
-) {
+)-> Result<()> {
     for i in idx..=Tile::Z7 {
         // 対子
         if summarized_hand[i as usize] == 2 {
-            same2.push(Same2::new(i, i));
+            same2.push(Same2::new(i, i)?);
             summarized_hand[i as usize] -= 2;
             *shanten_min = count_normal_shanten_recursively(
                 idx,
@@ -663,7 +662,7 @@ fn count_same_or_sequential_2(
                 same2_result,
                 sequential2_result,
                 single_result,
-            );
+            )?;
             summarized_hand[i as usize] += 2;
             same2.pop();
         }
@@ -674,7 +673,7 @@ fn count_same_or_sequential_2(
         {
             // 塔子
             if summarized_hand[i as usize] >= 1 && summarized_hand[i as usize + 1] >= 1 {
-                sequential2.push(Sequential2::new(i, i + 1));
+                sequential2.push(Sequential2::new(i, i + 1)?);
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 1] -= 1;
                 *shanten_min = count_normal_shanten_recursively(
@@ -692,7 +691,7 @@ fn count_same_or_sequential_2(
                     same2_result,
                     sequential2_result,
                     single_result,
-                );
+                )?;
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 1] += 1;
                 sequential2.pop();
@@ -702,7 +701,7 @@ fn count_same_or_sequential_2(
                 && summarized_hand[i as usize + 1] == 0
                 && summarized_hand[i as usize + 2] >= 1
             {
-                sequential2.push(Sequential2::new(i, i + 2));
+                sequential2.push(Sequential2::new(i, i + 2)?);
                 summarized_hand[i as usize] -= 1;
                 summarized_hand[i as usize + 2] -= 1;
                 *shanten_min = count_normal_shanten_recursively(
@@ -720,13 +719,14 @@ fn count_same_or_sequential_2(
                     same2_result,
                     sequential2_result,
                     single_result,
-                );
+                )?;
                 summarized_hand[i as usize] += 1;
                 summarized_hand[i as usize + 2] += 1;
                 sequential2.pop();
             }
         }
     }
+    Ok(())
     //return (same2, sequential2);
 }
 
@@ -755,7 +755,7 @@ mod tests {
         let test_str = "226699m99p228s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).unwrap().shanten,
             0
         );
     }
@@ -765,7 +765,7 @@ mod tests {
         let test_str = "226699m99p222s66z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).unwrap().shanten,
             0
         );
     }
@@ -775,7 +775,7 @@ mod tests {
         let test_str = "19m19p11s1234567z 5m";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::ThirteenOrphens).shanten,
+            HandAnalyzer::new_by_form(&test, Form::ThirteenOrphens).unwrap().shanten,
             0
         );
     }
@@ -786,7 +786,7 @@ mod tests {
         let test_str = "1122m3344p5555s1z 1z";
         let test = Hand::from(test_str);
         assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::SevenPairs).shanten,
+            HandAnalyzer::new_by_form(&test, Form::SevenPairs).unwrap().shanten,
             1
         );
     }
@@ -796,10 +796,7 @@ mod tests {
     fn win_by_ready_hand() {
         let test_str = "123m444p789s1112z 2z";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
 
     #[test]
@@ -807,10 +804,7 @@ mod tests {
     fn win_by_honor_tiles_players_wind() {
         let test_str = "333m456p1789s 333z 1s";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
 
     #[test]
@@ -818,30 +812,21 @@ mod tests {
     fn win_by_honor_tiles_prevailing_wind() {
         let test_str = "234567m6789s 111z 6s";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
     #[test]
     /// 三元牌で和了った
     fn win_by_honor_tiles_dragons() {
         let test_str = "5m123456p888s 777z 5m";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
     #[test]
     /// 断么九で和了った
     fn win_by_all_simples() {
         let test_str = "234m8s 567m 333p 456s 8s";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
 
     #[test]
@@ -849,9 +834,6 @@ mod tests {
     fn win_by_no_points() {
         let test_str = "123567m234p6799s 5s";
         let test = Hand::from(test_str);
-        assert_eq!(
-            HandAnalyzer::new_by_form(&test, Form::Normal).shanten,
-            -1
-        );
+        assert_eq!(HandAnalyzer::new_by_form(&test, Form::Normal).unwrap().shanten, -1);
     }
 }

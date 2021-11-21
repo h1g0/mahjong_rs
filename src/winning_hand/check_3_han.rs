@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
@@ -9,14 +11,14 @@ pub fn check_two_sets_of_identical_sequences(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::TwoSetsOfIdenticalSequences,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -25,18 +27,18 @@ pub fn check_terminal_in_each_set(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::TerminalInEachSet,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     // 清老頭とは複合しないため、必ず順子が含まれる
     if hand.sequential3.len() == 0 {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
 
     let mut no_1_9 = false;
@@ -44,45 +46,46 @@ pub fn check_terminal_in_each_set(
 
     // 刻子
     for same in &hand.same3 {
-        if !same.has_1_or_9() {
+        if !same.has_1_or_9()? {
             no_1_9 = true;
         }
     }
     // 順子
     for seq in &hand.sequential3 {
-        if !seq.has_1_or_9() {
+        if !seq.has_1_or_9()? {
             no_1_9 = true;
         }
     }
 
     // 雀頭
     for head in &hand.same2 {
-        if !head.has_1_or_9() {
+        if !head.has_1_or_9()? {
             no_1_9 = true;
         }
     }
 
     if no_1_9 {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     if status.has_claimed_open {
-        return (name, true, 2);
+        Ok((name, true, 2))
+    }else{
+        Ok((name, true, 3))
     }
-    return (name, true, 3);
 }
 /// 混一色
 pub fn check_half_flush(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::HalfFlush,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -99,12 +102,12 @@ mod tests {
     fn test_terminal_in_each_set() {
         let test_str = "123999m11p11179s 8s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = false;
         assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status, &settings),
+            check_terminal_in_each_set(&test_analyzer, &status, &settings).unwrap(),
             ("純全帯么九", true, 3)
         );
     }
@@ -113,12 +116,12 @@ mod tests {
     fn test_terminal_in_each_set_open() {
         let test_str = "123m111p7999s 789m 8s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = true;
         assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status, &settings),
+            check_terminal_in_each_set(&test_analyzer, &status, &settings).unwrap(),
             ("純全帯么九（鳴）", true, 2)
         );
     }
@@ -128,16 +131,16 @@ mod tests {
     fn test_terminal_or_honor_in_each_set_does_not_combined_with_terminal_in_each_set() {
         let test_str = "111789m111p99s11z 1z";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = false;
         assert_eq!(
-            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).1,
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).unwrap().1,
             true
         );
         assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status, &settings).1,
+            check_terminal_in_each_set(&test_analyzer, &status, &settings).unwrap().1,
             false
         );
     }
@@ -146,16 +149,16 @@ mod tests {
     fn test_terminal_in_each_set_does_not_combined_with_terminal_or_honor_in_each_set() {
         let test_str = "111789m111p1199s 9s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = false;
         assert_eq!(
-            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).1,
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).unwrap().1,
             false
         );
         assert_eq!(
-            check_terminal_in_each_set(&test_analyzer, &status, &settings).1,
+            check_terminal_in_each_set(&test_analyzer, &status, &settings).unwrap().1,
             true
         );
     }

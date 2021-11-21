@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
@@ -10,20 +12,20 @@ pub fn check_seven_pairs(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::SevenPairs,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
-    return if hand.form == Form::SevenPairs {
-        (name, true, 2)
+    if hand.form == Form::SevenPairs {
+        Ok((name, true, 2))
     } else {
-        (name, false, 0)
-    };
+        Ok((name, false, 0))
+    }
 }
 
 /// 三色同順
@@ -31,14 +33,14 @@ pub fn check_three_colour_straight(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::ThreeColourStraight,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -47,7 +49,7 @@ pub fn check_straight(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::Straight,
         status.has_claimed_open,
@@ -55,7 +57,7 @@ pub fn check_straight(
     );
 
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     let mut m = [false; 3];
     let mut p = [false; 3];
@@ -78,45 +80,45 @@ pub fn check_straight(
 
     if (m[0] && m[1] && m[2]) || (p[0] && p[1] && p[2]) || (s[0] && s[1] && s[2]) {
         if status.has_claimed_open {
-            return (name, true, 1);
+            return Ok((name, true, 1));
         } else {
-            return (name, true, 2);
+            return Ok((name, true, 2));
         }
     }
-    return (name, false, 0);
+    Ok((name, false, 0))
 }
 /// 対々和
 pub fn check_all_triplet_hand(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::AllTripletHand,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     if hand.same3.len() == 4 && hand.same2.len() == 1 {
-        return (name, true, 2);
+        return Ok((name, true, 2));
     }
-    return (name, false, 0);
+    Ok((name, false, 0))
 }
 /// 三暗刻
 pub fn check_three_closed_triplets(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::ThreeClosedTriplets,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -125,14 +127,14 @@ pub fn check_three_colour_triplets(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::ThreeColourTriplets,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -141,19 +143,19 @@ pub fn check_terminal_or_honor_in_each_set(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::TerminalOrHonorInEachSet,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
 
     // 混老頭とは複合しないため、必ず順子が含まれる
     if hand.sequential3.len() == 0 {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
 
     let mut no_1_9_honor = false;
@@ -164,52 +166,52 @@ pub fn check_terminal_or_honor_in_each_set(
 
     // 刻子
     for same in &hand.same3 {
-        if !same.has_1_or_9() && !same.has_honor() {
+        if !same.has_1_or_9()? && !same.has_honor()? {
             no_1_9_honor = true;
         }
 
-        if same.has_honor() {
+        if same.has_honor()? {
             has_honor = true;
         }
     }
     // 順子
     for seq in &hand.sequential3 {
-        if !seq.has_1_or_9() {
+        if !seq.has_1_or_9()? {
             no_1_9_honor = true;
         }
     }
 
     // 雀頭
     for head in &hand.same2 {
-        if !head.has_1_or_9() && !head.has_honor() {
+        if !head.has_1_or_9()? && !head.has_honor()? {
             no_1_9_honor = true;
         }
-        if head.has_honor() {
+        if head.has_honor()? {
             has_honor = true;
         }
     }
 
     if no_1_9_honor || !has_honor {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     if status.has_claimed_open {
-        return (name, true, 1);
+        return Ok((name, true, 1));
     }
-    return (name, true, 2);
+    Ok((name, true, 2))
 }
 /// 混老頭
 pub fn check_all_terminals_and_honors(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::AllTerminalsAndHonors,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -218,14 +220,14 @@ pub fn check_little_three_dragons(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::LittleThreeDragons,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
@@ -240,11 +242,11 @@ mod tests {
     fn test_win_by_seven_pairs() {
         let test_str = "1122m3344p5566s1z 1z";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_seven_pairs(&test_analyzer, &status, &settings),
+            check_seven_pairs(&test_analyzer, &status, &settings).unwrap(),
             ("七対子", true, 2)
         );
     }
@@ -253,12 +255,12 @@ mod tests {
     fn test_terminal_or_honor_in_each_set() {
         let test_str = "123999m111p79s44z 8s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = false;
         assert_eq!(
-            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings),
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).unwrap(),
             ("混全帯么九", true, 2)
         );
     }
@@ -267,12 +269,12 @@ mod tests {
     fn test_terminal_or_honor_in_each_set_open() {
         let test_str = "123m111p79s44z 789m 8s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = true;
         assert_eq!(
-            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings),
+            check_terminal_or_honor_in_each_set(&test_analyzer, &status, &settings).unwrap(),
             ("混全帯么九（鳴）", true, 1)
         );
     }
@@ -281,11 +283,11 @@ mod tests {
     fn test_all_triplet_hand() {
         let test_str = "777m333p22z 555m 999s";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_all_triplet_hand(&test_analyzer, &status, &settings),
+            check_all_triplet_hand(&test_analyzer, &status, &settings).unwrap(),
             ("対々和", true, 2)
         );
     }
@@ -295,12 +297,12 @@ mod tests {
     fn test_straight() {
         let test_str = "123456789m78p22z 9p";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = false;
         assert_eq!(
-            check_straight(&test_analyzer, &status, &settings),
+            check_straight(&test_analyzer, &status, &settings).unwrap(),
             ("一気通貫", true, 2)
         );
     }
@@ -310,12 +312,12 @@ mod tests {
     fn test_straight_open() {
         let test_str = "123m1p123s 456s 789s 1p";
         let test = Hand::from(test_str);
-        let test_analyzer = HandAnalyzer::new(&test);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
         let mut status = Status::new();
         let settings = Settings::new();
         status.has_claimed_open = true;
         assert_eq!(
-            check_straight(&test_analyzer, &status, &settings),
+            check_straight(&test_analyzer, &status, &settings).unwrap(),
             ("一気通貫（鳴）", true, 1)
         );
     }

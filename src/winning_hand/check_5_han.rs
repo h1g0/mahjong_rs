@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
 use crate::settings::*;
@@ -8,14 +10,14 @@ pub fn check_nagashi_mangan(
     hand: &HandAnalyzer,
     status: &Status,
     settings: &Settings,
-) -> (&'static str, bool, u32) {
+) -> Result<(&'static str, bool, u32)> {
     let name = get(
         Kind::NagashiMangan,
         status.has_claimed_open,
         settings.display_lang,
     );
     if !has_won(hand) {
-        return (name, false, 0);
+        return Ok((name, false, 0));
     }
     todo!();
 }
