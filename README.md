@@ -1,6 +1,6 @@
 # mahjong_rs
 
-[![Build and test](https://github.com/h1g0/mahjong_rs/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/h1g0/mahjong_rs/actions/workflows/build_and_test.yml)
+[![Build and test](https://github.com/h1g0/mahjong_rs/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/h1g0/mahjong_rs/actions/workflows/build_and_test.yml)
 
 Implementation for Japanese Mahjong in Rust.
 
