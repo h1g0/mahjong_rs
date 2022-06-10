@@ -1,4 +1,3 @@
-//use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 mod tile;
