@@ -126,7 +126,8 @@ pub fn get(
 /// # Examples
 ///
 /// ```
-/// use crate::settings::Lang;
+/// use mahjong_rs::settings::Lang;
+/// use mahjong_rs::winning_hand::name::*;
 /// 
 /// assert_eq!(openned_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
 /// assert_eq!(openned_name!("三色同順", false, Lang::Ja), "三色同順");
