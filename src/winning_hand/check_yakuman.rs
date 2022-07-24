@@ -39,11 +39,9 @@ pub fn check_four_concealed_triplets(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    if !status.has_claimed_open && hand.same3.len() == 4{
-        // todo!();
-        // 通常の四暗刻では、自摸和了のみ（ロンした場合は三暗刻＋対々和になる）
-        Ok((name,true, 13))
-    }else{
+    if !status.has_claimed_open && hand.same3.len() == 4 && status.is_self_picked {
+        Ok((name, true, 13))
+    } else {
         Ok((name, false, 0))
     }
 }
@@ -234,7 +232,8 @@ mod tests {
         let test_str = "111333m444s1777z 1z";
         let test = Hand::from(test_str);
         let test_analyzer = HandAnalyzer::new(&test).unwrap();
-        let status = Status::new();
+        let mut status = Status::new();
+        status.is_self_picked = true; // 自摸和了
         let settings = Settings::new();
         assert_eq!(
             check_four_concealed_triplets(&test_analyzer, &status, &settings).unwrap(),
@@ -242,4 +241,18 @@ mod tests {
         );
     }
 
+    #[test]
+    /// 通常の四暗刻では、自摸和了のみ（ロンした場合は三暗刻＋対々和になる）
+    fn test_not_win_by_four_concealed_triplets_single_if_not_self_pick() {
+        let test_str = "111333m444s1777z 1z";
+        let test = Hand::from(test_str);
+        let test_analyzer = HandAnalyzer::new(&test).unwrap();
+        let mut status = Status::new();
+        status.is_self_picked = false;
+        let settings = Settings::new();
+        assert_eq!(
+            check_four_concealed_triplets(&test_analyzer, &status, &settings).unwrap(),
+            ("四暗刻", false, 0)
+        );
+    }
 }
