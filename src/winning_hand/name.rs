@@ -110,11 +110,20 @@ pub enum Kind {
 /// * `hand_kind` - 和了役の種類
 /// * `has_opened` - 副露しているか否か（喰い下がり役は`true`にすると名前の後に「（鳴）」が付く）
 /// * `lang` - 言語
-pub fn get(
-    hand_kind: Kind,
-    has_openned: bool,
-    lang: Lang,
-) -> &'static str {
+///
+/// # Examples
+///
+/// ```
+/// use mahjong_rs::settings::Lang;
+/// use mahjong_rs::winning_hand::name::*;
+///
+/// assert_eq!(get(Kind::ThreeColourStraight, true, Lang::Ja), "三色同順（鳴）");
+/// assert_eq!(get(Kind::ThreeColourStraight, false, Lang::Ja), "三色同順");
+/// assert_eq!(get(Kind::ThreeColourStraight, true, Lang::En), "Three Colour Straight (Open)");
+/// assert_eq!(get(Kind::ThreeColourStraight, false, Lang::En), "Three Colour Straight");
+/// ```
+
+pub fn get(hand_kind: Kind, has_openned: bool, lang: Lang) -> &'static str {
     match lang {
         Lang::En => get_en(hand_kind, has_openned),
         Lang::Ja => get_ja(hand_kind, has_openned),
@@ -122,18 +131,6 @@ pub fn get(
 }
 
 /// 喰い下がり役に対しては「（鳴）」を付けるマクロ
-///
-/// # Examples
-///
-/// ```
-/// use mahjong_rs::settings::Lang;
-/// use mahjong_rs::winning_hand::name::*;
-/// 
-/// assert_eq!(openned_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
-/// assert_eq!(openned_name!("三色同順", false, Lang::Ja), "三色同順");
-/// assert_eq!(openned_name!("Three Colour Triplets", true, Lang::En), "Three Colour Triplets (Open)");
-/// assert_eq!(openned_name!("Three Colour Triplets", false, Lang::En), "Three Colour Triplets");
-/// ```
 macro_rules! openned_name {
     ($str:expr, $open:expr, $lang:expr) => {
         match $open {
@@ -245,6 +242,7 @@ fn get_en(hand_kind: Kind, has_openned: bool) -> &'static str {
         Kind::HandOfEarth => "Hand Of Earth",
     }
 }
+
 fn get_ja(hand_kind: Kind, has_openned: bool) -> &'static str {
     match hand_kind {
         // 立直
