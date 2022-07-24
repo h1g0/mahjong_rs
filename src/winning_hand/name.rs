@@ -126,10 +126,12 @@ pub fn get(
 /// # Examples
 ///
 /// ```
-/// assert_eq!(oppened_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
-/// assert_eq!(oppened_name!("三色同順", false, Lang::Ja), "三色同順");
-/// assert_eq!(oppened_name!("Three Colour Triplets", true, Lang::En), "Three Colour Triplets (Open)");
-/// assert_eq!(oppened_name!("Three Colour Triplets", false, Lang::En), "Three Colour Triplets");
+/// use crate::settings::Lang;
+/// 
+/// assert_eq!(openned_name!("三色同順", true, Lang::Ja), "三色同順（鳴）");
+/// assert_eq!(openned_name!("三色同順", false, Lang::Ja), "三色同順");
+/// assert_eq!(openned_name!("Three Colour Triplets", true, Lang::En), "Three Colour Triplets (Open)");
+/// assert_eq!(openned_name!("Three Colour Triplets", false, Lang::En), "Three Colour Triplets");
 /// ```
 macro_rules! openned_name {
     ($str:expr, $open:expr, $lang:expr) => {
