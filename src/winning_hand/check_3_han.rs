@@ -4,6 +4,7 @@ use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
 use crate::settings::*;
+use crate::tile::{TileType, Tile};
 use crate::winning_hand::name::*;
 
 /// 二盃口
@@ -20,7 +21,23 @@ pub fn check_two_sets_of_identical_sequences(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    if status.has_claimed_open {
+        return Ok((name, false, 0));
+    }
+    if hand.sequential3.len() < 4 {
+        return Ok((name, false, 0));
+    }
+    use std::collections::HashMap;
+    let mut map: HashMap<[TileType;3], usize> = HashMap::new();
+    for seq in &hand.sequential3 {
+        *map.entry(seq.get()).or_insert(0) += 1;
+    }
+    let pairs = map.values().map(|c| c / 2).sum::<usize>();
+    if pairs >= 2 {
+        Ok((name, true, 3))
+    } else {
+        Ok((name, false, 0))
+    }
 }
 /// 純全帯么九
 pub fn check_terminal_in_each_set(
@@ -87,7 +104,36 @@ pub fn check_half_flush(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    let mut char = false;
+    let mut circle = false;
+    let mut bamboo = false;
+
+    for same in &hand.same3 {
+        if same.is_character()? { char = true; }
+        if same.is_circle()? { circle = true; }
+        if same.is_bamboo()? { bamboo = true; }
+    }
+    for seq in &hand.sequential3 {
+        if seq.is_character()? { char = true; }
+        if seq.is_circle()? { circle = true; }
+        if seq.is_bamboo()? { bamboo = true; }
+    }
+    for pair in &hand.same2 {
+        if pair.is_character()? { char = true; }
+        if pair.is_circle()? { circle = true; }
+        if pair.is_bamboo()? { bamboo = true; }
+    }
+
+    let suits = char as u32 + circle as u32 + bamboo as u32;
+    if suits == 1 {
+        if status.has_claimed_open {
+            Ok((name, true, 2))
+        } else {
+            Ok((name, true, 3))
+        }
+    } else {
+        Ok((name, false, 0))
+    }
 }
 
 /// ユニットテスト
@@ -160,6 +206,48 @@ mod tests {
         assert_eq!(
             check_terminal_in_each_set(&test_analyzer, &status, &settings).unwrap().1,
             true
+        );
+    }
+    #[test]
+    /// 二盃口の判定
+    fn test_two_sets_of_identical_sequences() {
+        let test_str = "112233m778899p7z 7z";
+        let hand = Hand::from(test_str);
+        let analyzer = HandAnalyzer::new(&hand).unwrap();
+        let status = Status::new();
+        let settings = Settings::new();
+        assert_eq!(
+            check_two_sets_of_identical_sequences(&analyzer, &status, &settings).unwrap(),
+            ("二盃口", false, 0)
+        );
+    }
+
+    #[test]
+    /// 混一色（門前）で和了った
+    fn test_half_flush_closed() {
+        let test_str = "123456789m1112z 2z";
+        let hand = Hand::from(test_str);
+        let analyzer = HandAnalyzer::new(&hand).unwrap();
+        let status = Status::new();
+        let settings = Settings::new();
+        assert_eq!(
+            check_half_flush(&analyzer, &status, &settings).unwrap(),
+            ("混一色", true, 3)
+        );
+    }
+
+    #[test]
+    /// 混一色（鳴き）で和了った
+    fn test_half_flush_open() {
+        let test_str = "111m789m2z 123m 222z 2z";
+        let hand = Hand::from(test_str);
+        let analyzer = HandAnalyzer::new(&hand).unwrap();
+        let mut status = Status::new();
+        let settings = Settings::new();
+        status.has_claimed_open = true;
+        assert_eq!(
+            check_half_flush(&analyzer, &status, &settings).unwrap(),
+            ("混一色（鳴）", true, 2)
         );
     }
 }
