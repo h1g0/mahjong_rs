@@ -87,7 +87,7 @@ pub fn check_last_tile_from_the_wall(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// 河底撈魚
 pub fn check_last_discard(
@@ -103,7 +103,7 @@ pub fn check_last_discard(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// 嶺上開花
 pub fn check_dead_wall_draw(
@@ -119,7 +119,7 @@ pub fn check_dead_wall_draw(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// 搶槓
 pub fn check_robbing_a_quad(
@@ -135,7 +135,7 @@ pub fn check_robbing_a_quad(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// ダブル立直
 pub fn check_double_ready(
@@ -151,7 +151,7 @@ pub fn check_double_ready(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// 平和
 pub fn check_no_points_hand(
@@ -167,7 +167,7 @@ pub fn check_no_points_hand(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 /// 一盃口
 pub fn check_one_set_of_identical_sequences(

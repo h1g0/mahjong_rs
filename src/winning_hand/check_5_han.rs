@@ -19,7 +19,7 @@ pub fn check_nagashi_mangan(
     if !has_won(hand) {
         return Ok((name, false, 0));
     }
-    todo!();
+    todo!()
 }
 
 /// ユニットテスト
