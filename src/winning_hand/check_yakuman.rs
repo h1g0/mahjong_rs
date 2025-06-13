@@ -497,7 +497,7 @@ mod tests {
     }
 
     #[test]
-    /// 緑一色で和了ったかを確認
+    /// 緑一色で和了った
     fn test_all_green() {
         let test_str = "22334466s66z 888s 6z";
         let hand = Hand::from(test_str);
