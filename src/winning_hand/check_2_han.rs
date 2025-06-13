@@ -490,7 +490,7 @@ mod tests {
     }
 
     #[test]
-    /// 混老頭で和了ったかを確認
+    /// 混老頭で和了った
     fn test_all_terminals_and_honors() {
         let test_str = "111m999p111s777z55z 5z";
         let hand = Hand::from(test_str);
