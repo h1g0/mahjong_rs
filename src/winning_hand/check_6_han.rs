@@ -4,7 +4,6 @@ use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
 use crate::settings::*;
-use crate::tile::Tile;
 use crate::winning_hand::name::*;
 
 /// 清一色
