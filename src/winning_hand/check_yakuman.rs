@@ -215,7 +215,7 @@ pub fn check_all_green(
     }
     const GREEN: [TileType; 6] = [Tile::S2, Tile::S3, Tile::S4, Tile::S6, Tile::S8, Tile::Z6];
 
-    let mut is_green = |t: TileType| GREEN.contains(&t);
+    let is_green = |t: TileType| GREEN.contains(&t);
 
     for same in &hand.same3 {
         let tile = same.get()[0];
