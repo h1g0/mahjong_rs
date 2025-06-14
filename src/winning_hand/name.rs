@@ -114,8 +114,8 @@ pub enum Kind {
 /// # Examples
 ///
 /// ```
-/// use mahjong_rs::settings::Lang;
-/// use mahjong_rs::winning_hand::name::*;
+/// use riichi_mahjong_rs::settings::Lang;
+/// use riichi_mahjong_rs::winning_hand::name::*;
 ///
 /// assert_eq!(get(Kind::ThreeColourStraight, true, Lang::Ja), "三色同順（鳴）");
 /// assert_eq!(get(Kind::ThreeColourStraight, false, Lang::Ja), "三色同順");
