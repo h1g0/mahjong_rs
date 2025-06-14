@@ -157,6 +157,7 @@ pub fn check_double_ready(
 /// 平和
 pub fn check_no_points_hand(
     hand: &HandAnalyzer,
+    raw_hand: &Hand,
     status: &Status,
     settings: &Settings,
 ) -> Result<(&'static str, bool, u32) >{
@@ -190,7 +191,12 @@ pub fn check_no_points_hand(
         return Ok((name, false, 0));
     }
 
-    // 両面待ちかどうかを確認
+    // 和了牌が両面待ちかどうかを確認
+    let win_tile = match raw_hand.drawn() {
+        Some(t) => t.get(),
+        None => return Ok((name, false, 0)),
+    };
+
     let mut counts: TileSummarize = [0; Tile::LEN];
     for seq in &hand.sequential3 {
         for t in &seq.get() {
@@ -203,31 +209,12 @@ pub fn check_no_points_hand(
         }
     }
 
-    let mut is_ryanmen = false;
-    for t in Tile::M1..=Tile::Z7 {
-        if counts[t as usize] == 0 {
-            continue;
-        }
-        counts[t as usize] -= 1;
-        // 組み合わせが成立しているか
-        let mut tiles: Vec<Tile> = Vec::new();
-        for i in Tile::M1..=Tile::Z7 {
-            for _ in 0..counts[i as usize] {
-                tiles.push(Tile::new(i));
-            }
-        }
-        let temp_hand = Hand::new(tiles, None);
-        if let Ok(an) = HandAnalyzer::new(&temp_hand) {
-            if an.shanten == 0 && is_two_sided_wait(t, &counts) {
-                is_ryanmen = true;
-                counts[t as usize] += 1;
-                break;
-            }
-        }
-        counts[t as usize] += 1;
+    if counts[win_tile as usize] == 0 {
+        return Ok((name, false, 0));
     }
+    counts[win_tile as usize] -= 1;
 
-    if !is_ryanmen {
+    if !is_two_sided_wait(win_tile, &counts) {
         return Ok((name, false, 0));
     }
 
@@ -656,7 +643,7 @@ mod tests {
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", true, 1)
         );
     }
@@ -670,7 +657,7 @@ mod tests {
         let settings = Settings::new();
         status.has_claimed_open = true;
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", false, 0)
         );
     }
@@ -683,7 +670,7 @@ mod tests {
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", false, 0)
         );
     }
@@ -696,7 +683,7 @@ mod tests {
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", false, 0)
         );
     }
@@ -710,7 +697,7 @@ mod tests {
         let status = Status::new();
         let settings = Settings::new();
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", false, 0)
         );
     }
@@ -725,7 +712,7 @@ mod tests {
         status.player_wind = Wind::East;
         status.prevailing_wind = Wind::East;
         assert_eq!(
-            check_no_points_hand(&analyzer, &status, &settings).unwrap(),
+            check_no_points_hand(&analyzer, &test, &status, &settings).unwrap(),
             ("平和", false, 0)
         );
     }
