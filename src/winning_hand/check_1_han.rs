@@ -4,7 +4,7 @@ use crate::hand_info::block::BlockProperty;
 use crate::hand_info::hand_analyzer::*;
 use crate::hand_info::status::*;
 use crate::settings::*;
-use crate::tile::{Dragon, Tile, TileType, TileSummarize};
+use crate::tile::{Dragon, Tile, TileSummarize};
 use crate::hand::Hand;
 use crate::winning_hand::name::*;
 
